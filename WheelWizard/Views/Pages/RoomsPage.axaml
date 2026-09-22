@@ -34,11 +34,11 @@
         </StackPanel>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,Auto" Margin="10,10,10,8">
-            <TextBox Width="300" HorizontalAlignment="Left"
+            <TextBox Width="300" HorizontalAlignment="Center"
                      PlaceholderText="Search room, player, or friend code"
                      TextChanged="PlayerSearchField_OnTextChanged" x:Name="PlayerSearchField" />
             <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,6,0,0"
-                        HorizontalAlignment="Left">
+                        HorizontalAlignment="Center">
                 <TextBox PlaceholderText="Min avg. VR" MaxLength="7"
                          Width="105" TextChanged="VrFilter_OnTextChanged" x:Name="MinimumVrField" />
                 <TextBox PlaceholderText="Max avg. VR" MaxLength="7"
