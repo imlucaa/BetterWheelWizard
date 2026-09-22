@@ -44,7 +44,7 @@
                 <TextBox PlaceholderText="Max avg. VR" MaxLength="7"
                          Width="105"
                           TextChanged="VrFilter_OnTextChanged" x:Name="MaximumVrField" />
-                <ComboBox Width="160" x:Name="AverageVrSortDropdown"
+                <ComboBox Width="78" x:Name="AverageVrSortDropdown"
                           SelectedIndex="0" SelectionChanged="AverageVrSortDropdown_OnSelectionChanged">
                     <ComboBoxItem Content="All rooms" />
                     <ComboBoxItem Content="Lowest → highest" />
