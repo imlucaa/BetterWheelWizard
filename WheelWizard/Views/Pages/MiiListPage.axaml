@@ -1,0 +1,246 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             xmlns:behaviorComponent="clr-namespace:WheelWizard.Views.Patterns"
+             xmlns:loc="clr-namespace:WheelWizard.Localization"
+             mc:Ignorable="d" d:DesignWidth="456" d:DesignHeight="776"
+             x:CompileBindings="False"
+             x:Class="WheelWizard.Views.Pages.MiiListPage">
+    <Grid x:Name="CompleteGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <!-- This is the total height as the (Title + infoSection) - (padding) -->
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom" />
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Spacing="8">
+                <TextBlock Text="{loc:T page_title.my_miis}"
+                           Classes="PageTitleText" />
+                <components:StateBox Text="0"
+                                     IconSize="0"
+                                     x:Name="ListItemCount"
+                                     VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,6,10"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        IsVisible="{Binding IsVisible, ElementName=VisibleWhenDb}">
+                <components:Button Text="" Click="FavMii_OnClick" x:Name="FavoriteMiiButton"
+                                   Variant="Default" Padding="10"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top">
+                    <components:Button.Styles>
+                        <Style Selector="components|Button">
+                            <Setter Property="IconData" Value="{StaticResource StarIcon}"/>
+                            <Setter Property="ToolTip.Tip" Value="{loc:T action.favorite}"/>
+                        </Style>
+                        <Style Selector="components|Button.UnFav">
+                            <Setter Property="IconData" Value="{StaticResource EmptyStarIcon}"/>
+                            <Setter Property="ToolTip.Tip" Value="{loc:T action.unfavorite}"/>
+                        </Style>
+                    </components:Button.Styles>
+                </components:Button>
+                <components:Button Text="" Click="EditMii_OnClick" x:Name="EditMiisButton"
+                                   IconData="{StaticResource Pen}"
+                                   Variant="Default" Padding="10" IsVisible="False"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                   ToolTip.Tip="{loc:T action.edit}" />
+                <components:Button Text="" Click="DuplicateMii_OnClick" x:Name="DuplicateMiisButton"
+                                   IconData="{StaticResource Duplicate}"
+                                   Variant="Default" Padding="10" IsVisible="False"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                   ToolTip.Tip="{loc:T action.duplicate}" />
+                <components:Button Text="" Click="ExportMii_OnClick" x:Name="ExportMiisButton"
+                                   IconData="{StaticResource FileExport}"
+                                   Variant="Default" Padding="10" IsVisible="False"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                   ToolTip.Tip="{loc:T action.export}" />
+                <components:Button Text="" Click="DeleteMii_OnClick" x:Name="DeleteMiisButton"
+                                   IconData="{StaticResource Trash}"
+                                   Variant="Danger" Padding="10" IsVisible="False"
+                                    ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                    ToolTip.Tip="{loc:T action.delete}" />
+                <TextBox x:Name="SavedMiiSearchField" Width="150" IsVisible="False"
+                         VerticalAlignment="Center" PlaceholderText="Search Miis"
+                         TextChanged="SavedMiiSearch_OnTextChanged" />
+                <components:Button Text="" Click="ToggleSavedMiiSearch_OnClick" x:Name="SearchSavedMiiButton"
+                                   IconData="{StaticResource Search}"
+                                   Variant="Default" Padding="10"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                   ToolTip.Tip="Search saved Miis" />
+                <components:Button Text="" Click="ImportMii_OnClick" x:Name="ImportMiiButton"
+                                   IconData="{StaticResource FileImport}"
+                                   Variant="Default" Padding="10"
+                                   ToolTip.ShowDelay="0" ToolTip.Placement="Top"
+                                   ToolTip.Tip="{loc:T action.import}" />
+            </StackPanel>
+        </Grid>
+        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom" />
+
+        <components:EmptyPageInfo Grid.Row="1" x:Name="VisibleWhenNoDb"
+                                  HorizontalAlignment="Center" IsVisible="False"
+                                  Title="{loc:T empty_content.no_miis_title}"
+                                  BodyText="{loc:T empty_content.no_miis}" />
+
+        <Grid x:Name="VisibleWhenDb" Grid.Row="1" RowDefinitions="Auto,*">
+            <StackPanel Grid.Row="0" Margin="8,8,8,0">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <components:Button x:Name="MyMiisTabButton" Text="My Miis" Click="MyMiisTab_OnClick" />
+                    <components:Button x:Name="OnlineMiisTabButton" Text="Mii Downloader" Click="OnlineMiisTab_OnClick" />
+                </StackPanel>
+            </StackPanel>
+
+            <ListBox Grid.Row="1" x:Name="MiiList" SelectionMode="Single" BorderThickness="0"
+                     Background="Transparent" Padding="0" ItemsSource="{Binding MiiRows}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding Items}" HorizontalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4" HorizontalAlignment="Center" VerticalAlignment="Top" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <behaviorComponent:MiiBlock Width="90" Height="90" Margin="8,10"
+                                                                Mii="{Binding Mii}"
+                                                                GroupName="{Binding SelectionGroup}"
+                                                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                Click="MiiBlock_OnClick">
+                                        <behaviorComponent:MiiBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="{Binding FavoriteActionHeader}"
+                                                          CommandParameter="{Binding}" Click="FavoriteContextMenu_OnClick"
+                                                          IsEnabled="{Binding HasMii}" />
+                                                <MenuItem Header="{loc:T action.edit}"
+                                                          CommandParameter="{Binding}" Click="EditContextMenu_OnClick"
+                                                          IsEnabled="{Binding HasMii}" />
+                                                <MenuItem Header="Duplicate"
+                                                          CommandParameter="{Binding}" Click="DuplicateContextMenu_OnClick"
+                                                          IsEnabled="{Binding HasMii}" />
+                                                <MenuItem Header="{loc:T action.export}"
+                                                          CommandParameter="{Binding}" Click="ExportContextMenu_OnClick"
+                                                          IsEnabled="{Binding HasMii}" />
+                                                <MenuItem Header="{loc:T action.delete}"
+                                                          CommandParameter="{Binding}" Click="DeleteContextMenu_OnClick"
+                                                          IsEnabled="{Binding HasMii}" />
+                                            </ContextMenu>
+                                        </behaviorComponent:MiiBlock.ContextMenu>
+                                    </behaviorComponent:MiiBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Grid Grid.Row="1" x:Name="OnlineMiiPanel" IsVisible="False" Margin="10"
+                  RowDefinitions="Auto,Auto,*">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,0,10">
+                    <TextBox x:Name="OnlineMiiSearchField" MinWidth="140"
+                             PlaceholderText="Player or 0000-0000-0000"
+                             TextChanged="OnlineMiiSearch_OnTextChanged"
+                             KeyDown="OnlineMiiSearch_OnKeyDown" />
+                    <components:Button Grid.Column="1" x:Name="SearchOnlineMiiButton" Text="Find"
+                                       IconData="{StaticResource Search}"
+                                       Click="SearchFriendCode_OnClick"
+                                       ToolTip.Tip="Find a player by friend code" />
+                </Grid>
+
+                <Border Grid.Row="1" Classes="BoxItemBackground" Margin="0,0,0,10" Padding="12">
+                    <Grid ColumnDefinitions="96,*" ColumnSpacing="14">
+                        <Border Width="96" Height="96" CornerRadius="8" ClipToBounds="True"
+                                Background="{DynamicResource Neutral950}">
+                            <behaviorComponent:MiiImageLoader x:Name="OnlineMiiPreview"
+                                                              LoadingColor="{DynamicResource Neutral600}"
+                                                              FallBackColor="{DynamicResource Neutral600}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="5" VerticalAlignment="Center">
+                            <TextBlock x:Name="OnlineMiiName" Text="Select a player to preview their Mii"
+                                       TextWrapping="Wrap" FontSize="16" FontWeight="SemiBold" />
+                            <TextBlock x:Name="OnlineMiiFriendCode" Classes="TinyText" />
+                            <TextBlock x:Name="OnlineMiiLookupStatus" Classes="TinyText" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Neutral400}" />
+                            <components:Button x:Name="ImportOnlineMiiButton" Text="Import into My Miis"
+                                               HorizontalAlignment="Left" Margin="0,4,0,0"
+                                               Click="ImportOnlineMii_OnClick" IsEnabled="False" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="10" Margin="2,4,2,8">
+                        <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Neutral400}"
+                                   Text="Enter an RWFC friend code above, then import the Mii directly into My Miis." />
+
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Discover Miis" FontSize="18" FontWeight="SemiBold" />
+                                <TextBlock Text="Random public Miis from RWFC" Classes="TinyText"
+                                           Foreground="{DynamicResource Neutral400}" />
+                            </StackPanel>
+                            <components:Button Grid.Column="1" x:Name="RefreshSuggestedMiisButton"
+                                               Text="Refresh" IconData="{StaticResource Refresh}"
+                                               ButtonSize="Compact" Click="RefreshSuggestedMiis_OnClick" />
+                        </Grid>
+
+                        <TextBlock x:Name="SuggestedMiisStatus" Classes="TinyText" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Neutral400}"
+                                   Text="Open Mii Downloader to load random Miis." />
+
+                        <ItemsControl x:Name="SuggestedMiisList" ItemsSource="{Binding SuggestedOnlineMiis}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="BoxItemBackground" Margin="0,0,8,8" Padding="10">
+                                        <Grid ColumnDefinitions="72,*" ColumnSpacing="10">
+                                            <Border Width="72" Height="72" CornerRadius="7" ClipToBounds="True"
+                                                    Background="{DynamicResource Neutral950}">
+                                                <behaviorComponent:MiiImageLoader Mii="{Binding Mii}"
+                                                                                  LoadingColor="{DynamicResource Neutral600}"
+                                                                                  FallBackColor="{DynamicResource Neutral600}" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding FriendCode}" Classes="TinyText"
+                                                           Foreground="{DynamicResource Neutral400}" />
+                                                <components:Button Text="Download" ButtonSize="Compact"
+                                                                   HorizontalAlignment="Left" Margin="0,3,0,0"
+                                                                   CommandParameter="{Binding}"
+                                                                   Click="DownloadSuggestedMii_OnClick" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

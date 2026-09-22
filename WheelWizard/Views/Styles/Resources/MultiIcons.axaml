@@ -1,0 +1,68 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:util="clr-namespace:WheelWizard.Styles.Util">
+    
+    <!-- You can toggle these to have a different designer view, Make sure to run the app after changing to apply it-->
+    <sys:Boolean x:Key="ShowTemplateBaseColors">True</sys:Boolean>
+    <sys:Boolean x:Key="ShowTemplateSetColors">True</sys:Boolean>
+    
+    <Design.PreviewWith>
+        <Border Padding="20" Background="#8B91A5">
+            <UniformGrid Columns="5">
+                <util:MultiColorExampleComponent IconData="{DynamicResource Multi-Example}" IconName="Multi-Example"
+                                                 Color1="{StaticResource Neutral50}"
+                                                 Color2="{StaticResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
+                <util:MultiColorExampleComponent IconData="{DynamicResource Multi-PaintBrush}" IconName="Multi-PaintBrush"
+                                                 Color1="{StaticResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral600}" />
+            </UniformGrid>
+        </Border>
+    </Design.PreviewWith>
+    
+    <!-- These colors are used to swap colors around in the template -->
+    <!-- All template colors have an Alpha of 254 instead of 255 -->
+    <Color x:Key="TemplateColor1">#feff0000</Color>
+    <Color x:Key="TemplateColor2">#feff8c00</Color>
+    <Color x:Key="TemplateColor3">#feffff00</Color>
+    <Color x:Key="TemplateColor4">#feadff2f</Color>
+    <Color x:Key="TemplateColor5">#fe32cd32</Color>
+    <Color x:Key="TemplateColor6">#fe00ffff</Color>
+    <Color x:Key="TemplateColor7">#fe1e90ff</Color>
+    <Color x:Key="TemplateColor8">#fe0000ff</Color>
+    <Color x:Key="TemplateColor9">#fe483d8b</Color>
+    <Color x:Key="TemplateColor10">#fe800080</Color>
+    <Color x:Key="TemplateColor11">#feff1493</Color>
+    <Color x:Key="TemplateColor12">#feff69b4</Color>
+    <!-- We can always add more if necessary, However, 12 imo is actually already to-much -->
+    
+    <!-- Please remove this example if there are enough actual icons so we can use those as reference -->
+    <DrawingImage x:Key="Multi-Example">
+        <DrawingGroup>
+            <GeometryDrawing Brush="{StaticResource TemplateColor3}"
+                             Geometry="M39.254 20.0749C38.6963 16.9657 37.0632 14.1515 34.6404 12.1246C32.2176 10.0976 29.1593 8.98706 26.0005 8.98706C22.8416 8.98706 19.7833 10.0976 17.3605 12.1246C14.9377 14.1515 13.3047 16.9657 12.747 20.0749C11.502 26.1829 11.654 32.3749 14.525 34.7509C18.617 38.1309 26 38.1309 26 38.1309C26 38.1309 33.383 38.1309 37.475 34.7509C40.348 32.3789 40.5 26.1829 39.254 20.0749Z">
+            </GeometryDrawing>
+            <GeometryDrawing Brush="{StaticResource TemplateColor1}"
+                             Geometry="M26.0001 11.0608C18.9621 11.0608 14.6411 17.3848 15.1721 26.0608C15.6361 33.6408 20.0451 38.9778 26.0001 38.9778C31.9551 38.9778 36.3641 33.6408 36.8281 26.0608C37.3591 17.3848 33.0381 11.0608 26.0001 11.0608Z">
+                <GeometryDrawing.Pen>
+                    <Pen Thickness="2.475" Brush="{StaticResource TemplateColor2}"/>
+                </GeometryDrawing.Pen> 
+            </GeometryDrawing>
+            <GeometryDrawing Brush="{StaticResource TemplateColor3}"
+                             Geometry="M38.3641 18.7349L33.1161 11.5839L26.0001 9.26294L18.8851 11.5839L13.6371 18.7349L12.5691 29.4139C12.5691 29.4139 16.1281 20.3139 26.0001 20.3139C35.8721 20.3139 39.4321 29.4139 39.4321 29.4139L38.3641 18.7349Z">
+            </GeometryDrawing>
+        </DrawingGroup>
+    </DrawingImage>
+    
+    <DrawingImage x:Key="Multi-PaintBrush">
+        <DrawingGroup>
+            <GeometryDrawing Brush="{StaticResource TemplateColor1}"
+                             Geometry="M162.4 6c-1.5-3.6-5-6-8.9-6l-19 0c-3.9 0-7.5 2.4-8.9 6L104.9 57.7c-3.2 8-14.6 8-17.8 0L66.4 6c-1.5-3.6-5-6-8.9-6L48 0C21.5 0 0 21.5 0 48L0 224l0 22.4L0 256l9.6 0 364.8 0 9.6 0 0-9.6 0-22.4 0-176c0-26.5-21.5-48-48-48L230.5 0c-3.9 0-7.5 2.4-8.9 6L200.9 57.7c-3.2 8-14.6 8-17.8 0L162.4 6z">
+            </GeometryDrawing>
+            <GeometryDrawing Brush="{StaticResource TemplateColor2}"
+                             Geometry="M0 288l0 32c0 35.3 28.7 64 64 64l64 0 0 64c0 35.3 28.7 64 64 64s64-28.7 64-64l0-64 64 0c35.3 0 64-28.7 64-64l0-32L0 288z M192 432a16 16 0 1 1 0 32 16 16 0 1 1 0-32z">
+            </GeometryDrawing>
+        </DrawingGroup>
+    </DrawingImage>
+</ResourceDictionary>

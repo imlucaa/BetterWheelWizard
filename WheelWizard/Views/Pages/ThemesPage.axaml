@@ -1,0 +1,112 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="456" d:DesignHeight="776"
+             x:Class="WheelWizard.Views.Pages.ThemesPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{DynamicResource BackgroundLineColor}" Height="1"
+                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <TextBlock Grid.Row="0" Text="Themes" Classes="PageTitleText" />
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,18,0,12" Spacing="16">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Launcher colors" FontSize="20" Foreground="{StaticResource TitleTextColor}" />
+                     <TextBlock Text="Choose separate colors for controls, branding, text, and the launcher background."
+                               Foreground="{StaticResource BodyTextColor}" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="3">
+                                 <TextBlock Text="Custom launcher colors" FontSize="18" />
+                                  <TextBlock Text="Use #RRGGBB hex codes. Bright backgrounds and low-contrast text are adjusted automatically for readability."
+                                           Foreground="{StaticResource BodyTextColor}" FontSize="13" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="30" Height="30" CornerRadius="15"
+                                    Background="{Binding Background, ElementName=ColorPreview}"
+                                    BorderBrush="{DynamicResource Neutral700}" BorderThickness="1" />
+                        </Grid>
+
+                        <Grid RowDefinitions="Auto,6,Auto">
+                            <TextBlock Grid.Row="0" Text="Accent color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBox Grid.Row="2" x:Name="ColorTextBox" PlaceholderText="#249AF3"
+                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                        </Grid>
+
+                        <Grid RowDefinitions="Auto,6,Auto">
+                            <TextBlock Grid.Row="0" Text="Wheel and title color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBox Grid.Row="2" x:Name="BrandColorTextBox" PlaceholderText="#F1F3F5"
+                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                        </Grid>
+
+                        <Grid RowDefinitions="Auto,6,Auto">
+                            <TextBlock Grid.Row="0" Text="Text color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBox Grid.Row="2" x:Name="TextColorTextBox" PlaceholderText="#D7D9E0"
+                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                        </Grid>
+
+                        <Border x:Name="TextContrastNotice" IsVisible="False"
+                                Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Warning500}"
+                                BorderThickness="1" CornerRadius="6" Padding="10">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Border x:Name="EffectiveTextColorPreview" Width="22" Height="22" CornerRadius="11"
+                                        BorderBrush="{DynamicResource Neutral600}" BorderThickness="1"
+                                        VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" x:Name="TextContrastMessage"
+                                           Foreground="{DynamicResource Neutral200}" FontSize="13"
+                                           VerticalAlignment="Center" TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+
+                        <Grid RowDefinitions="Auto,6,Auto">
+                            <TextBlock Grid.Row="0" Text="Background color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBox Grid.Row="2" x:Name="BackgroundColorTextBox" PlaceholderText="#101216"
+                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                        </Grid>
+
+                        <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral700}"
+                                BorderThickness="1" CornerRadius="6" Padding="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                <Border Width="32" Height="32" CornerRadius="16" BorderThickness="2"
+                                        BorderBrush="{DynamicResource LauncherBrandColor}">
+                                    <PathIcon Data="{StaticResource WheelIcon}" Width="20" Height="20"
+                                              Foreground="{DynamicResource LauncherBrandColor}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Wheel Wizard" FontWeight="Bold"
+                                               Foreground="{DynamicResource LauncherBrandColor}" />
+                                    <TextBlock Text="Accent, branding, text, and surfaces"
+                                               FontSize="12" Foreground="{DynamicResource Neutral300}" />
+                                </StackPanel>
+                                <Border Grid.Column="2" Background="{DynamicResource Neutral800}"
+                                        CornerRadius="6" Padding="9,5" VerticalAlignment="Center">
+                                    <TextBlock Text="Sample" Foreground="{DynamicResource Primary200}" />
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock x:Name="ColorError" Text="Enter a valid #RRGGBB color."
+                                       Foreground="{StaticResource Danger400}" VerticalAlignment="Center" IsVisible="False" />
+                            <components:Button Grid.Column="1" Text="Apply theme" Variant="Primary"
+                                               Click="ApplyTheme_OnClick" />
+                        </Grid>
+
+                        <Border IsVisible="False">
+                            <Border x:Name="ColorPreview" Background="#249AF3" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

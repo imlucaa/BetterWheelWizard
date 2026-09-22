@@ -1,0 +1,435 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:WheelWizard.Views.Converters"
+        xmlns:controls="using:WheelWizard.Views.Components">
+    <Design.PreviewWith>
+        <Border Padding="10" Background="{DynamicResource Neutral800}">
+            <StackPanel Spacing="10">
+                <controls:MultiIconRadioButton IconData="{StaticResource Multi-Example}"
+                                               Color1="{StaticResource Neutral400}"
+                                               Color2="{StaticResource Neutral500}"
+                                               Color3="{StaticResource Neutral100}"
+                                               HoverColor3="{StaticResource Neutral100}"
+                                               SelectedColor3="{StaticResource Warning200}"
+                                               />
+                <controls:MultiIconRadioButton IconData="{StaticResource Multi-Example}"
+                                               Color1="{StaticResource Neutral400}"
+                                               Color2="{StaticResource Neutral500}"
+                                               Color3="{StaticResource Neutral100}"
+                                               HoverColor3="{StaticResource Neutral100}"
+                                               SelectedColor3="{StaticResource Warning200}"/>
+                
+                <controls:MultiIconRadioButton IconData="{StaticResource Multi-Example}" IsChecked="True"
+                                               Color1="{StaticResource Neutral400}"
+                                               Color2="{StaticResource Neutral500}"
+                                               Color3="{StaticResource Neutral100}"
+                                               HoverColor3="{StaticResource Neutral100}"
+                                               SelectedColor3="{StaticResource Warning200}"/>
+                <controls:MultiIconRadioButton IconData="{StaticResource Multi-Example}" />
+                <controls:MultiIconRadioButton IconData="{StaticResource Multi-Example}" IsEnabled="False"
+                                               DisabledColor1="{DynamicResource Neutral900}"
+                                               DisabledColor2="{DynamicResource Neutral950}"
+                                               DisabledColor3="{DynamicResource Neutral950}"
+                                               />
+                <controls:MultiIconRadioButton IconGeo="{StaticResource Heart}"
+                                               Color1="{StaticResource Neutral400}"/>
+                <controls:MultiIconRadioButton IconGeo="{StaticResource Home}"
+                                               Color1="{StaticResource Neutral400}"
+                                               HoverColor1="{StaticResource Danger50}"
+                                               SelectedColor1="{DynamicResource Primary400}"/>
+            </StackPanel>
+        </Border>
+       
+    </Design.PreviewWith>
+
+    <Style Selector="controls|MultiIconRadioButton">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderThickness="0" ClipToBounds="True"
+                        BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}"
+                        Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" >
+                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                            <Border CornerRadius="99999" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Opacity="0.6" IsVisible="False" x:Name="PART_BackgroundBlur"
+                                    Height="50" Width="30" Effect="blur(90)" Background="{DynamicResource Primary200}">
+                            </Border>
+                         
+                         <Border Background="Transparent"
+                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6">
+                             <Path Data="{TemplateBinding IconGeo}"
+                                   Stretch="Uniform" x:Name="Part_SingleIcon"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+                             </Path>
+                         </Border>
+                         
+                         <controls:MultiColoredIcon IconData="{TemplateBinding IconData}" Margin="6"
+                                                    x:Name="PART_MultiIcon"
+                                                    UndefinedColorsTransparent="{TemplateBinding UndefinedColorsTransparent}"
+                                                    />
+                     </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        
+        <Setter Property="Background" Value="Transparent" />
+
+        <Style Selector="^ /template/ Path#Part_SingleIcon">
+            <Setter Property="Fill" Value="{TemplateBinding Color1}" />
+        </Style>
+        <Style Selector="^ /template/ controls|MultiColoredIcon#PART_MultiIcon">
+            <Setter Property="Color1" Value="{TemplateBinding Color1}" />
+            <Setter Property="Color2" Value="{TemplateBinding Color2}" />
+            <Setter Property="Color3" Value="{TemplateBinding Color3}" />
+            <Setter Property="Color4" Value="{TemplateBinding Color4}" />
+            <Setter Property="Color5" Value="{TemplateBinding Color5}" />
+            <Setter Property="Color6" Value="{TemplateBinding Color6}" />
+            <Setter Property="Color7" Value="{TemplateBinding Color7}" />
+            <Setter Property="Color8" Value="{TemplateBinding Color8}" />
+            <Setter Property="Color9" Value="{TemplateBinding Color9}" />
+            <Setter Property="Color10" Value="{TemplateBinding Color10}" />
+            <Setter Property="Color11" Value="{TemplateBinding Color11}" />
+            <Setter Property="Color12" Value="{TemplateBinding Color12}" />
+        </Style>
+    </Style>
+    
+    <Style Selector="controls|MultiIconRadioButton:pointerover">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        <Style Selector="^ /template/ Path#Part_SingleIcon">
+            <Setter Property="Fill">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="^ /template/ controls|MultiColoredIcon#PART_MultiIcon">
+            <Setter Property="Color1">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+          
+                      <Setter Property="Color2">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor2" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color2" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color3">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor3" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color3" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color4">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor4" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color4" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color5">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor5" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color5" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color6">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor6" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color6" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color7">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor7" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color7" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color8">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor8" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color8" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color9">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor9" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color9" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color10">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor10" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color10" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color11">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor11" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color11" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color12">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="HoverColor12" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color12" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Style>
+
+    <Style Selector="controls|MultiIconRadioButton:checked">
+        <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+        <Style Selector="^ /template/ Path#Part_SingleIcon">
+            <Setter Property="Fill">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="^ /template/ controls|MultiColoredIcon#PART_MultiIcon">
+                       <Setter Property="Color1">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color2">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor2" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color2" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color3">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor3" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color3" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color4">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor4" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color4" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color5">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor5" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color5" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color6">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor6" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color6" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color7">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor7" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color7" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color8">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor8" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color8" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color9">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor9" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color9" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color10">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor10" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color10" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color11">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor11" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color11" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color12">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="SelectedColor12" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color12" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Style>
+    
+    <Style Selector="controls|MultiIconRadioButton[IsEnabled=False]">
+        <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+        <Style Selector="^ /template/ Path#Part_SingleIcon">
+            <Setter Property="Fill">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="^ /template/ controls|MultiColoredIcon#PART_MultiIcon">
+                        <Setter Property="Color1">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor1" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color1" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color2">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor2" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color2" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color3">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor3" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color3" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color4">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor4" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color4" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color5">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor5" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color5" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color6">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor6" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color6" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color7">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor7" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color7" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color8">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor8" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color8" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color9">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor9" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color9" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color10">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor10" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color10" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color11">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor11" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color11" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Color12">
+                <Setter.Value>
+                    <MultiBinding Converter="{x:Static conv:FallbackConverters.Brushes}">
+                        <Binding Path="DisabledColor12" RelativeSource="{RelativeSource TemplatedParent}" />
+                        <Binding Path="Color12" RelativeSource="{RelativeSource TemplatedParent}" />
+                    </MultiBinding>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Style>
+</Styles>

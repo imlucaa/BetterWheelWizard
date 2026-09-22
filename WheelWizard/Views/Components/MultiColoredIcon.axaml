@@ -1,0 +1,25 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:WheelWizard.Views.Components">
+    <Design.PreviewWith>
+        <Border Padding="5" Background="#8B91A5">
+            <UniformGrid Columns="5">
+                <controls:MultiColoredIcon Width="40" Height="40" IconData="{DynamicResource Hair34}"/>
+                
+                <controls:MultiColoredIcon Width="40" Height="40" Color1="Aqua" IconData="{DynamicResource Hair35}"/>
+            </UniformGrid>
+        </Border>
+
+    </Design.PreviewWith>
+
+    <Style Selector="controls|MultiColoredIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border>
+                    <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Source="{TemplateBinding ProcessedIconData}" Stretch="Uniform" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

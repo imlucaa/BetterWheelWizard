@@ -1,0 +1,158 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:components="clr-namespace:WheelWizard.Views.Components">
+    <Design.PreviewWith>
+        <Border Background="{DynamicResource Neutral950}" Padding="10" >
+            <StackPanel Spacing="10">
+                <!-- EXAMPLES: -->
+                <TextBlock Foreground="{StaticResource Neutral400}" Text="Examples:" Padding="0,10,0,0" />
+                <components:IconLabel Text="Text only" 
+                                  Foreground="White" 
+                                  FontSize="16" />
+                  
+                <components:IconLabel Text="Sample Text" 
+                                    IconData="{StaticResource WheelIcon}"
+                                    Foreground="White" 
+                                    FontSize="16" />
+
+                <components:IconLabel Text="Right Icon" 
+                                    IconData="{StaticResource WheelIcon}"
+                                    Foreground="LightBlue" 
+                                    FontSize="14"
+                                    IsIconLeft="False" />
+
+                <components:IconLabel Text="Underlined" 
+                                    IconData="{StaticResource WheelIcon}"
+                                    Foreground="Yellow" 
+                                    FontSize="18"
+                                    IsUnderlined="True" />
+
+                <components:IconLabel Text="Larger Icon" 
+                                    IconData="{StaticResource WheelIcon}"
+                                    Foreground="Orange" 
+                                    FontSize="16"
+                                    IconSize="50" />
+                
+                <components:IconLabel
+                    IconData="{StaticResource WheelIcon}"
+                    IconSize="40"
+                    Foreground="White" />
+                
+                
+                <!-- BOUNDING BOXES: -->
+                <TextBlock Foreground="{StaticResource Neutral400}" Text="Bounding Boxes:" Padding="0,10,0,0" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Border Background="Red" HorizontalAlignment="Left">
+                        <components:IconLabel 
+                            IconData="{StaticResource WheelIcon}"
+                            Foreground="White" 
+                            FontSize="14" />
+                    </Border>
+                    
+                    <Border Background="Red" HorizontalAlignment="Left">
+                        <components:IconLabel 
+                            Text="abc"
+                            Foreground="White" 
+                            FontSize="14" />
+                    </Border>
+                    <Border Background="Red" HorizontalAlignment="Left">
+                        <components:IconLabel 
+                            Text="abc"
+                            IconData="{StaticResource WheelIcon}"
+                            Foreground="White" 
+                            FontSize="14" />
+                    </Border>
+                    <Border Background="Red" HorizontalAlignment="Left">
+                        <components:IconLabel 
+                            Text="abc"
+                            IsIconLeft="False"
+                            IconData="{StaticResource WheelIcon}"
+                            Foreground="White" 
+                            FontSize="14" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="components|IconLabel">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Horizontal" >
+                    <Border Background="Transparent" 
+                            Width="{TemplateBinding IconSize}"
+                            Height="{TemplateBinding IconSize}">
+                            <Path Data="{TemplateBinding IconData}"
+                                  Fill="{TemplateBinding Foreground}" 
+                                  Stretch="Uniform" 
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                            </Path>
+                        <Border.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="IsIconLeft" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                <Binding Path="IconData" RelativeSource="{RelativeSource TemplatedParent}"
+                                         Converter="{x:Static ObjectConverters.IsNotNull}" />
+                            </MultiBinding>
+                        </Border.IsVisible>
+                    </Border>
+                    
+                    <!-- This is a replacement for the gap of 10 between the first icon and the text 
+                    We dont want this gap to be here if there is only the text or only the icon on the left. 
+                    and so we either need to dynamically change the margin, or do this -->
+                    <Rectangle Fill="Transparent"  Width="10" Height="0">
+                        <Rectangle.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="IsIconLeft" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                <Binding Path="Text" RelativeSource="{RelativeSource TemplatedParent}"
+                                         Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
+                                <Binding Path="IconData" RelativeSource="{RelativeSource TemplatedParent}"
+                                         Converter="{x:Static ObjectConverters.IsNotNull}" />
+                            </MultiBinding>
+                        </Rectangle.IsVisible>
+                    </Rectangle>
+                    
+                    <TextBlock Text="{TemplateBinding Text}" 
+                               VerticalAlignment="Center"
+                               IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               FontSize="{TemplateBinding FontSize}"
+                               Foreground="{TemplateBinding Foreground}"
+                               TextWrapping="Wrap">
+                        <TextBlock.Styles>
+                            <Style Selector="components|IconLabel[IsUnderlined=True] TextBlock">
+                                <Setter Property="TextDecorations">
+                                    <Setter.Value>
+                                        <TextDecorationCollection>
+                                            <TextDecoration Location="Underline" />
+                                        </TextDecorationCollection >
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TextBlock.Styles>
+                    </TextBlock>
+                    
+                    <Border Background="Transparent"
+                        Width="{TemplateBinding IconSize}"
+                        Height="{TemplateBinding IconSize}"
+                        Margin="10,0,0,0">
+                        <Path Data="{TemplateBinding IconData}"
+                              Fill="{TemplateBinding Foreground}" 
+                              Stretch="Uniform" 
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                        <Border.IsVisible>
+                            <MultiBinding  Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="IsIconLeft" RelativeSource="{RelativeSource TemplatedParent}"
+                                         Converter="{x:Static BoolConverters.Not}" />
+                                <Binding Path="IconData" RelativeSource="{RelativeSource TemplatedParent}"
+                                         Converter="{x:Static ObjectConverters.IsNotNull}" />
+                            </MultiBinding>
+                        </Border.IsVisible>
+                    </Border>
+                    
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

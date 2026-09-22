@@ -1,0 +1,185 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="656" d:DesignHeight="876"
+             xmlns:loc="clr-namespace:WheelWizard.Localization"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns"
+             xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
+             x:Class="WheelWizard.Views.Pages.RoomsPage"
+             x:DataType="pages:RoomsPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom" />
+
+        <Border Grid.Row="2" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom" />
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <TextBlock Text="{loc:T page_title.rooms}" Classes="PageTitleText" />
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0,0,0"
+                    ToolTip.Tip="{loc:T hover.rooms_page_disclaimer}"
+                    ToolTip.Placement="Top" ToolTip.ShowDelay="20"
+                    Width="18" Height="18">
+                <PathIcon Foreground="{StaticResource TitleIconColor}" Margin="0"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Data="{StaticResource InfoTip}" />
+            </Border>
+        </StackPanel>
+
+        <Grid Grid.Row="1" RowDefinitions="Auto,Auto" Margin="10,10,10,8">
+            <TextBox Width="300" HorizontalAlignment="Left"
+                     PlaceholderText="Search room, player, or friend code"
+                     TextChanged="PlayerSearchField_OnTextChanged" x:Name="PlayerSearchField" />
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,6,0,0"
+                        HorizontalAlignment="Left">
+                <TextBox PlaceholderText="Min avg. VR" MaxLength="7"
+                         Width="105" TextChanged="VrFilter_OnTextChanged" x:Name="MinimumVrField" />
+                <TextBox PlaceholderText="Max avg. VR" MaxLength="7"
+                         Width="105"
+                          TextChanged="VrFilter_OnTextChanged" x:Name="MaximumVrField" />
+                <ComboBox Width="160" x:Name="AverageVrSortDropdown"
+                          SelectedIndex="0" SelectionChanged="AverageVrSortDropdown_OnSelectionChanged">
+                    <ComboBoxItem Content="All rooms" />
+                    <ComboBoxItem Content="Lowest → highest" />
+                    <ComboBoxItem Content="Highest → lowest" />
+                    <ComboBoxItem Content="Lowest room only" />
+                    <ComboBoxItem Content="Highest room only" />
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+
+        <components:EmptyPageInfo Grid.Row="2" x:Name="EmptyRoomsView"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Title="{loc:T empty_content.no_rooms_title}"
+                                  BodyText="{loc:T empty_content.no_rooms}" />
+
+
+        <Grid Grid.Row="2" RowDefinitions="*, 16*" Margin="10,0" x:Name="RoomsListViewContainer">
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,6">
+                    <components:FormFieldLabel Text="{loc:T list_title.rooms}" />
+                    <components:MemeNumberState Text="0" IconSize="0" x:Name="RoomsListItemCount"
+                                                IconData="{StaticResource Dice}" />
+                </StackPanel>
+                <Border Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
+
+            </Grid>
+
+            <ListBox SelectionMode="Single" Padding="0" ItemsSource="{Binding Rooms}"
+                     Background="Transparent" BorderThickness="0" Grid.Row="1"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     SelectionChanged="RoomsView_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="BoxItemBackground" Padding="8,7">
+                            <Grid ColumnDefinitions="36,*,94" RowDefinitions="Auto,Auto" ColumnSpacing="8">
+                                <PathIcon Data="{StaticResource Road}" Width="34" Height="34" Classes="RoadIcon"
+                                          IsVisible="{Binding IsPublic }" VerticalAlignment="Center"
+                                          Grid.Column="0" Grid.RowSpan="2" />
+                                <PathIcon Data="{StaticResource RoadLocked}" Width="34" Height="34" Classes="RoadIcon"
+                                          VerticalAlignment="Center" Grid.Column="0" Grid.RowSpan="2"
+                                          IsVisible="{Binding IsPublic, Converter={x:Static BoolConverters.Not}}" />
+
+                                <!-- Temporary, will replace this later with path icon, but it's cool that this exists -->
+                                <!-- <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
+                                        Background="{DynamicResource Neutral950}" Width="50" Height="50" Margin="0,3">
+                                    <miiComp:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                            LoadingColor="{DynamicResource Neutral600}"
+                                                            Mii="{Binding HostMii}"
+                                                            FallBackColor="{DynamicResource Neutral600}"
+                                                            ImageVariant="SMALL"/>
+                                </Border> -->
+
+                                <Grid Grid.Column="1" ColumnDefinitions="Auto,*" ColumnSpacing="7" VerticalAlignment="Center">
+                                    <components:FormFieldLabel Text="{Binding DisplayGameMode}" Foreground="{DynamicResource Neutral100}" />
+                                    <TextBlock Text="{Binding Id}" FontSize="12" Classes="TinyText"
+                                               Grid.Column="1" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Grid.Column="1" Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="5">
+                                    <PathIcon Data="{StaticResource Road}" Width="12" Height="12"
+                                              Foreground="{DynamicResource Primary400}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding TrackDisplay}" FontSize="12"
+                                               Foreground="{DynamicResource Neutral300}"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Border Grid.Column="2" Grid.RowSpan="2" Background="{DynamicResource Neutral800}"
+                                         CornerRadius="6" Padding="7,4" VerticalAlignment="Center">
+                                    <Grid RowDefinitions="Auto,Auto,Auto">
+                                        <TextBlock Text="{Binding AverageVrDisplay}" FontSize="14" FontWeight="Bold"
+                                                   Foreground="{DynamicResource Neutral50}" HorizontalAlignment="Center" />
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="4"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="Avg. VR" FontSize="10" Foreground="{DynamicResource Neutral300}" />
+                                            <TextBlock Text="•" FontSize="10" Foreground="{DynamicResource Neutral500}" />
+                                            <PathIcon Data="{StaticResource UserCouple}" Width="10" Height="10"
+                                                      Foreground="{DynamicResource Neutral300}" VerticalAlignment="Center" />
+                                             <TextBlock Text="{Binding PlayerCount}" FontSize="10"
+                                                        Foreground="{DynamicResource Neutral300}" />
+                                         </StackPanel>
+                                        <TextBlock Grid.Row="2" Text="{Binding RaceTimeDisplay}" FontSize="10"
+                                                   Foreground="{DynamicResource Neutral200}"
+                                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                                   ToolTip.Tip="Time on the current race" />
+                                     </Grid>
+                                </Border>
+                            </Grid>
+
+                            <Border.Styles>
+                                <Style Selector="ListBoxItem Border.BoxItemBackground PathIcon.RoadIcon">
+                                    <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+                                </Style>
+                                <Style Selector="ListBoxItem Border.BoxItemBackground:pointerover PathIcon.RoadIcon">
+                                    <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+                                </Style>
+                            </Border.Styles>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+
+        <Grid Grid.Row="2" RowDefinitions="*, 16*" Margin="10,0" x:Name="PlayerListViewContainer" IsVisible="False">
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,6">
+                    <components:FormFieldLabel Text="{loc:T list_title.players}" />
+                    <components:MemeNumberState Text="0" IconSize="0" x:Name="PlayerListItemCount" />
+                </StackPanel>
+                <Border Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
+
+            </Grid>
+
+            <ListBox Grid.Row="1" SelectionMode="Single" BorderThickness="0"
+                     Padding="0" Margin="0" Background="Transparent" ItemsSource="{Binding Players}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     SelectionChanged="PlayerView_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <patterns:PlayerListItem
+                            UserName="{Binding Name}"
+                            FriendCode="{Binding FriendCode}"
+                            Vr="{Binding VrDisplay}"
+                            Mii="{Binding FirstMii}"
+                            IsOpenHost="{Binding IsOpenHost}"
+                            HasBadges="{Binding HasBadges}"
+                            IsTopPlayer="{Binding IsTopLeaderboardPlayer}"
+                            TopLabel="{Binding TopLabel}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.TeamWheelWizard.WheelWizard</id>
+  <name>Wheel Wizard</name>
+  <summary>Mario Kart Wii Mod Manager &amp; Retro Rewind Auto Updater</summary>
+  <developer id="io.github.teamwheelwizard">
+    <name>TeamWheelWizard</name>
+  </developer>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <content_rating type="oars-1.0"/>
+
+  <recommends>
+    <id version="2606a" compare="ge">org.DolphinEmu.dolphin-emu</id>
+    <internet>always</internet>
+  </recommends>
+
+  <description>
+    <p>
+      Wheel Wizard is a convenient Mario Kart Wii mod manager and launcher,
+      designed for the Retro Rewind custom track distribution.
+      It includes several online features and supports running the game through
+      either the Dolphin Emulator or Wiicompiled.
+    </p>
+  </description>
+
+  <categories>
+    <category>Game</category>
+  </categories>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Wheel Wizard's home page</caption>
+      <image type="source">https://raw.githubusercontent.com/TeamWheelWizard/.github/b349e757255c98330419c29973a6986a831b339a/images/screenshots-shadow/home_page.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Wheel Wizard's room details page</caption>
+      <image type="source">https://raw.githubusercontent.com/TeamWheelWizard/.github/b349e757255c98330419c29973a6986a831b339a/images/screenshots-shadow/rooms_page.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Wheel Wizard's profile page</caption>
+      <image type="source">https://raw.githubusercontent.com/TeamWheelWizard/.github/b349e757255c98330419c29973a6986a831b339a/images/screenshots-shadow/profile_page.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Wheel Wizard's Mii management page</caption>
+      <image type="source">https://raw.githubusercontent.com/TeamWheelWizard/.github/b349e757255c98330419c29973a6986a831b339a/images/screenshots-shadow/mii_page.png</image>
+    </screenshot>
+  </screenshots>
+
+  <launchable type="desktop-id">io.github.TeamWheelWizard.WheelWizard.desktop</launchable>
+  <icon type="stock">io.github.TeamWheelWizard.WheelWizard</icon>
+
+  <provides>
+    <binary>WheelWizard</binary>
+  </provides>
+
+  <releases>
+    <release version="2.5.7" date="2026-09-13"/>
+    <release version="2.5.6" date="2026-09-11"/>
+    <release version="2.5.5" date="2026-09-11"/>
+    <release version="2.5.4" date="2026-09-05"/>
+    <release version="2.5.3" date="2026-09-03"/>
+    <release version="2.5.2" date="2026-08-27"/>
+    <release version="2.5.1" date="2026-08-24"/>
+    <release version="2.5.0" date="2026-08-23"/>
+    <release version="2.4.11" date="2026-07-09"/>
+    <release version="2.4.10" date="2026-06-05"/>
+    <release version="2.4.9" date="2026-06-01"/>
+    <release version="2.4.8" date="2026-06-01"/>
+    <release version="2.4.7" date="2026-05-27"/>
+    <release version="2.4.6" date="2026-05-27"/>
+    <release version="2.4.5" date="2026-05-17"/>
+    <release version="2.4.4" date="2026-04-15"/>
+    <release version="2.4.3" date="2026-04-01"/>
+    <release version="2.4.2" date="2026-03-25"/>
+    <release version="2.4.1" date="2026-02-25"/>
+    <release version="2.4.0" date="2026-02-17"/>
+    <release version="2.3.5" date="2026-01-11"/>
+    <release version="2.3.4" date="2026-01-11"/>
+    <release version="2.3.3" date="2025-09-14"/>
+    <release version="2.3.2" date="2025-07-01"/>
+    <release version="2.3.1" date="2025-06-30"/>
+    <release version="2.3.0" date="2025-06-28"/>
+    <release version="2.2.1" date="2025-05-06"/>
+    <release version="2.1.3" date="2025-04-13"/>
+    <release version="2.1.0" date="2025-04-11"/>
+  </releases>
+
+  <url type="homepage">https://github.com/TeamWheelWizard/WheelWizard</url>
+  <url type="bugtracker">https://github.com/TeamWheelWizard/WheelWizard/issues</url>
+  <url type="contribute">https://github.com/TeamWheelWizard/WheelWizard/blob/5a0d00b04af5b6a1ac0757088b28f4a8e588b509/CONTRIBUTING.md</url>
+  <url type="vcs-browser">https://github.com/TeamWheelWizard/WheelWizard</url>
+</component>

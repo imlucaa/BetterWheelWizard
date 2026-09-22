@@ -1,0 +1,75 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:WheelWizard.Views.Converters"
+             x:Class="WheelWizard.Views.App"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <FontFamily x:Key="DefaultFont">avares://WheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://WheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
+
+            <!-- CONSTANTS -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="Styles/Resources/Constants.axaml" />
+                <ResourceInclude Source="Styles/Resources/Icons.axaml" />
+                <ResourceInclude Source="Styles/Resources/MultiIcons.axaml" />
+                <!-- MiiIcons -->
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiHair.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiEye.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiNose.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiEyebrow.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiGlasses.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiMouth.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiFace.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiMustache.axaml" />
+                <ResourceInclude Source="Styles/Resources/MiiIcons/MiiGoatee.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- CONVERTERS -->
+            <converters:IsEqualToConverter x:Key="IsEqualTo" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+
+
+    <Application.Styles>
+        <FluentTheme />
+        <!-- !!Only used for the designer!! -->
+        <StyleInclude Source="Styles/Util/MultiColorExampleComponent.axaml" />
+        <!-- !!Only used for the designer!! -->
+
+        <!-- STYLES -->
+        <StyleInclude Source="Styles/Styles/ButtonStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/TextStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/ToggleButtonStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/MiscStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/TextBoxStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/DropdownStyles.axaml" />
+        <StyleInclude Source="Styles/Styles/SliderStyles.axaml" />
+
+        <!-- STANDARD COMPONENTS -->
+        <StyleInclude Source="Components/MultiColoredIcon.axaml" />
+        <StyleInclude Source="Components/MultiIconRadioButton.axaml" />
+        <StyleInclude Source="Components/IconLabel.axaml" />
+        <StyleInclude Source="Components/IconLabelButton.axaml" />
+        <StyleInclude Source="Components/Button.axaml" />
+        <StyleInclude Source="Components/OptionButton.axaml" />
+        <StyleInclude Source="Components/StateBox.axaml" />
+        <StyleInclude Source="Components/EmptyPageInfo.axaml" />
+        <StyleInclude Source="Components/FormFieldLabel.axaml" />
+        <StyleInclude Source="Components/LoadingIcon.axaml" />
+        <StyleInclude Source="Patterns/SidebarRadioButton.axaml" />
+        <StyleInclude Source="Components/PopupListButton.axaml" />
+        <StyleInclude Source="Components/MemeNumberState.axaml" />
+
+        <!-- PAGE/WHWZ SPECIFIC COMPONENTS -->
+        <StyleInclude Source="Patterns/ModBrowserListItem.axaml" />
+        <StyleInclude Source="Patterns/FriendsListItem.axaml" />
+        <StyleInclude Source="Patterns/PlayerListItem.axaml" />
+        <StyleInclude Source="Components/Badge.axaml" />
+        <StyleInclude Source="Patterns/MiiBlock.axaml" />
+        <StyleInclude Source="Components/WheelTrail.axaml" />
+        <StyleInclude Source="Patterns/LeaderboardPodiumCard.axaml" />
+    </Application.Styles>
+</Application>

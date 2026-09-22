@@ -1,0 +1,461 @@
+using System.Globalization;
+using System.IO.Abstractions;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
+using Testably.Abstractions;
+using Testably.Abstractions.Testing;
+using WheelWizard.DolphinInstaller;
+using WheelWizard.Localization;
+using WheelWizard.Settings;
+using WheelWizard.Settings.Types;
+using WheelWizard.Themes;
+
+namespace WheelWizard.Test.Features.Settings;
+
+[CollectionDefinition("SettingsFeature", DisableParallelization = true)]
+public sealed class SettingsFeatureCollection;
+
+[Collection("SettingsFeature")]
+public class SettingsManagerTests
+{
+    [Fact]
+    public void Get_Throws_WhenRequestedTypeDoesNotMatchSettingType()
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.Throws<InvalidOperationException>(() => manager.Get<int>(manager.WW_LANGUAGE));
+    }
+
+    [Fact]
+    public void Set_Throws_WhenProvidedValueIsNull()
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.Throws<ArgumentNullException>(() => manager.Set<string>(manager.WW_LANGUAGE, null!));
+    }
+
+    [Fact]
+    public void Set_ReturnsFalse_WhenValidationFails()
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        var result = manager.Set(manager.FOCUSED_USER, 99, skipSave: true);
+
+        Assert.False(result);
+        Assert.Equal(0, manager.Get<int>(manager.FOCUSED_USER));
+    }
+
+    [Theory]
+    [InlineData("#249AF3", true)]
+    [InlineData("#000000", true)]
+    [InlineData("#FFFFFF", true)]
+    [InlineData("249AF3", false)]
+    [InlineData("#GGGGGG", false)]
+    [InlineData("#1234", false)]
+    public void LauncherThemeColor_RequiresRgbHexCode(string color, bool expected)
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.Equal(expected, manager.Set(manager.LAUNCHER_THEME_COLOR, color, skipSave: true));
+    }
+
+    [Theory]
+    [InlineData(0.49)]
+    [InlineData(2.01)]
+    public void SavedWindowScale_RejectsValuesOutsideBounds(double scale)
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        var result = manager.Set(manager.SAVED_WINDOW_SCALE, scale, skipSave: true);
+
+        Assert.False(result);
+        Assert.Equal(1.0, manager.Get<double>(manager.SAVED_WINDOW_SCALE));
+    }
+
+    [Theory]
+    [InlineData(0.49)]
+    [InlineData(2.01)]
+    public void WindowScalePreview_RejectsValuesOutsideBounds(double scale)
+    {
+        var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        var result = manager.Set(manager.WINDOW_SCALE, scale, skipSave: true);
+
+        Assert.False(result);
+        Assert.Equal(1.0, manager.Get<double>(manager.WINDOW_SCALE));
+    }
+
+    [Fact]
+    public void ValidateCorePathSettings_ReturnsAllExpectedIssues_WhenDefaultsAreInvalid()
+    {
+        var manager = CreateManager(new RealFileSystem(), out _, out _, out _);
+#pragma warning disable CS0618
+        SettingsRuntime.Initialize(manager);
+#pragma warning restore CS0618
+
+        var result = manager.ValidateCorePathSettings();
+
+        Assert.True(result.IsSuccess);
+        Assert.False(result.Value.IsValid);
+        Assert.Contains(result.Value.Issues, issue => issue.Code == SettingsValidationCode.InvalidUserFolderPath);
+        Assert.Contains(result.Value.Issues, issue => issue.Code == SettingsValidationCode.InvalidDolphinLocation);
+        Assert.Contains(result.Value.Issues, issue => issue.Code == SettingsValidationCode.InvalidGameLocation);
+    }
+
+    [Fact]
+    public void PathsSetupCorrectly_ReturnsTrue_WhenCorePathsAreValid()
+    {
+        var fileSystem = new MockFileSystem();
+        var manager = CreateManager(fileSystem, out _, out _, out _);
+        var userFolderPath = $"/wheelwizard-user-{Guid.NewGuid():N}";
+        var gameFilePath = Path.Combine(userFolderPath, "game.iso");
+        var dolphinLocation = SettingsTestUtils.GetValidDolphinLocation(fileSystem);
+        fileSystem.Directory.CreateDirectory(userFolderPath);
+        fileSystem.File.WriteAllText(gameFilePath, "iso");
+#pragma warning disable CS0618
+        SettingsRuntime.Initialize(manager);
+#pragma warning restore CS0618
+
+        Assert.True(manager.Set(manager.USER_FOLDER_PATH, userFolderPath, skipSave: true));
+        Assert.True(manager.Set(manager.GAME_LOCATION, gameFilePath, skipSave: true));
+        Assert.True(manager.Set(manager.DOLPHIN_LOCATION, dolphinLocation, skipSave: true));
+        Assert.True(manager.PathsSetupCorrectly());
+    }
+
+    [Fact]
+    public void LoadSettings_CallsUnderlyingManagersOnlyOnce()
+    {
+        var manager = CreateManager(new MockFileSystem(), out var whWzManager, out var dolphinManager, out var recompManager);
+
+        manager.LoadSettings();
+        manager.LoadSettings();
+
+        whWzManager.Received(1).LoadSettings();
+        dolphinManager.Received(1).LoadSettings();
+        recompManager.Received(1).LoadSettings();
+    }
+
+    private static SettingsManager CreateManager(
+        IFileSystem fileSystem,
+        out IWhWzSettingManager whWzSettingManager,
+        out IDolphinSettingManager dolphinSettingManager,
+        out IRecompSettingManager recompSettingManager
+    )
+    {
+        whWzSettingManager = Substitute.For<IWhWzSettingManager>();
+        dolphinSettingManager = Substitute.For<IDolphinSettingManager>();
+        recompSettingManager = Substitute.For<IRecompSettingManager>();
+
+        return new SettingsManager(whWzSettingManager, dolphinSettingManager, recompSettingManager, fileSystem);
+    }
+}
+
+[Collection("SettingsFeature")]
+public class SettingsSignalBusTests
+{
+    [Fact]
+    public void Publish_NotifiesActiveSubscribers()
+    {
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var setting = new WhWzSetting(typeof(int), "Volume", 10);
+        SettingChangedSignal? receivedSignal = null;
+        using var _ = signalBus.Subscribe(signal => receivedSignal = signal);
+
+        signalBus.Publish(setting);
+
+        Assert.True(receivedSignal.HasValue);
+        Assert.Same(setting, receivedSignal.Value.Setting);
+    }
+
+    [Fact]
+    public void DisposeSubscription_StopsReceivingSignals()
+    {
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var setting = new WhWzSetting(typeof(int), "Volume", 10);
+        var receiveCount = 0;
+        var subscription = signalBus.Subscribe(_ => receiveCount++);
+
+        signalBus.Publish(setting);
+        subscription.Dispose();
+        signalBus.Publish(setting);
+
+        Assert.Equal(1, receiveCount);
+    }
+
+    [Fact]
+    public void Subscribe_Throws_WhenHandlerIsNull()
+    {
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+
+        Assert.Throws<ArgumentNullException>(() => signalBus.Subscribe(null!));
+    }
+}
+
+[Collection("SettingsFeature")]
+public class SettingsLocalizationServiceTests
+{
+    [Fact]
+    public void LanguageDisplayNames_UseAppliedYamlLanguage()
+    {
+        var originalLanguage = LocalizationProvider.Current.CurrentLanguage;
+        var localizationService = new EmbeddedYamlLocalizationService();
+        LocalizationProvider.Use(localizationService);
+
+        try
+        {
+            localizationService.SetLanguage("nl");
+            var englishInDutch = SettingValues.WhWzLanguages["en"]();
+
+            localizationService.SetLanguage("de");
+            var englishInGerman = SettingValues.WhWzLanguages["en"]();
+
+            Assert.Contains(localizationService.TranslateForLanguage("value.language.english", "nl"), englishInDutch);
+            Assert.Contains(localizationService.TranslateForLanguage("value.language.english", "de"), englishInGerman);
+            Assert.NotEqual(englishInDutch, englishInGerman);
+        }
+        finally
+        {
+            localizationService.SetLanguage(originalLanguage);
+            LocalizationProvider.Use(localizationService);
+        }
+    }
+
+    [Fact]
+    public void TranslateForLanguage_FallsBackToEnglish_WhenLanguageDoesNotOverrideKey()
+    {
+        var localizationService = new EmbeddedYamlLocalizationService();
+
+        var translated = localizationService.TranslateForLanguage("page_title.home", "ar");
+
+        Assert.Equal(localizationService.TranslateForLanguage("page_title.home", "en"), translated);
+    }
+
+    [Fact]
+    public void TranslationFunction_UsesSpecificNumberVariant_WhenItExists()
+    {
+        var originalLanguage = LocalizationProvider.Current.CurrentLanguage;
+        var localizationService = new EmbeddedYamlLocalizationService();
+        LocalizationProvider.Use(localizationService);
+
+        try
+        {
+            localizationService.SetLanguage("en");
+
+            Assert.Equal("1 day", TranslationFunctions.t("time.days.n", 1));
+            Assert.Equal("2 days", TranslationFunctions.t("time.days.n", 2));
+        }
+        finally
+        {
+            localizationService.SetLanguage(originalLanguage);
+            LocalizationProvider.Use(localizationService);
+        }
+    }
+
+    [Fact]
+    public void Initialize_SetsCurrentCulture_FromLanguageSetting()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        var originalUiCulture = CultureInfo.CurrentUICulture;
+        var originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+        var originalDefaultUiCulture = CultureInfo.DefaultThreadCurrentUICulture;
+        var originalLanguage = LocalizationProvider.Current.CurrentLanguage;
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var settingsManager = Substitute.For<ISettingsManager>();
+        var languageSetting = new WhWzSetting(typeof(string), "WW_Language", "fr");
+        settingsManager.WW_LANGUAGE.Returns(languageSetting);
+        settingsManager.Get<string>(Arg.Any<Setting>()).Returns(_ => (string)languageSetting.Get());
+        var yamlLocalizationService = new EmbeddedYamlLocalizationService();
+        var localizationService = new SettingsLocalizationService(settingsManager, signalBus, yamlLocalizationService);
+
+        try
+        {
+            localizationService.Initialize();
+
+            Assert.Equal("fr", CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
+            Assert.Equal("fr", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            Assert.Equal("fr", CultureInfo.DefaultThreadCurrentCulture?.TwoLetterISOLanguageName);
+            Assert.Equal("fr", CultureInfo.DefaultThreadCurrentUICulture?.TwoLetterISOLanguageName);
+            Assert.Equal("fr", yamlLocalizationService.CurrentLanguage);
+            Assert.Equal("fr", LocalizationProvider.Current.CurrentLanguage);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+            CultureInfo.CurrentUICulture = originalUiCulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUiCulture;
+            yamlLocalizationService.SetLanguage(originalLanguage);
+            LocalizationProvider.Use(yamlLocalizationService);
+        }
+    }
+
+    [Fact]
+    public void PublishLanguageSignal_UpdatesCulture_WhenLanguageChanges()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        var originalUiCulture = CultureInfo.CurrentUICulture;
+        var originalDefaultCulture = CultureInfo.DefaultThreadCurrentCulture;
+        var originalDefaultUiCulture = CultureInfo.DefaultThreadCurrentUICulture;
+        var originalLanguage = LocalizationProvider.Current.CurrentLanguage;
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var settingsManager = Substitute.For<ISettingsManager>();
+        var languageSetting = new WhWzSetting(typeof(string), "WW_Language", "en");
+        settingsManager.WW_LANGUAGE.Returns(languageSetting);
+        settingsManager.Get<string>(Arg.Any<Setting>()).Returns(_ => (string)languageSetting.Get());
+        var yamlLocalizationService = new EmbeddedYamlLocalizationService();
+        var localizationService = new SettingsLocalizationService(settingsManager, signalBus, yamlLocalizationService);
+
+        try
+        {
+            localizationService.Initialize();
+            languageSetting.Set("de", skipSave: true);
+            signalBus.Publish(languageSetting);
+
+            Assert.Equal("de", CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
+            Assert.Equal("de", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            Assert.Equal("de", CultureInfo.DefaultThreadCurrentCulture?.TwoLetterISOLanguageName);
+            Assert.Equal("de", CultureInfo.DefaultThreadCurrentUICulture?.TwoLetterISOLanguageName);
+            Assert.Equal("de", yamlLocalizationService.CurrentLanguage);
+            Assert.Equal("de", LocalizationProvider.Current.CurrentLanguage);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+            CultureInfo.CurrentUICulture = originalUiCulture;
+            CultureInfo.DefaultThreadCurrentCulture = originalDefaultCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = originalDefaultUiCulture;
+            yamlLocalizationService.SetLanguage(originalLanguage);
+            LocalizationProvider.Use(yamlLocalizationService);
+        }
+    }
+}
+
+[Collection("SettingsFeature")]
+public class SettingsStartupInitializerTests
+{
+    [Fact]
+    public void Initialize_LoadsSettings_InitializesLocalization_AndSetsRuntimes()
+    {
+        var settingsManager = Substitute.For<ISettingsManager>();
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var localizationService = Substitute.For<ISettingsLocalizationService>();
+        var launcherThemeService = Substitute.For<ILauncherThemeService>();
+        var logger = Substitute.For<ILogger<SettingsStartupInitializer>>();
+        settingsManager.ValidateCorePathSettings().Returns(Ok(new SettingsValidationReport([])));
+        var initializer = new SettingsStartupInitializer(settingsManager, signalBus, localizationService, launcherThemeService, logger);
+
+        initializer.Initialize();
+
+        settingsManager.Received(1).LoadSettings();
+        localizationService.Received(1).Initialize();
+        launcherThemeService.Received(1).Initialize();
+#pragma warning disable CS0618
+        Assert.Same(settingsManager, SettingsRuntime.Current);
+#pragma warning restore CS0618
+    }
+
+    [Fact]
+    public void Initialize_DoesNotThrow_WhenValidationFails()
+    {
+        var settingsManager = Substitute.For<ISettingsManager>();
+        var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
+        var localizationService = Substitute.For<ISettingsLocalizationService>();
+        var launcherThemeService = Substitute.For<ILauncherThemeService>();
+        var logger = Substitute.For<ILogger<SettingsStartupInitializer>>();
+        settingsManager.ValidateCorePathSettings().Returns(Fail("validation failed"));
+        var initializer = new SettingsStartupInitializer(settingsManager, signalBus, localizationService, launcherThemeService, logger);
+
+        var exception = Record.Exception(initializer.Initialize);
+
+        Assert.Null(exception);
+        settingsManager.Received(1).LoadSettings();
+        localizationService.Received(1).Initialize();
+        launcherThemeService.Received(1).Initialize();
+    }
+}
+
+internal static class SettingsTestUtils
+{
+    public static ISettingsManager InitializeSettingsRuntime(string userFolderPath, string dolphinLocation = "dolphin-emu")
+    {
+        var settings = CreateRuntimeSettingsStub(userFolderPath, dolphinLocation);
+#pragma warning disable CS0618
+        SettingsRuntime.Initialize(settings);
+#pragma warning restore CS0618
+        return settings;
+    }
+
+    public static void InitializeSignalRuntime(ISettingsSignalBus? signalBus = null)
+    {
+#pragma warning disable CS0618
+        SettingsSignalRuntime.Initialize(signalBus ?? CreateSettingsSignalBus());
+#pragma warning restore CS0618
+    }
+
+    public static ISettingsSignalBus CreateSettingsSignalBus()
+    {
+        var logger = Substitute.For<ILogger<SettingsSignalBus>>();
+        return new SettingsSignalBus(logger);
+    }
+
+    public static void ResetSettingsRuntime()
+    {
+#pragma warning disable CS0618
+        SetPrivateStaticFieldValue(typeof(SettingsRuntime), "_current", null);
+#pragma warning restore CS0618
+    }
+
+    public static void ResetSignalRuntime()
+    {
+#pragma warning disable CS0618
+        SetPrivateStaticFieldValue(typeof(SettingsSignalRuntime), "_current", null);
+        var pendingInitializersField =
+            typeof(SettingsSignalRuntime).GetField("PendingInitializers", BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new InvalidOperationException("SettingsSignalRuntime pending initializers field was not found.");
+#pragma warning restore CS0618
+        if (pendingInitializersField.GetValue(null) is not System.Collections.IList pendingInitializers)
+            throw new InvalidOperationException("SettingsSignalRuntime pending initializers storage has an unexpected type.");
+        pendingInitializers.Clear();
+    }
+
+    public static string GetValidDolphinLocation(IFileSystem fileSystem)
+    {
+        if (!OperatingSystem.IsWindows())
+            return "/usr/bin/env";
+
+        const string exePath = @"C:\WheelWizardTests\Dolphin.exe";
+        var directoryPath = fileSystem.Path.GetDirectoryName(exePath);
+        if (!string.IsNullOrWhiteSpace(directoryPath))
+            fileSystem.Directory.CreateDirectory(directoryPath);
+
+        fileSystem.File.WriteAllText(exePath, "test");
+        return exePath;
+    }
+
+    private static ISettingsManager CreateRuntimeSettingsStub(string userFolderPath, string dolphinLocation)
+    {
+        var settings = Substitute.For<ISettingsManager>();
+        var userFolderSetting = new WhWzSetting(typeof(string), "UserFolderPath", userFolderPath);
+        var dolphinLocationSetting = new WhWzSetting(typeof(string), "DolphinLocation", dolphinLocation);
+
+        settings.USER_FOLDER_PATH.Returns(userFolderSetting);
+        settings.DOLPHIN_LOCATION.Returns(dolphinLocationSetting);
+
+        settings
+            .Get<string>(Arg.Is<Setting>(setting => ReferenceEquals(setting, userFolderSetting)))
+            .Returns(_ => (string)userFolderSetting.Get());
+        settings
+            .Get<string>(Arg.Is<Setting>(setting => ReferenceEquals(setting, dolphinLocationSetting)))
+            .Returns(_ => (string)dolphinLocationSetting.Get());
+
+        return settings;
+    }
+
+    private static void SetPrivateStaticFieldValue(Type targetType, string fieldName, object? value)
+    {
+        var field =
+            targetType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)
+            ?? throw new InvalidOperationException($"{targetType.Name}.{fieldName} field was not found.");
+        field.SetValue(null, value);
+    }
+}

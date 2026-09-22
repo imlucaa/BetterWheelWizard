@@ -1,0 +1,20 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:behavior="clr-namespace:WheelWizard.Views.Patterns"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   xmlns:miiVars="using:WheelWizard.MiiImages.Domain"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" ClipToBounds="False"
+                   x:Class="WheelWizard.Views.Popups.MiiManagement.MiiCarouselWindow">
+    <Grid Width="440" Height="340" RowDefinitions="*,Auto">
+        <components:LoadingIcon HorizontalAlignment="Center" VerticalAlignment="Center" Width="180" Height="180"
+                                x:Name="MiiLoadingIcon" Foreground="{DynamicResource Neutral800}" />
+        <behavior:Mii3DRender x:Name="Carousel" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="280" 
+                               ImageVariant="{x:Static miiVars:MiiImageVariants.FullBodyCarousel}"/>
+        <components:Button Grid.Row="1" x:Name="SaveMiiButton" Text="Save to My Miis"
+                           Variant="Primary" HorizontalAlignment="Center" Margin="0,4,0,8"
+                           Click="SaveMii_OnClick" />
+    </Grid>
+</base:PopupContent>
