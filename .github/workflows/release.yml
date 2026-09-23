@@ -338,17 +338,29 @@ jobs:
         run: |
           mkdir -p final-artifacts
 
-          # Linux & Windows: required.
-          cp artifacts-linux-windows/BetterWheelWizardWindows.exe final-artifacts/
-          cp artifacts-linux-windows/BetterWheelWizard_Linux final-artifacts/
-          cp artifacts-linux-windows/BetterWheelWizard_ARM64_Linux final-artifacts/
+          # download-artifact has changed its default extraction layout between major
+          # versions, so locate required assets by name instead of assuming a directory.
+          copy_required_asset() {
+            asset_name="$1"
+            asset_path="$(find . -type f -name "$asset_name" -print -quit)"
+            if [ -z "$asset_path" ]; then
+              echo "::error::$asset_name was not found in the downloaded artifacts."
+              exit 1
+            fi
+            cp "$asset_path" final-artifacts/
+          }
+
+          copy_required_asset BetterWheelWizardWindows.exe
+          copy_required_asset BetterWheelWizard_Linux
+          copy_required_asset BetterWheelWizard_ARM64_Linux
 
           # macOS DMGs: attached when their job produced them, skipped with a warning otherwise.
-          for dmg in artifacts-macos-arm64/WheelWizard-macOSarm64.dmg artifacts-macos-x64/WheelWizard-macOSintel.dmg; do
-            if [ -f "$dmg" ]; then
-              cp "$dmg" final-artifacts/
+          for dmg_name in WheelWizard-macOSarm64.dmg WheelWizard-macOSintel.dmg; do
+            dmg_path="$(find . -type f -name "$dmg_name" -print -quit)"
+            if [ -n "$dmg_path" ]; then
+              cp "$dmg_path" final-artifacts/
             else
-              echo "::warning::$(basename "$dmg") was not produced; publishing this release without it."
+              echo "::warning::$dmg_name was not produced; publishing this release without it."
             fi
           done
 
