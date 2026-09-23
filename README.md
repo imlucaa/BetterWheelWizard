@@ -1,12 +1,13 @@
 # BetterWheelWizard
 
 <p align="center">
-  <strong>An enhanced Wheel Wizard launcher for Mario Kart Wii and Retro Rewind.</strong>
+  <strong>A polished community launcher for Mario Kart Wii and Retro Rewind.</strong><br />
+  Browse rooms, manage Miis, customize the launcher, and keep your game data backed up.
 </p>
 
 <p align="center">
   <a href="https://github.com/imlucaa/BetterWheelWizard/releases/latest">
-    <img src="https://img.shields.io/github/v/release/imlucaa/BetterWheelWizard?style=for-the-badge&label=Latest%20release" alt="Latest release" />
+    <img src="https://img.shields.io/github/v/release/imlucaa/BetterWheelWizard?style=for-the-badge&label=Latest%20release" alt="Latest BetterWheelWizard release" />
   </a>
   <a href="https://github.com/imlucaa/BetterWheelWizard/releases">
     <img src="https://img.shields.io/github/downloads/imlucaa/BetterWheelWizard/total?style=for-the-badge" alt="Total downloads" />
@@ -16,28 +17,66 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/imlucaa/BetterWheelWizard/releases/latest"><strong>Download</strong></a>
+  ·
+  <a href="#features"><strong>Features</strong></a>
+  ·
+  <a href="#requirements"><strong>Requirements</strong></a>
+  ·
+  <a href="https://github.com/imlucaa/BetterWheelWizard/issues/new"><strong>Report a bug</strong></a>
+</p>
+
 > [!IMPORTANT]
 > BetterWheelWizard is an unofficial community fork of
 > [TeamWheelWizard/WheelWizard](https://github.com/TeamWheelWizard/WheelWizard).
 > It is not an official Team Wheel Wizard release.
 
-## Highlights
+## Download
 
-- Enhanced room browser with search, VR filters, sorting, room details, and race status
-- Mii Downloader with RWFC friend-code lookup and downloadable public Miis
-- Saved-Mii search, importing, copying, and player Mii actions
-- Theme library with built-in presets, saved themes, and compact sharing codes
-- Direct backups for regional `rksys.dat` saves and `RRRating.pul`
-- Dolphin and WiiCompiled support
+Get the newest build from the
+**[latest BetterWheelWizard release](https://github.com/imlucaa/BetterWheelWizard/releases/latest)**.
+
+| Platform | Release file |
+| --- | --- |
+| Windows x64 | `WheelWizardWindows.exe` |
+| Linux x64 | `WheelWizard_Linux` |
+| Linux ARM64 | `WheelWizard_arm64_Linux` |
+
+> [!NOTE]
+> macOS packages are currently unavailable because signed builds could not be
+> produced. Windows and Linux builds are available normally.
+
+## Features
+
+### Play and manage
+
+- Launch Retro Rewind through Dolphin or use WiiCompiled
+- Browse live rooms with player search, average-VR filters, sorting, race
+  status, and detailed player information
+- Find public Miis through RWFC friend-code lookup and import them directly
+- Search, import, copy, and manage saved Miis
+
+### Make it yours
+
+- Choose from built-in themes or save custom launcher themes
+- Customize accent, branding, text, and background colors
+- Import and share compact `BWW1` theme codes
+- Keep text readable with automatic contrast adjustments
+
+### Protect your data
+
+- Back up every detected regional `rksys.dat` save while preserving folders
+  such as `RMCE` and `RMCP`
+- Back up `RRRating.pul` independently to a destination you choose
+- Copy files directly without changing the originals or creating ZIP archives
 
 ## Feature showcase
 
-### Import and share theme codes
+### Theme library and sharing
 
-Choose a built-in preset or save your own accent, branding, text, and
-background colors. Import shared themes by pasting a compact `BWW1` code, or
-copy your current colors as a code to share with others. Automatic contrast
-adjustments keep launcher text readable.
+Build a launcher style from four color controls, save it to your library, or
+paste a shared `BWW1` code to start from someone else's theme.
 
 <p align="center">
   <a href="docs/screenshots/better-themes.png">
@@ -47,8 +86,8 @@ adjustments keep launcher text readable.
 
 ### Mii Downloader
 
-Find an RWFC player by friend code or browse random public Miis, then import a
-fresh copy into My Miis.
+Look up an RWFC player by friend code or discover random public Miis, then
+download a fresh copy directly into My Miis.
 
 <p align="center">
   <a href="docs/screenshots/mii-downloader.png">
@@ -58,8 +97,8 @@ fresh copy into My Miis.
 
 ### Better room browsing
 
-Search rooms and players, filter by average VR, and sort the room list from one
-compact control panel.
+Search rooms and players, filter by average VR, and sort live results from one
+compact control panel. Room and player details stay readable at a glance.
 
 <p align="center">
   <a href="docs/screenshots/better-rooms-2.5.10.png">
@@ -67,29 +106,23 @@ compact control panel.
   </a>
 </p>
 
-<p align="center"><sub>Click any screenshot to view it at full resolution.</sub></p>
-
-## Download
-
-Download **BetterWheelWizard.exe** from the
-[latest release](https://github.com/imlucaa/BetterWheelWizard/releases/latest).
-
-
+<p align="center"><sub>Click a screenshot to open it at full resolution.</sub></p>
 
 ## Requirements
 
 You must provide your own legally dumped Mario Kart Wii game backup.
-Supported formats include `.iso`, `.gcm`, `.gcz`, `.ciso`, `.wbfs`, `.wia`,
-and `.rvz`.
 
-| Mode | Supported game region |
+Supported formats: `.iso`, `.gcm`, `.gcz`, `.ciso`, `.wbfs`, `.wia`, and
+`.rvz`.
+
+| Launch mode | Supported game region |
 | --- | --- |
 | Retro Rewind through Dolphin | Any region |
 | WiiCompiled, with or without Retro Rewind | PAL |
 
 ## Build from source
 
-The project currently targets .NET 10.
+BetterWheelWizard targets **.NET 10**. From the repository root:
 
 ```powershell
 dotnet test WheelWizard.sln --configuration Release
@@ -99,18 +132,21 @@ dotnet publish WheelWizard/WheelWizard.csproj `
   --runtime win-x64 `
   --self-contained true `
   -p:PublishSingleFile=true `
-  -p:IncludeNativeLibrariesForSelfExtract=true
+  -p:IncludeNativeLibrariesForSelfExtract=true `
+  -p:EnableCompressionInSingleFile=true
 ```
+
+Change `win-x64` to `linux-x64` or `linux-arm64` when publishing for Linux.
 
 ## Report a bug
 
 [Open an issue](https://github.com/imlucaa/BetterWheelWizard/issues/new) and
 include:
 
-- What happened
-- Steps to reproduce it
-- Your Windows version and launch mode
-- A screenshot or log when available
+- What happened and what you expected instead
+- Steps to reproduce the problem
+- Your operating system and launch mode
+- A screenshot or log, when available
 
 ## Credits
 
@@ -118,8 +154,6 @@ BetterWheelWizard is based on
 [TeamWheelWizard/WheelWizard](https://github.com/TeamWheelWizard/WheelWizard),
 created by [Patchzy](https://github.com/patchzyy) and
 [WantToBeeMe](https://github.com/wanttobeeme).
-
-Additional upstream acknowledgements:
 
 - Retro Rewind was created by ZPL. See the
   [Tockdom Wiki](https://wiki.tockdom.com/wiki/Retro_Rewind).
@@ -134,6 +168,6 @@ Additional upstream acknowledgements:
 
 BetterWheelWizard is distributed under the
 [GNU General Public License v3.0](LICENSE), matching the upstream project.
-You may use, modify, and redistribute it under the terms of that license, and
-derivative distributions must remain GPL v3.0 compatible and provide their
+You may use, modify, and redistribute it under the terms of that license.
+Derivative distributions must remain GPL v3.0 compatible and provide their
 corresponding source code.
