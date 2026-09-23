@@ -32,15 +32,16 @@
 
 ## Feature showcase
 
-### Custom launcher themes
+### Import and share theme codes
 
 Choose a built-in preset or save your own accent, branding, text, and
-background colors. Themes can be copied and pasted as compact sharing codes,
-while automatic contrast adjustments keep launcher text readable.
+background colors. Import shared themes by pasting a compact `BWW1` code, or
+copy your current colors as a code to share with others. Automatic contrast
+adjustments keep launcher text readable.
 
 <p align="center">
-  <a href="docs/screenshots/custom-themes.png">
-    <img src="docs/screenshots/custom-themes.png" alt="BetterWheelWizard custom theme editor" width="650" />
+  <a href="docs/screenshots/better-themes.png">
+    <img src="docs/screenshots/better-themes.png" alt="BetterWheelWizard theme library with import and sharing controls" width="650" />
   </a>
 </p>
 
