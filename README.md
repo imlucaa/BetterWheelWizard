@@ -26,16 +26,17 @@
 - Enhanced room browser with search, VR filters, sorting, room details, and race status
 - Mii Downloader with RWFC friend-code lookup and downloadable public Miis
 - Saved-Mii search, importing, copying, and player Mii actions
-- Custom launcher colors for controls, branding, text, and backgrounds
+- Theme library with built-in presets, saved themes, and compact sharing codes
+- Direct backups for regional `rksys.dat` saves and `RRRating.pul`
 - Dolphin and WiiCompiled support
 
 ## Feature showcase
 
 ### Custom launcher themes
 
-Choose separate colors for controls, BetterWheelWizard branding, interface
-text, and the launcher background. Colors update across the launcher with
-automatic readability adjustments.
+Choose a built-in preset or save your own accent, branding, text, and
+background colors. Themes can be copied and pasted as compact sharing codes,
+while automatic contrast adjustments keep launcher text readable.
 
 <p align="center">
   <a href="docs/screenshots/custom-themes.png">
