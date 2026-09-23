@@ -6,6 +6,8 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.11] - 2026-09-24
+
 ### Changed
 
 - Renamed future release downloads to use the BetterWheelWizard name.
@@ -33,6 +35,7 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.10...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...HEAD
+[2.5.11]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.10...v2.5.11
 [2.5.10]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.9...v2.5.10
 [2.5.9]: https://github.com/imlucaa/BetterWheelWizard/releases/tag/v2.5.9
