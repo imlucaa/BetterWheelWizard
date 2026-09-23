@@ -216,10 +216,10 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Classes="BoxItemBackground" Margin="0,0,8,8" Padding="10">
-                                        <Grid ColumnDefinitions="72,*" ColumnSpacing="10">
-                                            <Border Width="72" Height="72" CornerRadius="7" ClipToBounds="True"
-                                                    Background="{DynamicResource Neutral950}">
+                                    <Border Classes="BoxItemBackground" Margin="0,0,6,8" Padding="8">
+                                        <Grid ColumnDefinitions="60,*" ColumnSpacing="8">
+                                            <Border Width="60" Height="60" CornerRadius="7" ClipToBounds="True"
+                                                     Background="{DynamicResource Neutral950}">
                                                 <behaviorComponent:MiiImageLoader Mii="{Binding Mii}"
                                                                                   LoadingColor="{DynamicResource Neutral600}"
                                                                                   FallBackColor="{DynamicResource Neutral600}" />
@@ -227,7 +227,8 @@
                                             <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
                                                            TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="{Binding FriendCode}" Classes="TinyText"
+                                                <TextBlock Text="{Binding FriendCode}" FontSize="11"
+                                                           TextWrapping="NoWrap"
                                                            Foreground="{DynamicResource Neutral400}" />
                                                 <components:Button Text="Download" ButtonSize="Compact"
                                                                    HorizontalAlignment="Left" Margin="0,3,0,0"
