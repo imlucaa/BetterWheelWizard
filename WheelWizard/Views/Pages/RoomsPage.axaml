@@ -33,14 +33,14 @@
             </Border>
         </StackPanel>
 
-        <Border Grid.Row="1" Width="357" HorizontalAlignment="Center" Margin="10,10,10,8"
+        <Border Grid.Row="1" MaxWidth="357" HorizontalAlignment="Stretch" Margin="10,10,10,8"
                 Padding="10" CornerRadius="8" Background="{DynamicResource Neutral900}"
                 BorderBrush="{DynamicResource Neutral800}" BorderThickness="1">
             <Grid RowDefinitions="Auto,Auto">
                 <TextBox HorizontalAlignment="Stretch"
                          PlaceholderText="Search room, player, or friend code"
                          TextChanged="PlayerSearchField_OnTextChanged" x:Name="PlayerSearchField" />
-                <Grid Grid.Row="1" ColumnDefinitions="105,105,105" ColumnSpacing="6" Margin="0,7,0,0">
+                <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="6" Margin="0,7,0,0">
                     <TextBox PlaceholderText="Min avg. VR" MaxLength="7"
                              TextChanged="VrFilter_OnTextChanged" x:Name="MinimumVrField" />
                     <TextBox Grid.Column="1" PlaceholderText="Max avg. VR" MaxLength="7"

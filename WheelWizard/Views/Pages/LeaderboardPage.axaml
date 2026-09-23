@@ -113,8 +113,9 @@
                            FontSize="18"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="{Binding ErrorMessage}"
-                           Classes="BodyText"
-                           Width="310"
+                            Classes="BodyText"
+                            MaxWidth="310"
+                            TextWrapping="Wrap"
                            TextAlignment="Center"
                            HorizontalAlignment="Center" />
                 <components:Button Text="Retry"

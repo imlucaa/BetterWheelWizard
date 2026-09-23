@@ -11,8 +11,8 @@ public class WindowsUpdatePlatform(IFileSystem fileSystem) : IUpdatePlatform
 {
     public GithubAsset? GetAssetForCurrentPlatform(GithubRelease release)
     {
-        // Select the first asset ending with ".exe"
-        return release.Assets.FirstOrDefault(asset => asset.BrowserDownloadUrl.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
+        return release.Assets.FirstOrDefault(asset => asset.Name.Equals("BetterWheelWizardWindows.exe", StringComparison.OrdinalIgnoreCase))
+            ?? release.Assets.FirstOrDefault(asset => asset.Name.Equals("WheelWizardWindows.exe", StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<OperationResult> ExecuteUpdateAsync(string downloadUrl)

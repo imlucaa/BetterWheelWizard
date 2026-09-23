@@ -10,17 +10,23 @@ public class LinuxUpdatePlatform(IFileSystem fileSystem) : IUpdatePlatform
 {
     public GithubAsset? GetAssetForCurrentPlatform(GithubRelease release)
     {
-        string identifier;
-        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm || RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
+        return GetAssetForArchitecture(release, RuntimeInformation.ProcessArchitecture);
+    }
+
+    public static GithubAsset? GetAssetForArchitecture(GithubRelease release, Architecture architecture)
+    {
+        var identifiers = architecture is Architecture.Arm or Architecture.Arm64
+            ? new[] { "BetterWheelWizard_ARM64_Linux", "WheelWizard_arm64_Linux" }
+            : new[] { "BetterWheelWizard_Linux", "WheelWizard_Linux" };
+
+        foreach (var identifier in identifiers)
         {
-            identifier = "WheelWizard_arm64_Linux";
-        }
-        else
-        {
-            identifier = "WheelWizard_Linux";
+            var asset = release.Assets.FirstOrDefault(candidate => candidate.Name.Equals(identifier, StringComparison.OrdinalIgnoreCase));
+            if (asset is not null)
+                return asset;
         }
 
-        return release.Assets.FirstOrDefault(asset => asset.BrowserDownloadUrl.Contains(identifier, StringComparison.OrdinalIgnoreCase));
+        return null;
     }
 
     public async Task<OperationResult> ExecuteUpdateAsync(string downloadUrl)

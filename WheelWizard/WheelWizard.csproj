@@ -24,6 +24,8 @@
 
     <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
         <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+        <!-- Registry access is isolated behind the WINDOWS compilation symbol. -->
+        <NoWarn>$(NoWarn);CA1416</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64' or '$(RuntimeIdentifier)' == 'linux-arm64'">

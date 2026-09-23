@@ -24,6 +24,8 @@
   ·
   <a href="#requirements"><strong>Requirements</strong></a>
   ·
+  <a href="CHANGELOG.md"><strong>Changelog</strong></a>
+  ·
   <a href="https://github.com/imlucaa/BetterWheelWizard/issues/new"><strong>Report a bug</strong></a>
 </p>
 
@@ -39,9 +41,9 @@ Get the newest build from the
 
 | Platform | Release file |
 | --- | --- |
-| Windows x64 | `WheelWizardWindows.exe` |
-| Linux x64 | `WheelWizard_Linux` |
-| Linux ARM64 | `WheelWizard_arm64_Linux` |
+| Windows x64 | `BetterWheelWizardWindows.exe` |
+| Linux x64 | `BetterWheelWizard_Linux` |
+| Linux ARM64 | `BetterWheelWizard_ARM64_Linux` |
 
 > [!NOTE]
 > macOS packages are currently unavailable because signed builds could not be
