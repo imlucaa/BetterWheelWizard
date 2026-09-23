@@ -72,8 +72,8 @@ else
 fi
 
 EXE_DIR="$OUTPUT_DIR/compiled/$RID"
-if [ ! -f "$EXE_DIR/WheelWizard" ]; then
-    echo "[ERROR] Built binary not found at $EXE_DIR/WheelWizard"
+if [ ! -f "$EXE_DIR/BetterWheelWizard" ]; then
+    echo "[ERROR] Built binary not found at $EXE_DIR/BetterWheelWizard"
     echo "        Make sure the build step succeeded or set SKIP_BUILD=true if pre-built."
     exit 1
 fi
@@ -98,7 +98,7 @@ fi
 
 # Place the binary
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
-cp "$EXE_DIR/WheelWizard" "$APP_BUNDLE/Contents/MacOS/WheelWizard"
+cp "$EXE_DIR/BetterWheelWizard" "$APP_BUNDLE/Contents/MacOS/WheelWizard"
 
 # Copy the icon if present
 if [ -f "$MAC_DIRS/Contents/Resources/WheelWizard.icns" ]; then

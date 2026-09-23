@@ -69,9 +69,9 @@ jobs:
       - name: Stage release assets
         run: |
           mkdir -p artifacts
-          cp publish/win-x64/WheelWizard.exe artifacts/WheelWizardWindows.exe
-          cp publish/linux-x64/WheelWizard artifacts/WheelWizard_Linux
-          cp publish/linux-arm64/WheelWizard artifacts/WheelWizard_arm64_Linux
+          cp publish/win-x64/BetterWheelWizard.exe artifacts/WheelWizardWindows.exe
+          cp publish/linux-x64/BetterWheelWizard artifacts/WheelWizard_Linux
+          cp publish/linux-arm64/BetterWheelWizard artifacts/WheelWizard_arm64_Linux
           chmod +x artifacts/WheelWizard_Linux artifacts/WheelWizard_arm64_Linux
 
       - name: Upload Linux + Windows artifacts

@@ -150,8 +150,8 @@
                                     x:Name="SupportUsButton"
                                     IconData="{StaticResource CoffeeIcon}"
                                     Text="{loc:T action.link.support}"
-                                     Foreground="{DynamicResource Neutral200}"
-                                    HoverForeground="{DynamicResource Primary300}"
+                                     Foreground="{DynamicResource BodyTextColor}"
+                                    HoverForeground="{DynamicResource BodyTextColor}"
                                     FontSize="13"
                                     IconSize="20"
                                     Click="SupportUs_OnClick"
@@ -159,7 +159,7 @@
                                     VerticalAlignment="Bottom"
                                     Margin="15,0,0,52" />
 
-        <Grid Grid.Column="0" Grid.Row="5" ColumnDefinitions="28,8,28,8,28,8,*"
+        <Grid Grid.Column="0" Grid.Row="5" ColumnDefinitions="28,8,28,8,28,8,Auto"
               VerticalAlignment="Bottom" Margin="10,0,13,12" x:Name="SidebarBottomBar">
             <Border Grid.Column="0"
                     ToolTip.Tip="This only shows regions YOU have played on"
@@ -176,8 +176,8 @@
                         <Setter Property="Foreground" Value="Transparent" />
                     </Style>
                     <Style Selector="Border.Warning PathIcon">
-                        <Setter Property="Foreground" Value="{StaticResource Warning500}" />
-                        <Setter Property="Data" Value="{StaticResource WarningTip}" />
+                        <Setter Property="Foreground" Value="{StaticResource Warning400}" />
+                        <Setter Property="Data" Value="{StaticResource WarningTriangle}" />
                     </Style>
                     <Style Selector="Border.Error PathIcon">
                         <Setter Property="Foreground" Value="{StaticResource Danger500}" />
@@ -188,11 +188,11 @@
                         <Setter Property="Data" Value="{StaticResource SuccessTip}" />
                     </Style>
                     <Style Selector="Border.Info PathIcon">
-                        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+                        <Setter Property="Foreground" Value="{DynamicResource BodyTextColor}" />
                         <Setter Property="Data" Value="{StaticResource InfoTip}" />
                     </Style>
                     <Style Selector="Border.Question PathIcon">
-                        <Setter Property="Foreground" Value="{StaticResource Warning600}" />
+                        <Setter Property="Foreground" Value="{DynamicResource BodyTextColor}" />
                         <Setter Property="Data" Value="{StaticResource QuestionTip}" />
                     </Style>
                     <Style Selector="Border.Party PathIcon">
@@ -207,12 +207,21 @@
                     Width="28" Height="28"
                     Classes="BottomSidebarIcon"
                     PointerPressed="SidebarInfoButton_OnPointerPressed">
-                <PathIcon Data="{StaticResource InfoTip}"
-                          x:Name="SidebarInfoIcon"
-                          Width="24" Height="24"
-                          Margin="-2"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center" />
+                <Border x:Name="SidebarInfoIcon"
+                        Width="20" Height="20"
+                        CornerRadius="10"
+                        BorderThickness="2"
+                        BorderBrush="{DynamicResource BodyTextColor}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="i"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource BodyTextColor}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0,-1,0,0" />
+                </Border>
                 <Border.ContextMenu>
                     <ContextMenu x:Name="SidebarInfoContextMenu"
                                  Placement="Pointer"
@@ -285,20 +294,21 @@
 
             <Border Grid.Column="6"
                     Height="26"
+                    MinWidth="70"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource Neutral600}"
                     Background="Transparent"
                     CornerRadius="999"
-                    HorizontalAlignment="Stretch"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Center">
                 <TextBlock x:Name="VersionTagText"
                            Text="v0.0.0"
                            Classes="TinyText"
                            FontSize="13"
-                            Foreground="{DynamicResource Neutral200}"
+                             Foreground="{DynamicResource BodyTextColor}"
                            FontWeight="Medium"
-                           Margin="0,0,8,0"
-                           HorizontalAlignment="Right"
+                            Margin="10,0"
+                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
             </Border>
 
@@ -306,20 +316,14 @@
                 <Style Selector="Border.BottomSidebarIcon">
                     <Setter Property="Cursor" Value="Hand" />
                 </Style>
-                <Style Selector="PathIcon#SidebarInfoIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
-                </Style>
                 <Style Selector="PathIcon#SidebarSettingsIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
-                </Style>
-                <Style Selector="Border#SidebarInfoButton:pointerover PathIcon#SidebarInfoIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource BodyTextColor}" />
                 </Style>
                 <Style Selector="Border#SidebarSettingsButton:pointerover PathIcon#SidebarSettingsIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource BodyTextColor}" />
                 </Style>
                 <Style Selector="Border#LiveStatusBorder:pointerover PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
                 </Style>
             </Grid.Styles>
         </Grid>

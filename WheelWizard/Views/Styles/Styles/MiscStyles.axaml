@@ -12,13 +12,23 @@
         <Setter Property="Margin" Value="0,0,0,7" />
         <Setter Property="Padding" Value="10" />
         <!-- When there is an error or something, you can change the color here to something, then the edge also changes -->
-        <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="Border.SettingsRowStyle">
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="10,5" />
+    </Style>
+    <Style Selector="Border.SettingsRowStyle:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
+    </Style>
+    <Style Selector="Border.BackupFeatureCard">
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary700}" />
+    </Style>
+    <Style Selector="TextBlock.BackupStatus">
+        <Setter Property="Foreground" Value="{DynamicResource Primary300}" />
     </Style>
     <Style Selector="Border.SettingsRowTop">
         <Setter Property="CornerRadius" Value="12,12,5,5" />
@@ -71,6 +81,12 @@
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Margin" Value="0,3"/>
         <Setter Property="Padding" Value="7,0"/>
+        <Setter Property="Background" Value="{DynamicResource Neutral900}"/>
+    </Style>
+    <Style Selector="Border.BoxItemBackground">
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="{DynamicResource Neutral900}"/>
     </Style>
     <Style Selector="ListBoxItem Border.BoxItemBackground:pointerover">

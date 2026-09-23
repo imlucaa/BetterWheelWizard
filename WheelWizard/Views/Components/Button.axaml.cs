@@ -24,6 +24,7 @@ public class Button : Avalonia.Controls.Button // Change to TemplatedControl
     public enum ButtonsVariantType
     {
         Primary,
+        Play,
         Warning,
         Default,
         Danger,

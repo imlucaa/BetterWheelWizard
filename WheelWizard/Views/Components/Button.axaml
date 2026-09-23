@@ -128,6 +128,20 @@
         <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
         <Setter Property="Background" Value="{DynamicResource Primary500}" />
     </Style>
+
+    <!-- PLAY: use the selected theme's accent palette -->
+    <Style Selector="components1|Button.Play">
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary700}" />
+    </Style>
+    <Style Selector="components1|Button.Play:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary600}" />
+    </Style>
+    <Style Selector="components1|Button.Play:pressed">
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary500}" />
+    </Style>
     
     <!-- UGLY LIGHT -->
     <Style Selector="components1|Button.UglyLight">
@@ -144,9 +158,9 @@
     </Style>
         
     <Style Selector="components1|Button:disabled /template/ Border">
-        <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
     </Style>
     <Style Selector="components1|Button:disabled /template/ components1|IconLabel">
-        <Setter Property="Foreground" Value="{DynamicResource Neutral950}" />
+        <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
     </Style>
 </Styles>

@@ -8,7 +8,8 @@
              x:Class="WheelWizard.Views.Pages.SettingsPage">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <!-- Settings needs two header levels: page title above the tab strip. -->
+            <RowDefinition Height="95" />
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -20,7 +21,8 @@
                    Classes="PageTitleText" />
         
         <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Orientation="Horizontal" x:Name="SettingPages" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal" x:Name="SettingPages" Spacing="3"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,7">
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="WhWzSettings" 
                               Click="TopBarRadio_OnClick" Content="Wheel Wizard" IsChecked="True" />
                 <RadioButton x:Name="RecompSettingsTab" Classes="TopBar CompactSettingsTab" Tag="RecompSettings"
@@ -29,6 +31,8 @@
                               Click="TopBarRadio_OnClick" Content="{loc:T category.dolphin}"/>
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="OtherSettings" 
                                Click="TopBarRadio_OnClick" Content="{loc:T category.other}" />
+                <RadioButton Classes="TopBar CompactSettingsTab" Tag="BackupSettings"
+                               Click="TopBarRadio_OnClick" Content="Backup" />
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="AppInfo"
                               Click="TopBarRadio_OnClick" Content="{loc:T category.about}" />
             </StackPanel>
@@ -39,7 +43,8 @@
                 <Setter Property="FontSize" Value="14" />
             </Style>
             <Style Selector="RadioButton.CompactSettingsTab /template/ ContentPresenter">
-                <Setter Property="Padding" Value="7,5" />
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="CornerRadius" Value="8" />
             </Style>
         </Grid.Styles>
         

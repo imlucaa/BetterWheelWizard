@@ -7,6 +7,7 @@
              xmlns:components1="clr-namespace:WheelWizard.Views.Components"
              x:Class="WheelWizard.Views.Pages.Settings.OtherSettings">
 
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
     <Grid x:Name="DolphinBorder">
         <StackPanel Margin="0,15,0,0">
 
@@ -158,4 +159,5 @@
             <Border Classes="SettingsBottomSpacer" />
         </StackPanel>
     </Grid>
+    </ScrollViewer>
 </UserControl>

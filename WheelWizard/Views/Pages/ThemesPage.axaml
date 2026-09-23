@@ -8,27 +8,97 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="{StaticResource TopRowSize}" />
-            <RowDefinition />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="{DynamicResource BackgroundLineColor}" Height="1"
                 HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <TextBlock Grid.Row="0" Text="Themes" Classes="PageTitleText" />
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12"
+              VerticalAlignment="Center" Margin="3,8,3,8">
+            <Border Width="42" Height="42" CornerRadius="21"
+                    Background="{DynamicResource Neutral900}"
+                    BorderBrush="{DynamicResource Neutral700}" BorderThickness="1">
+                <PathIcon Data="{StaticResource ThemePalette}" Width="22" Height="22"
+                          Foreground="{DynamicResource Primary300}" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Themes" FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource Neutral50}" />
+                <TextBlock Text="Choose, create, and share launcher colors"
+                           Classes="TinyText" />
+            </StackPanel>
+        </Grid>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,18,0,12" Spacing="16">
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Launcher colors" FontSize="20" Foreground="{StaticResource TitleTextColor}" />
-                     <TextBlock Text="Choose separate colors for controls, branding, text, and the launcher background."
-                               Foreground="{StaticResource BodyTextColor}" TextWrapping="Wrap" />
-                </StackPanel>
+            <StackPanel Margin="0,18,0,6" Spacing="16">
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="Theme library" FontSize="18" />
+                            <TextBlock Text="Built-in presets and themes you save appear here."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ComboBox x:Name="ThemeDropdown" Classes="ThemeLibrary" PlaceholderText="Choose a theme"
+                                  HorizontalAlignment="Stretch" MinHeight="38"
+                                  SelectionChanged="ThemeDropdown_OnSelectionChanged">
+                            <ComboBox.Styles>
+                                <Style Selector="ComboBox.ThemeLibrary /template/ Border#Background">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
+                                </Style>
+                                <Style Selector="ComboBox.ThemeLibrary:pointerover /template/ Border#Background, ComboBox.ThemeLibrary:dropdownopen /template/ Border#Background">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
+                                </Style>
+                                <Style Selector="ComboBox.ThemeLibrary:dropdownopen /template/ Border#PopupBorder">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+                                </Style>
+                                <Style Selector="ComboBox.ThemeLibrary ComboBoxItem">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+                                </Style>
+                                <Style Selector="ComboBox.ThemeLibrary ComboBoxItem:pointerover /template/ Border#PART_optionBody">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+                                </Style>
+                                <Style Selector="ComboBox.ThemeLibrary ComboBoxItem:selected /template/ Border#PART_optionBody">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+                                </Style>
+                            </ComboBox.Styles>
+                        </ComboBox>
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                            <components:Button Grid.Column="0" Text="Copy code" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource Copy}" Click="CopyThemeCode_OnClick"
+                                               ToolTip.Tip="Copy these four colors as a sharing code" />
+                            <components:Button Grid.Column="1" Text="Paste code" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource FileImport}" Click="PasteThemeCode_OnClick"
+                                               ToolTip.Tip="Load four colors from a sharing code" />
+                            <components:Button Grid.Column="2" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
+                                               IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
+                        </Grid>
+                        <components:Button x:Name="RestorePresetsButton" Text="Restore presets" ButtonSize="Compact"
+                                           Variant="Default" Click="RestorePresets_OnClick"
+                                           HorizontalAlignment="Center"
+                                           ToolTip.Tip="Restore deleted built-in themes" />
+                        <Border Height="1" Background="{DynamicResource Neutral800}" Margin="0,2" />
+                        <TextBlock Text="Save current colors" FontSize="15" FontWeight="SemiBold" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                            <TextBox x:Name="ThemeNameTextBox" PlaceholderText="Theme name" MaxLength="48" />
+                            <components:Button Grid.Column="1" Text="Save theme" Variant="Default"
+                                               Click="SaveTheme_OnClick" />
+                        </Grid>
+                        <TextBlock x:Name="ThemeStatusText" Classes="TinyText" Foreground="{DynamicResource Primary300}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
 
                 <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
                     <StackPanel Spacing="12">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="3">
-                                 <TextBlock Text="Custom launcher colors" FontSize="18" />
-                                  <TextBlock Text="Use #RRGGBB hex codes. Bright backgrounds and low-contrast text are adjusted automatically for readability."
+                                <TextBlock Text="Custom launcher colors" FontSize="18" />
+                                <TextBlock Text="Use #RRGGBB hex codes. Low-contrast text is adjusted automatically for readability."
                                            Foreground="{StaticResource BodyTextColor}" FontSize="13" TextWrapping="Wrap" />
                             </StackPanel>
                             <Border Grid.Column="1" Width="30" Height="30" CornerRadius="15"
@@ -37,19 +107,17 @@
                         </Grid>
 
                         <Grid RowDefinitions="Auto,6,Auto">
-                            <TextBlock Grid.Row="0" Text="Accent color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBlock Text="Accent color" Foreground="{StaticResource BodyTextColor}" />
                             <TextBox Grid.Row="2" x:Name="ColorTextBox" PlaceholderText="#249AF3"
                                      MaxLength="7" TextChanged="Color_OnTextChanged" />
                         </Grid>
-
                         <Grid RowDefinitions="Auto,6,Auto">
-                            <TextBlock Grid.Row="0" Text="Wheel and title color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBlock Text="Wheel and title color" Foreground="{StaticResource BodyTextColor}" />
                             <TextBox Grid.Row="2" x:Name="BrandColorTextBox" PlaceholderText="#F1F3F5"
                                      MaxLength="7" TextChanged="Color_OnTextChanged" />
                         </Grid>
-
                         <Grid RowDefinitions="Auto,6,Auto">
-                            <TextBlock Grid.Row="0" Text="Text color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBlock Text="Text color" Foreground="{StaticResource BodyTextColor}" />
                             <TextBox Grid.Row="2" x:Name="TextColorTextBox" PlaceholderText="#D7D9E0"
                                      MaxLength="7" TextChanged="Color_OnTextChanged" />
                         </Grid>
@@ -59,8 +127,7 @@
                                 BorderThickness="1" CornerRadius="6" Padding="10">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                 <Border x:Name="EffectiveTextColorPreview" Width="22" Height="22" CornerRadius="11"
-                                        BorderBrush="{DynamicResource Neutral600}" BorderThickness="1"
-                                        VerticalAlignment="Center" />
+                                        BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
                                 <TextBlock Grid.Column="1" x:Name="TextContrastMessage"
                                            Foreground="{DynamicResource Neutral200}" FontSize="13"
                                            VerticalAlignment="Center" TextWrapping="Wrap" />
@@ -68,45 +135,27 @@
                         </Border>
 
                         <Grid RowDefinitions="Auto,6,Auto">
-                            <TextBlock Grid.Row="0" Text="Background color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBlock Text="Background color" Foreground="{StaticResource BodyTextColor}" />
                             <TextBox Grid.Row="2" x:Name="BackgroundColorTextBox" PlaceholderText="#101216"
                                      MaxLength="7" TextChanged="Color_OnTextChanged" />
                         </Grid>
 
-                        <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral700}"
-                                BorderThickness="1" CornerRadius="6" Padding="10">
-                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                                <Border Width="32" Height="32" CornerRadius="16" BorderThickness="2"
-                                        BorderBrush="{DynamicResource LauncherBrandColor}">
-                                    <PathIcon Data="{StaticResource WheelIcon}" Width="20" Height="20"
-                                              Foreground="{DynamicResource LauncherBrandColor}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="BetterWheelWizard" FontWeight="Bold"
-                                               Foreground="{DynamicResource LauncherBrandColor}" />
-                                    <TextBlock Text="Accent, branding, text, and surfaces"
-                                               FontSize="12" Foreground="{DynamicResource Neutral300}" />
-                                </StackPanel>
-                                <Border Grid.Column="2" Background="{DynamicResource Neutral800}"
-                                        CornerRadius="6" Padding="9,5" VerticalAlignment="Center">
-                                    <TextBlock Text="Sample" Foreground="{DynamicResource Primary200}" />
-                                </Border>
-                            </Grid>
-                        </Border>
-
-                        <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock x:Name="ColorError" Text="Enter a valid #RRGGBB color."
-                                       Foreground="{StaticResource Danger400}" VerticalAlignment="Center" IsVisible="False" />
-                            <components:Button Grid.Column="1" Text="Apply theme" Variant="Primary"
-                                               Click="ApplyTheme_OnClick" />
-                        </Grid>
-
-                        <Border IsVisible="False">
-                            <Border x:Name="ColorPreview" Background="#249AF3" />
-                        </Border>
+                        <Border IsVisible="False"><Border x:Name="ColorPreview" Background="#249AF3" /></Border>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </ScrollViewer>
+
+        <Border Grid.Row="2" Background="{DynamicResource Neutral950}"
+                BorderBrush="{DynamicResource Neutral800}" BorderThickness="0,1,0,0"
+                Padding="0,10,0,2">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="ColorError" Text="Enter valid colors. A name is required to save."
+                           Foreground="{StaticResource Danger400}" VerticalAlignment="Center"
+                           TextWrapping="Wrap" IsVisible="False" />
+                <components:Button Grid.Column="1" Text="Apply theme" Variant="Default"
+                                   IconData="{StaticResource CheckMark}" Click="ApplyTheme_OnClick" />
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

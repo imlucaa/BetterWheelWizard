@@ -34,7 +34,7 @@
   <Style Selector="patterns|SidebarRadioButton">
     <Setter Property="Background" Value="{DynamicResource Neutral900}" />
     <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
-    <Setter Property="Height" Value="46" />
+    <Setter Property="Height" Value="44" />
     <Setter Property="GroupName" Value="SidebarRadioButton"/> <!-- Because its a radio button, they have to be in the same group to work -->
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     <Setter Property="Template">
@@ -43,11 +43,11 @@
                 BorderThickness="0" >
           <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="True">
             <Border x:Name="PART_SelectionIndicator"
-                    Width="5"
-                    CornerRadius="0"
+                    Width="4" Height="26"
+                    CornerRadius="0,4,4,0"
                     Background="Transparent"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Stretch" />
+                    VerticalAlignment="Center" />
             
             <Border CornerRadius="99999" IsVisible="False" Opacity="0.3" Name="PART_HoverEffect"
                     HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -69,7 +69,7 @@
               </Border.Styles>
             </Border>
             
-            <components:IconLabel x:Name="RadioIcon" IconSize="25" FontSize="19"
+            <components:IconLabel x:Name="RadioIcon" IconSize="23" FontSize="18"
                              IconData="{TemplateBinding IconData}"
                              Text="{TemplateBinding Text}"
                              Foreground="{TemplateBinding Foreground}"

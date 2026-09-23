@@ -109,7 +109,7 @@
 
                                 <Grid Grid.Column="1" Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="5">
                                     <PathIcon Data="{StaticResource Road}" Width="12" Height="12"
-                                              Foreground="{DynamicResource Primary400}" VerticalAlignment="Center" />
+                                              Foreground="{DynamicResource BodyTextColor}" VerticalAlignment="Center" />
                                     <TextBlock Grid.Column="1" Text="{Binding TrackDisplay}" FontSize="12"
                                                Foreground="{DynamicResource Neutral300}"
                                                TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />

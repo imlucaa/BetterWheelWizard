@@ -13,7 +13,7 @@
         <NoWarn>$(NoWarn);AVLN3001</NoWarn>
 
         <!-- Program details -->
-        <Version>2.5.8</Version>
+        <Version>2.5.9</Version>
         <Title>BetterWheelWizard</Title>
         <Product>BetterWheelWizard</Product>
         <Description>An enhanced Wheel Wizard build for managing Retro Rewind and mods.</Description>

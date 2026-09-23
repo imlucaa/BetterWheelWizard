@@ -57,7 +57,7 @@ public partial class HomePage : UserControlBase
             WheelWizardStatus.NoServer => new(t("state.no_server"), Button.ButtonsVariantType.Danger, "RoadError", null, true),
             WheelWizardStatus.NoServerButInstalled => new(
                 t("action.play_offline"),
-                Button.ButtonsVariantType.Warning,
+                Button.ButtonsVariantType.Play,
                 "Play",
                 LaunchGame,
                 true
@@ -78,7 +78,7 @@ public partial class HomePage : UserControlBase
             ),
             WheelWizardStatus.NotInstalled => new(t("action.install"), Button.ButtonsVariantType.Warning, "Download", Download, true),
             WheelWizardStatus.OutOfDate => new(t("action.update"), Button.ButtonsVariantType.Warning, "Download", Update, true),
-            WheelWizardStatus.Ready => new(t("action.play"), Button.ButtonsVariantType.Primary, "Play", LaunchGame, true),
+            WheelWizardStatus.Ready => new(t("action.play"), Button.ButtonsVariantType.Play, "Play", LaunchGame, true),
             _ => new(t("state.loading"), Button.ButtonsVariantType.Default, "Spinner", null, false),
         };
 

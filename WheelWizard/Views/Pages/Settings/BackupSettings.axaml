@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Views.Pages.Settings.BackupSettings">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,15,0,0">
+            <TextBlock Text="Back up rksys.dat and RRRating.pul files"
+                       FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
+            <StackPanel Spacing="4">
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
+                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
+                        <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource Neutral800}" Margin="0,0,12,0">
+                            <PathIcon Data="{StaticResource FileExport}" Width="18" Height="18" Foreground="{DynamicResource Primary300}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="0,0,14,0" Spacing="4" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="rksys.dat" />
+                            <TextBlock x:Name="RksysStatusText" Classes="TinyText" TextWrapping="Wrap"
+                                       Text="Checking for rksys.dat…" />
+                        </StackPanel>
+                        <components:Button Grid.Column="2" x:Name="BackupRksysButton"
+                                           Text="" IconData="{StaticResource FileExport}" Padding="10"
+                                           ToolTip.Tip="Back up rksys.dat" ToolTip.ShowDelay="0"
+                                           VerticalAlignment="Center" Click="BackupRksys_OnClick" />
+                    </Grid>
+                </Border>
+
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
+                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
+                        <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource Neutral800}" Margin="0,0,12,0">
+                            <PathIcon Data="{StaticResource FileExport}" Width="18" Height="18" Foreground="{DynamicResource Primary300}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="0,0,14,0" Spacing="4" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="RRRating.pul" />
+                            <TextBlock x:Name="RatingStatusText" Classes="TinyText" TextWrapping="Wrap"
+                                       Text="Checking for RRRating.pul…" />
+                        </StackPanel>
+                        <components:Button Grid.Column="2" x:Name="BackupRatingButton"
+                                           Text="" IconData="{StaticResource FileExport}" Padding="10"
+                                           ToolTip.Tip="Back up RRRating.pul" ToolTip.ShowDelay="0"
+                                           VerticalAlignment="Center" Click="BackupRating_OnClick" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0,12,0,0">
+                <TextBlock x:Name="BackupResultText" Classes="TinyText BackupStatus" TextWrapping="Wrap"
+                           Text="Select a backup button, then choose where to save the file." />
+            </Border>
+            <TextBlock Classes="TinyText" Margin="4,10,4,0" TextWrapping="Wrap"
+                       Foreground="{DynamicResource Neutral400}"
+                       Text="If a backup with the same name already exists in your chosen folder, it will be replaced." />
+            <Border Classes="SettingsBottomSpacer" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

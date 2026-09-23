@@ -143,7 +143,7 @@
             <PathIcon HorizontalAlignment="Center" VerticalAlignment="Top"
                       Data="{StaticResource WheelIcon}"
                       x:Name="WheelIcon"
-                      Foreground="{DynamicResource Neutral600}"
+                      Foreground="{DynamicResource Primary700}"
                       Width="200" Height="200" Margin="0,25" />
             <!-- 
                 Note that this icon should have the same margin on each side. Decide a padding/border, enter that number in the margin at tb.
@@ -157,7 +157,7 @@
             <TextBlock HorizontalAlignment="Center" Classes="TitleText" x:Name="GameTitle" />
             <components:Button x:Name="PlayButton"
                                IsEnabled="True"
-                               Variant="Primary"
+                               Variant="Play"
                                Text="Play" PointerEntered="PlayButton_OnPointerEntered"
                                PointerExited="PlayButton_OnPointerExit"
                                IconData="{StaticResource Play}"
@@ -168,6 +168,7 @@
              But because the dolphin icon looks goofy that small, we can increase the size, and then change the size to be the default size again  -->
             <components:Button x:Name="DolphinButton"
                                IsEnabled="True"
+                               Variant="Play"
                                IconData="{StaticResource DolphinIcon}"
                                IconSize="30"
                                Height="40"

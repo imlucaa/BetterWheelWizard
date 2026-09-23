@@ -28,11 +28,11 @@
         <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,12"
                     Orientation="Vertical" x:Name="TopBarButtons" Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasMods}">
-                <components:Button Variant="Primary" 
+                <components:Button Variant="Default"
                                    Text="{loc:T action.browse}" IconData="{StaticResource Search}"
                                    Click="BrowseMod_Click" HorizontalAlignment="Center" />
                 <components:Button Variant="Default"
-                                   IconData="{StaticResource FileImport}"
+                                    IconData="{StaticResource FileImport}"
                                    Click="ImportMod_Click" HorizontalAlignment="Center" />
             </StackPanel>
         </StackPanel>
@@ -44,7 +44,7 @@
                                       BodyText="{loc:T empty_content.no_mods}"
                                       HorizontalAlignment="Center" />
             <UniformGrid Margin="0,12" Columns="2" Rows="1">
-                <components:Button Variant="Primary" Margin="3,0"
+                <components:Button Variant="Default" Margin="3,0"
                                    Text="{loc:T action.browse}" IconData="{StaticResource Search}"
                                    Click="BrowseMod_Click" HorizontalAlignment="Stretch" />
                 <components:Button Variant="Default" Margin="3,0"
