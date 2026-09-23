@@ -28,7 +28,6 @@
 - Saved-Mii search, importing, copying, and player Mii actions
 - Custom launcher colors for controls, branding, text, and backgrounds
 - Dolphin and WiiCompiled support
-- Self-contained Windows x64 builds
 
 ## Feature showcase
 
@@ -61,9 +60,6 @@ automatic readability adjustments.
 
 Download **BetterWheelWizard.exe** from the
 [latest release](https://github.com/imlucaa/BetterWheelWizard/releases/latest).
-
-The Windows x64 build is self-contained, so a separate .NET installation is
-not required.
 
 > [!WARNING]
 > Beta builds may contain bugs. Back up your existing Wheel Wizard data and
