@@ -159,10 +159,11 @@
                              PlaceholderText="Player or 0000-0000-0000"
                              TextChanged="OnlineMiiSearch_OnTextChanged"
                              KeyDown="OnlineMiiSearch_OnKeyDown" />
-                    <components:Button Grid.Column="1" x:Name="SearchOnlineMiiButton" Text="Find"
-                                       IconData="{StaticResource Search}"
-                                       Click="SearchFriendCode_OnClick"
-                                       ToolTip.Tip="Find a player by friend code" />
+                    <components:Button Grid.Column="1" x:Name="SearchOnlineMiiButton" Text="" Width="48"
+                                       Padding="0"
+                                        IconData="{StaticResource Search}"
+                                        Click="SearchFriendCode_OnClick"
+                                        ToolTip.Tip="Search for a player by friend code" />
                 </Grid>
 
                 <Border Grid.Row="1" Classes="BoxItemBackground" Margin="0,0,0,10" Padding="12">

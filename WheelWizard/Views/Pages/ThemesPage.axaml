@@ -82,7 +82,7 @@
                                               Foreground="{DynamicResource LauncherBrandColor}" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Wheel Wizard" FontWeight="Bold"
+                                    <TextBlock Text="BetterWheelWizard" FontWeight="Bold"
                                                Foreground="{DynamicResource LauncherBrandColor}" />
                                     <TextBlock Text="Accent, branding, text, and surfaces"
                                                FontSize="12" Foreground="{DynamicResource Neutral300}" />

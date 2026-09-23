@@ -33,27 +33,29 @@
             </Border>
         </StackPanel>
 
-        <Grid Grid.Row="1" RowDefinitions="Auto,Auto" Margin="10,10,10,8">
-            <TextBox Width="300" HorizontalAlignment="Center"
-                     PlaceholderText="Search room, player, or friend code"
-                     TextChanged="PlayerSearchField_OnTextChanged" x:Name="PlayerSearchField" />
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,6,0,0"
-                        HorizontalAlignment="Center">
-                <TextBox PlaceholderText="Min avg. VR" MaxLength="7"
-                         Width="105" TextChanged="VrFilter_OnTextChanged" x:Name="MinimumVrField" />
-                <TextBox PlaceholderText="Max avg. VR" MaxLength="7"
-                         Width="105"
-                          TextChanged="VrFilter_OnTextChanged" x:Name="MaximumVrField" />
-                <ComboBox Width="105" x:Name="AverageVrSortDropdown"
-                          SelectedIndex="0" SelectionChanged="AverageVrSortDropdown_OnSelectionChanged">
-                    <ComboBoxItem Content="All rooms" />
-                    <ComboBoxItem Content="Lowest → highest" />
-                    <ComboBoxItem Content="Highest → lowest" />
-                    <ComboBoxItem Content="Lowest room only" />
-                    <ComboBoxItem Content="Highest room only" />
-                </ComboBox>
-            </StackPanel>
-        </Grid>
+        <Border Grid.Row="1" Width="357" HorizontalAlignment="Center" Margin="10,10,10,8"
+                Padding="10" CornerRadius="8" Background="{DynamicResource Neutral900}"
+                BorderBrush="{DynamicResource Neutral800}" BorderThickness="1">
+            <Grid RowDefinitions="Auto,Auto">
+                <TextBox HorizontalAlignment="Stretch"
+                         PlaceholderText="Search room, player, or friend code"
+                         TextChanged="PlayerSearchField_OnTextChanged" x:Name="PlayerSearchField" />
+                <Grid Grid.Row="1" ColumnDefinitions="105,105,105" ColumnSpacing="6" Margin="0,7,0,0">
+                    <TextBox PlaceholderText="Min avg. VR" MaxLength="7"
+                             TextChanged="VrFilter_OnTextChanged" x:Name="MinimumVrField" />
+                    <TextBox Grid.Column="1" PlaceholderText="Max avg. VR" MaxLength="7"
+                             TextChanged="VrFilter_OnTextChanged" x:Name="MaximumVrField" />
+                    <ComboBox Grid.Column="2" x:Name="AverageVrSortDropdown"
+                              SelectedIndex="0" SelectionChanged="AverageVrSortDropdown_OnSelectionChanged">
+                        <ComboBoxItem Content="All rooms" />
+                        <ComboBoxItem Content="Lowest → highest" />
+                        <ComboBoxItem Content="Highest → lowest" />
+                        <ComboBoxItem Content="Lowest room only" />
+                        <ComboBoxItem Content="Highest room only" />
+                    </ComboBox>
+                </Grid>
+            </Grid>
+        </Border>
 
         <components:EmptyPageInfo Grid.Row="2" x:Name="EmptyRoomsView"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
