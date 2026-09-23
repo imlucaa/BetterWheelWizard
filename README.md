@@ -37,27 +37,21 @@ Choose separate colors for controls, BetterWheelWizard branding, interface
 text, and the launcher background. Colors update across the launcher with
 automatic readability adjustments.
 
-<p align="center">
-  <img src="docs/screenshots/custom-themes.png" alt="BetterWheelWizard custom theme editor" width="680" />
-</p>
+![BetterWheelWizard custom theme editor](docs/screenshots/custom-themes.png)
 
 ### Mii Downloader
 
 Find an RWFC player by friend code or browse random public Miis, then import a
 fresh copy into My Miis.
 
-<p align="center">
-  <img src="docs/screenshots/mii-downloader.png" alt="BetterWheelWizard Mii Downloader" width="680" />
-</p>
+![BetterWheelWizard Mii Downloader](docs/screenshots/mii-downloader.png)
 
 ### Better room browsing
 
 Search rooms and players, filter by average VR, and sort the room list from one
 compact control panel.
 
-<p align="center">
-  <img src="docs/screenshots/better-rooms.png" alt="BetterWheelWizard room search and VR filters" width="680" />
-</p>
+![BetterWheelWizard room search and VR filters](docs/screenshots/better-rooms.png)
 
 ## Download
 
