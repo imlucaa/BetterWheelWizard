@@ -45,24 +45,27 @@ adjustments keep launcher text readable.
   </a>
 </p>
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>Mii Downloader</h3>
-      <p>Find an RWFC player by friend code or browse random public Miis, then import a fresh copy into My Miis.</p>
-      <a href="docs/screenshots/mii-downloader.png">
-        <img src="docs/screenshots/mii-downloader.png" alt="BetterWheelWizard Mii Downloader" width="300" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>Better room browsing</h3>
-      <p>Search rooms and players, filter by average VR, and sort the room list from one compact control panel.</p>
-      <a href="docs/screenshots/better-rooms-2.5.10.png">
-        <img src="docs/screenshots/better-rooms-2.5.10.png" alt="BetterWheelWizard room browser with improved room and player layouts" width="300" />
-      </a>
-    </td>
-  </tr>
-</table>
+### Mii Downloader
+
+Find an RWFC player by friend code or browse random public Miis, then import a
+fresh copy into My Miis.
+
+<p align="center">
+  <a href="docs/screenshots/mii-downloader.png">
+    <img src="docs/screenshots/mii-downloader.png" alt="BetterWheelWizard Mii Downloader" width="650" />
+  </a>
+</p>
+
+### Better room browsing
+
+Search rooms and players, filter by average VR, and sort the room list from one
+compact control panel.
+
+<p align="center">
+  <a href="docs/screenshots/better-rooms-2.5.10.png">
+    <img src="docs/screenshots/better-rooms-2.5.10.png" alt="BetterWheelWizard room browser with improved room and player layouts" width="650" />
+  </a>
+</p>
 
 <p align="center"><sub>Click any screenshot to view it at full resolution.</sub></p>
 
