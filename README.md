@@ -57,8 +57,8 @@ adjustments keep launcher text readable.
     <td width="50%" valign="top">
       <h3>Better room browsing</h3>
       <p>Search rooms and players, filter by average VR, and sort the room list from one compact control panel.</p>
-      <a href="docs/screenshots/better-rooms.png">
-        <img src="docs/screenshots/better-rooms.png" alt="BetterWheelWizard room search and VR filters" width="300" />
+      <a href="docs/screenshots/better-rooms-2.5.10.png">
+        <img src="docs/screenshots/better-rooms-2.5.10.png" alt="BetterWheelWizard room browser with improved room and player layouts" width="300" />
       </a>
     </td>
   </tr>
