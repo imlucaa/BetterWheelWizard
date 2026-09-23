@@ -81,10 +81,15 @@
             </Grid>
 
             <ListBox Grid.Row="1" x:Name="PlayersListView" SelectionMode="Single" BorderThickness="0"
-                     Padding="0" Margin="0" Background="Transparent" ItemsSource="{Binding PlayersList}"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     SelectionChanged="PlayerView_SelectionChanged">
+                      Padding="0" Margin="0" Background="Transparent" ItemsSource="{Binding PlayersList}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      SelectionChanged="PlayerView_SelectionChanged">
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListBox.Styles>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <patterns:PlayerListItem
