@@ -1,5 +1,5 @@
 > [!NOTE]
-> **WheelWizardEnhanced** is an unofficial customized build maintained by
+> **BetterWheelWizard** is an unofficial customized build maintained by
 > [imlucaa](https://github.com/imlucaa). It is based on the original
 > [TeamWheelWizard/WheelWizard](https://github.com/TeamWheelWizard/WheelWizard)
 > project by [Patchzy](https://github.com/patchzyy) and
