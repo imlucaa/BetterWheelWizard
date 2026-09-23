@@ -61,9 +61,7 @@ automatic readability adjustments.
 Download **BetterWheelWizard.exe** from the
 [latest release](https://github.com/imlucaa/BetterWheelWizard/releases/latest).
 
-> [!WARNING]
-> Beta builds may contain bugs. Back up your existing Wheel Wizard data and
-> settings before testing a release.
+
 
 ## Requirements
 
