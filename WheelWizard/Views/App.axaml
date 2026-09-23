@@ -35,6 +35,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
         <!-- !!Only used for the designer!! -->
         <StyleInclude Source="Styles/Util/MultiColorExampleComponent.axaml" />
         <!-- !!Only used for the designer!! -->

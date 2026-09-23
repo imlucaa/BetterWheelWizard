@@ -141,10 +141,10 @@
         <Border Grid.Row="1" Height="630" Width="250" CornerRadius="125,125,0,0" VerticalAlignment="Bottom"
                 Background="{StaticResource FrameColor}" Margin="{StaticResource NegativeEdgeGap}">
             <PathIcon HorizontalAlignment="Center" VerticalAlignment="Top"
-                      Data="{StaticResource WheelIcon}"
-                      x:Name="WheelIcon"
-                      Foreground="{DynamicResource Primary700}"
-                      Width="200" Height="200" Margin="0,25" />
+                       Data="{StaticResource WheelIcon}"
+                       x:Name="WheelIcon"
+                       Foreground="{DynamicResource LauncherBrandColor}"
+                       Width="200" Height="200" Margin="0,25" />
             <!-- 
                 Note that this icon should have the same margin on each side. Decide a padding/border, enter that number in the margin at tb.
                 Then, double this number, take the width of the parent container, and subtract the doubled margin. 
@@ -154,7 +154,8 @@
 
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="180" Margin="0,220">
 
-            <TextBlock HorizontalAlignment="Center" Classes="TitleText" x:Name="GameTitle" />
+            <TextBlock HorizontalAlignment="Center" Classes="TitleText" x:Name="GameTitle"
+                       Foreground="{DynamicResource LauncherBrandColor}" />
             <components:Button x:Name="PlayButton"
                                IsEnabled="True"
                                Variant="Play"

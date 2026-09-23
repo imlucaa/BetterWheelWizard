@@ -13,7 +13,7 @@
         <NoWarn>$(NoWarn);AVLN3001</NoWarn>
 
         <!-- Program details -->
-        <Version>2.5.11</Version>
+        <Version>2.5.12</Version>
         <Title>BetterWheelWizard</Title>
         <Product>BetterWheelWizard</Product>
         <Description>An enhanced Wheel Wizard build for managing Retro Rewind and mods.</Description>
@@ -39,6 +39,7 @@
     <ItemGroup>
         <!-- Everything specifically for Avalonia -->
         <PackageReference Include="Avalonia" Version="12.1.2" />
+        <PackageReference Include="Avalonia.Controls.ColorPicker" Version="12.1.2" />
         <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.2" />

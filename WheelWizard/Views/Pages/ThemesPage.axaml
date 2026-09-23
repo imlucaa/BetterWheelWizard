@@ -97,8 +97,8 @@
                     <StackPanel Spacing="12">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="3">
-                                <TextBlock Text="Custom launcher colors" FontSize="18" />
-                                <TextBlock Text="Use #RRGGBB hex codes. Low-contrast text is adjusted automatically for readability."
+                                <TextBlock Text="Choose your colors" FontSize="18" />
+                                <TextBlock Text="Select a color to see what part of the app it changes."
                                            Foreground="{StaticResource BodyTextColor}" FontSize="13" TextWrapping="Wrap" />
                             </StackPanel>
                             <Border Grid.Column="1" Width="30" Height="30" CornerRadius="15"
@@ -106,20 +106,47 @@
                                     BorderBrush="{DynamicResource Neutral700}" BorderThickness="1" />
                         </Grid>
 
-                        <Grid RowDefinitions="Auto,6,Auto">
-                            <TextBlock Text="Accent color" Foreground="{StaticResource BodyTextColor}" />
-                            <TextBox Grid.Row="2" x:Name="ColorTextBox" PlaceholderText="#249AF3"
-                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                        <Grid RowDefinitions="Auto,2,Auto,6,Auto">
+                            <TextBlock Text="Main color" Foreground="{StaticResource BodyTextColor}" />
+                            <TextBlock Grid.Row="2" Text="Buttons, selected menu items, highlights, and graphs."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                            <Grid Grid.Row="4" ColumnDefinitions="210,Auto" ColumnSpacing="8" HorizontalAlignment="Left">
+                                <TextBox x:Name="ColorTextBox" TextChanged="Color_OnTextChanged"
+                                         PlaceholderText="#FFFFFF" MaxLength="7" Height="32" />
+                                <Button Grid.Column="1" Width="38" Height="32" Padding="6"
+                                        ToolTip.Tip="Open color picker" Click="AccentColor_OnClick">
+                                    <Border x:Name="AccentSwatch" Width="20" Height="20" CornerRadius="5"
+                                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                </Button>
+                            </Grid>
                         </Grid>
-                        <Grid RowDefinitions="Auto,6,Auto">
+                        <Grid RowDefinitions="Auto,2,Auto,6,Auto">
                             <TextBlock Text="Wheel and title color" Foreground="{StaticResource BodyTextColor}" />
-                            <TextBox Grid.Row="2" x:Name="BrandColorTextBox" PlaceholderText="#F1F3F5"
-                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                            <TextBlock Grid.Row="2" Text="The large wheel, page titles, and game title."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                            <Grid Grid.Row="4" ColumnDefinitions="210,Auto" ColumnSpacing="8" HorizontalAlignment="Left">
+                                <TextBox x:Name="BrandColorTextBox" TextChanged="Color_OnTextChanged"
+                                         PlaceholderText="#FFFFFF" MaxLength="7" Height="32" />
+                                <Button Grid.Column="1" Width="38" Height="32" Padding="6"
+                                        ToolTip.Tip="Open color picker" Click="BrandColor_OnClick">
+                                    <Border x:Name="BrandSwatch" Width="20" Height="20" CornerRadius="5"
+                                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                </Button>
+                            </Grid>
                         </Grid>
-                        <Grid RowDefinitions="Auto,6,Auto">
+                        <Grid RowDefinitions="Auto,2,Auto,6,Auto">
                             <TextBlock Text="Text color" Foreground="{StaticResource BodyTextColor}" />
-                            <TextBox Grid.Row="2" x:Name="TextColorTextBox" PlaceholderText="#D7D9E0"
-                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                            <TextBlock Grid.Row="2" Text="Words, numbers, icons, and the BetterWheelWizard name. It adjusts if hard to read."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                            <Grid Grid.Row="4" ColumnDefinitions="210,Auto" ColumnSpacing="8" HorizontalAlignment="Left">
+                                <TextBox x:Name="TextColorTextBox" TextChanged="Color_OnTextChanged"
+                                         PlaceholderText="#FFFFFF" MaxLength="7" Height="32" />
+                                <Button Grid.Column="1" Width="38" Height="32" Padding="6"
+                                        ToolTip.Tip="Open color picker" Click="TextColor_OnClick">
+                                    <Border x:Name="TextSwatch" Width="20" Height="20" CornerRadius="5"
+                                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                </Button>
+                            </Grid>
                         </Grid>
 
                         <Border x:Name="TextContrastNotice" IsVisible="False"
@@ -134,13 +161,26 @@
                             </Grid>
                         </Border>
 
-                        <Grid RowDefinitions="Auto,6,Auto">
+                        <Grid RowDefinitions="Auto,2,Auto,6,Auto">
                             <TextBlock Text="Background color" Foreground="{StaticResource BodyTextColor}" />
-                            <TextBox Grid.Row="2" x:Name="BackgroundColorTextBox" PlaceholderText="#101216"
-                                     MaxLength="7" TextChanged="Color_OnTextChanged" />
+                            <TextBlock Grid.Row="2" Text="The main window, pages, cards, menus, and popups."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                            <Grid Grid.Row="4" ColumnDefinitions="210,Auto" ColumnSpacing="8" HorizontalAlignment="Left">
+                                <TextBox x:Name="BackgroundColorTextBox" TextChanged="Color_OnTextChanged"
+                                         PlaceholderText="#000000" MaxLength="7" Height="32" />
+                                <Button Grid.Column="1" Width="38" Height="32" Padding="6"
+                                        ToolTip.Tip="Open color picker" Click="BackgroundColor_OnClick">
+                                    <Border x:Name="BackgroundSwatch" Width="20" Height="20" CornerRadius="5"
+                                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                </Button>
+                            </Grid>
                         </Grid>
 
-                        <Border IsVisible="False"><Border x:Name="ColorPreview" Background="#249AF3" /></Border>
+                        <Border IsVisible="False">
+                            <StackPanel>
+                                <Border x:Name="ColorPreview" Background="#249AF3" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Border>
             </StackPanel>

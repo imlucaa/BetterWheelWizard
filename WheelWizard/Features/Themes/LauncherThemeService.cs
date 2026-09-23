@@ -81,9 +81,9 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
             ApplyTheme();
     }
 
-    private static IReadOnlyList<Color> CreateAccentScale(Color color)
+    internal static IReadOnlyList<Color> CreateAccentScale(Color color)
     {
-        var accent = CreateVisibleAccent(color);
+        var accent = color;
         return
         [
             Mix(accent, Colors.White, 0.90),
@@ -102,35 +102,16 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
 
     private static IReadOnlyList<Color> CreateSurfaceScale(Color color)
     {
-        var background = CreateDarkBackground(color);
+        var background = color;
+        var surfaceTarget = RelativeLuminance(background) > 0.45 ? Colors.Black : Colors.White;
         return
         [
-            Mix(background, Colors.White, 0.34),
-            Mix(background, Colors.White, 0.25),
-            Mix(background, Colors.White, 0.17),
-            Mix(background, Colors.White, 0.09),
+            Mix(background, surfaceTarget, 0.34),
+            Mix(background, surfaceTarget, 0.25),
+            Mix(background, surfaceTarget, 0.17),
+            Mix(background, surfaceTarget, 0.09),
             background,
         ];
-    }
-
-    internal static Color CreateDarkBackground(Color color)
-    {
-        var brightestChannel = Math.Max(color.R, Math.Max(color.G, color.B));
-        if (brightestChannel == 0)
-            return Color.Parse("#08090C");
-
-        var darkestChannel = Math.Min(color.R, Math.Min(color.G, color.B));
-        if (brightestChannel - darkestChannel < 8)
-        {
-            var level = (byte)Math.Clamp((int)brightestChannel, 8, 56);
-            return Color.FromRgb(level, level, level);
-        }
-
-        if (brightestChannel <= 72)
-            return color;
-
-        var scale = 72d / brightestChannel;
-        return Color.FromRgb((byte)Math.Round(color.R * scale), (byte)Math.Round(color.G * scale), (byte)Math.Round(color.B * scale));
     }
 
     internal static Color CreateReadableText(Color color, Color background)
@@ -138,13 +119,14 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         if (ContrastRatio(color, background) >= 4.5)
             return color;
 
+        var target = ContrastRatio(Colors.White, background) >= ContrastRatio(Colors.Black, background) ? Colors.White : Colors.Black;
         for (var amount = 0.05; amount <= 1; amount += 0.05)
         {
-            var candidate = Mix(color, Colors.White, amount);
+            var candidate = Mix(color, target, amount);
             if (ContrastRatio(candidate, background) >= 4.5)
                 return candidate;
         }
-        return Colors.White;
+        return target;
     }
 
     internal static bool HasReadableContrast(Color color, Color background) => ContrastRatio(color, background) >= 4.5;
@@ -174,19 +156,6 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
             return normalized <= 0.04045 ? normalized / 12.92 : Math.Pow((normalized + 0.055) / 1.055, 2.4);
         }
         return (0.2126 * Channel(color.R)) + (0.7152 * Channel(color.G)) + (0.0722 * Channel(color.B));
-    }
-
-    private static Color CreateVisibleAccent(Color color)
-    {
-        var brightestChannel = Math.Max(color.R, Math.Max(color.G, color.B));
-        var darkestChannel = Math.Min(color.R, Math.Min(color.G, color.B));
-        if (brightestChannel - darkestChannel < 12 && brightestChannel < 72)
-            return Color.Parse("#C7CCD6");
-
-        if (brightestChannel >= 96)
-            return color;
-
-        return Mix(color, Colors.White, (96 - brightestChannel) / 255d);
     }
 
     private static Color Mix(Color start, Color end, double amount)

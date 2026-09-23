@@ -56,19 +56,30 @@ public partial class ThemesPage : UserControlBase
     private static readonly LauncherThemeFile[] BuiltInThemes =
     [
         new("BetterWheelWizard", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#000000"),
-        new("Blue", "#249AF3", "#DDF2FF", "#DDF2FF", "#071A2D"),
-        new("Red", "#F04444", "#FFF1F1", "#F8DADA", "#260909"),
-        new("Pink", "#FF4FA3", "#FFE8F4", "#FFD8EA", "#290817"),
-        new("Yellow", "#FFD80D", "#FFFBE0", "#FFF4B8", "#211B02"),
-        new("Purple", "#9B6DFF", "#F3EFFF", "#E4D9FF", "#160A2C"),
-        new("Green", "#25C982", "#E4FFF2", "#D0F5E3", "#062418"),
-        new("Orange", "#FF8A3D", "#FFF1E8", "#FFE0CC", "#281006"),
-        new("Cyan", "#20D4E8", "#E4FCFF", "#D0F8FC", "#05252A"),
+        new("Red", "#F04444", "#F04444", "#F8DADA", "#260909"),
+        new("Orange", "#FF8A3D", "#FF8A3D", "#FFE0CC", "#281006"),
+        new("Yellow", "#FFD80D", "#FFD80D", "#FFF4B8", "#211B02"),
+        new("Green", "#25C982", "#25C982", "#D0F5E3", "#062418"),
+        new("Cyan", "#20D4E8", "#20D4E8", "#D0F8FC", "#05252A"),
+        new("Blue", "#249AF3", "#249AF3", "#DDF2FF", "#071A2D"),
+        new("Purple", "#9B6DFF", "#9B6DFF", "#E4D9FF", "#160A2C"),
+        new("Pink", "#FF4FA3", "#FF4FA3", "#FFD8EA", "#290817"),
+        new("Coral", "#FF6B6B", "#FF6B6B", "#FFE1E1", "#271011"),
+        new("Peach", "#FF9F68", "#FF9F68", "#FFE8D8", "#28160C"),
+        new("Mint", "#52D6A8", "#52D6A8", "#D9F8ED", "#09251D"),
+        new("Emerald", "#10B981", "#10B981", "#D1FAE5", "#05251A"),
+        new("Teal", "#14B8A6", "#14B8A6", "#CCFBF1", "#052522"),
+        new("Sky", "#38BDF8", "#38BDF8", "#DDF5FF", "#082330"),
+        new("Indigo", "#6366F1", "#6366F1", "#E0E1FF", "#11132E"),
+        new("Lavender", "#A78BFA", "#A78BFA", "#EDE7FF", "#1B1230"),
+        new("Violet", "#8B5CF6", "#8B5CF6", "#E8DEFF", "#170C2D"),
+        new("Rose", "#F43F5E", "#F43F5E", "#FFE0E6", "#2A0810"),
     ];
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
     private static string ThemesFolderPath => Path.Combine(PathManager.WheelWizardAppdataPath, "Themes");
     private static string DeletedBuiltInThemesPath => Path.Combine(ThemesFolderPath, "deleted-built-in-themes.json");
+    private bool _isLoadingTheme;
 
     [Inject]
     private ISettingsManager SettingsService { get; set; } = null!;
@@ -175,11 +186,19 @@ public partial class ThemesPage : UserControlBase
 
     private void SetEditor(LauncherThemeFile theme)
     {
-        ThemeNameTextBox.Text = theme.Name;
-        ColorTextBox.Text = theme.Accent;
-        BrandColorTextBox.Text = theme.Branding;
-        TextColorTextBox.Text = theme.Text;
-        BackgroundColorTextBox.Text = theme.Background;
+        _isLoadingTheme = true;
+        try
+        {
+            ThemeNameTextBox.Text = theme.Name;
+            ColorTextBox.Text = theme.Accent;
+            BrandColorTextBox.Text = theme.Branding;
+            TextColorTextBox.Text = theme.Text;
+            BackgroundColorTextBox.Text = theme.Background;
+        }
+        finally
+        {
+            _isLoadingTheme = false;
+        }
         UpdatePreview();
     }
 
@@ -342,6 +361,9 @@ public partial class ThemesPage : UserControlBase
 
     private void Color_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
+        if (_isLoadingTheme)
+            return;
+
         ColorError.IsVisible = false;
         UpdatePreview();
     }
@@ -350,25 +372,58 @@ public partial class ThemesPage : UserControlBase
     {
         var color = NormalizeHex(ColorTextBox.Text);
         if (LauncherThemeService.IsValidHexColor(color))
+        {
             ColorPreview.Background = new SolidColorBrush(Color.Parse(color));
+            UpdateColorChoice(AccentSwatch, color);
+        }
+
+        var brandColor = NormalizeHex(BrandColorTextBox.Text);
+        if (LauncherThemeService.IsValidHexColor(brandColor))
+            UpdateColorChoice(BrandSwatch, brandColor);
 
         var textColor = NormalizeHex(TextColorTextBox.Text);
         var backgroundColor = NormalizeHex(BackgroundColorTextBox.Text);
+        if (LauncherThemeService.IsValidHexColor(textColor))
+            UpdateColorChoice(TextSwatch, textColor);
+        if (LauncherThemeService.IsValidHexColor(backgroundColor))
+            UpdateColorChoice(BackgroundSwatch, backgroundColor);
         TextContrastNotice.IsVisible = false;
         if (!LauncherThemeService.IsValidHexColor(textColor) || !LauncherThemeService.IsValidHexColor(backgroundColor))
             return;
 
         var selected = Color.Parse(textColor);
-        var effective = LauncherThemeService.CreateReadableText(
-            selected,
-            LauncherThemeService.CreateDarkBackground(Color.Parse(backgroundColor))
-        );
+        var effective = LauncherThemeService.CreateReadableText(selected, Color.Parse(backgroundColor));
         EffectiveTextColorPreview.Background = new SolidColorBrush(effective);
         if (effective == selected)
             return;
         TextContrastMessage.Text =
             $"{textColor} is too dark for this background. It will display as #{effective.R:X2}{effective.G:X2}{effective.B:X2}.";
         TextContrastNotice.IsVisible = true;
+    }
+
+    private async void AccentColor_OnClick(object? sender, RoutedEventArgs e) =>
+        ColorTextBox.Text = await PickColor("Main color", ColorTextBox.Text) ?? ColorTextBox.Text;
+
+    private async void BrandColor_OnClick(object? sender, RoutedEventArgs e) =>
+        BrandColorTextBox.Text = await PickColor("Wheel and title color", BrandColorTextBox.Text) ?? BrandColorTextBox.Text;
+
+    private async void TextColor_OnClick(object? sender, RoutedEventArgs e) =>
+        TextColorTextBox.Text = await PickColor("Text color", TextColorTextBox.Text) ?? TextColorTextBox.Text;
+
+    private async void BackgroundColor_OnClick(object? sender, RoutedEventArgs e) =>
+        BackgroundColorTextBox.Text = await PickColor("Background color", BackgroundColorTextBox.Text) ?? BackgroundColorTextBox.Text;
+
+    private static async Task<string?> PickColor(string title, string? currentValue)
+    {
+        var normalized = NormalizeHex(currentValue);
+        var initialColor = LauncherThemeService.IsValidHexColor(normalized) ? Color.Parse(normalized) : Colors.White;
+        var selected = await new ThemeColorPickerWindow(title, initialColor).AwaitColor();
+        return selected is { } color ? $"#{color.R:X2}{color.G:X2}{color.B:X2}" : null;
+    }
+
+    private static void UpdateColorChoice(Border swatch, string hex)
+    {
+        swatch.Background = new SolidColorBrush(Color.Parse(hex));
     }
 
     private static string NormalizeHex(string? value)

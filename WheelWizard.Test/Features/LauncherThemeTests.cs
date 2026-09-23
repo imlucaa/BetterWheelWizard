@@ -6,27 +6,14 @@ namespace WheelWizard.Test.Features;
 public class LauncherThemeTests
 {
     [Theory]
-    [InlineData("#0000FF")]
-    [InlineData("#FF0000")]
-    [InlineData("#00FF00")]
-    public void DarkBackground_PreservesHueAtReadableBrightness(string hex)
-    {
-        var background = LauncherThemeService.CreateDarkBackground(Color.Parse(hex));
-        var channels = new[] { background.R, background.G, background.B };
-
-        Assert.InRange(channels.Max(), 1, 72);
-        Assert.True(channels.Max() > channels.Min());
-    }
-
-    [Theory]
     [InlineData("#000000")]
     [InlineData("#FFFFFF")]
-    public void DarkBackground_RemainsVisibleForMonochromeThemes(string hex)
+    public void AccentScale_PreservesSelectedBlackOrWhite(string hex)
     {
-        var background = LauncherThemeService.CreateDarkBackground(Color.Parse(hex));
+        var selected = Color.Parse(hex);
+        var scale = LauncherThemeService.CreateAccentScale(selected);
 
-        Assert.True(background.R > 0 || background.G > 0 || background.B > 0);
-        Assert.True(Math.Max(background.R, Math.Max(background.G, background.B)) < 64);
+        Assert.Equal(selected, scale[4]);
     }
 
     [Fact]
@@ -39,5 +26,25 @@ public class LauncherThemeTests
     public void TextContrast_WarnsForBlackOnDarkBackground()
     {
         Assert.False(LauncherThemeService.HasReadableContrast(Color.Parse("#000000"), Color.Parse("#08090C")));
+    }
+
+    [Fact]
+    public void ReadableText_DarkensTextForBrightBackground()
+    {
+        var background = Color.Parse("#C8B1DE");
+        var text = LauncherThemeService.CreateReadableText(Colors.White, background);
+
+        Assert.True(LauncherThemeService.HasReadableContrast(text, background));
+        Assert.True(text.R < 128 && text.G < 128 && text.B < 128);
+    }
+
+    [Fact]
+    public void ReadableText_LightensTextForDarkBackground()
+    {
+        var background = Color.Parse("#101216");
+        var text = LauncherThemeService.CreateReadableText(Colors.Black, background);
+
+        Assert.True(LauncherThemeService.HasReadableContrast(text, background));
+        Assert.True(text.R > 96 && text.G > 96 && text.B > 96);
     }
 }

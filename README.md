@@ -61,10 +61,10 @@ Get the newest build from the
 
 ### Make it yours
 
-- Choose from built-in themes or save custom launcher themes
-- Customize accent, branding, text, and background colors
+- Choose from a larger collection of built-in color themes or save your own
+- Customize main, wheel/title, text, and background colors with a visual picker or editable HEX fields
 - Import and share compact `BWW1` theme codes
-- Keep text readable with automatic contrast adjustments
+- Use the full color range while automatic contrast adjustments keep text readable
 
 ### Protect your data
 
@@ -77,12 +77,21 @@ Get the newest build from the
 
 ### Theme library and sharing
 
-Build a launcher style from four color controls, save it to your library, or
-paste a shared `BWW1` code to start from someone else's theme.
+Build a launcher style from four easy-to-understand color controls, choose
+colors visually or paste exact HEX values, and save the result to your library.
+Built-in presets cover basic rainbow colors and popular colors such as coral,
+mint, lavender, and rose. You can also copy or paste a compact `BWW1` code to
+share a complete theme.
 
 <p align="center">
   <a href="docs/screenshots/better-themes.png">
     <img src="docs/screenshots/better-themes.png" alt="BetterWheelWizard theme library with import and sharing controls" width="650" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="docs/screenshots/theme-color.png">
+    <img src="docs/screenshots/theme-color.png" alt="BetterWheelWizard visual theme color picker with an editable HEX field" width="360" />
   </a>
 </p>
 

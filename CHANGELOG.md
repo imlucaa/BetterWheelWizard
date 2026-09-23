@@ -6,6 +6,26 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.12] - 2026-09-24
+
+### Added
+
+- Added a visual color picker with copyable and editable HEX values for all four theme colors.
+- Added more built-in presets covering basic rainbow colors and popular colors such as coral, mint, lavender, and rose.
+
+### Changed
+
+- Renamed the accent control to Main color and added plain-language descriptions of what each color changes.
+- Applied selected main, wheel/title, and background colors exactly across the full brightness range, including pure black and white.
+- Adapted surfaces and text for bright backgrounds while retaining automatic readable-text contrast.
+- Made the Home wheel and game title follow the wheel/title color, while the BetterWheelWizard name follows the text color.
+- Simplified and compacted the Themes page and color-picker layout.
+
+### Fixed
+
+- Fixed built-in presets loading intermediate values into the wrong color fields.
+- Fixed positive VR History changes using accent/green text instead of the normal theme text color.
+
 ## [2.5.11] - 2026-09-24
 
 ### Changed
@@ -35,7 +55,8 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.12...HEAD
+[2.5.12]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...v2.5.12
 [2.5.11]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.10...v2.5.11
 [2.5.10]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.9...v2.5.10
 [2.5.9]: https://github.com/imlucaa/BetterWheelWizard/releases/tag/v2.5.9

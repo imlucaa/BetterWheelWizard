@@ -46,8 +46,8 @@
                           Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"
                           Foreground="{DynamicResource LauncherBrandColor}" />
                 <TextBlock x:Name="TitleLabel" FontSize="15" FontWeight="SemiBold"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                           Foreground="{DynamicResource LauncherBrandColor}" />
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Foreground="{DynamicResource BodyTextColor}" />
             </Grid>
         </Border>
 

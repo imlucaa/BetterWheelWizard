@@ -44,7 +44,6 @@
                     <StackPanel Spacing="1">
                         <components:FormFieldLabel Text="{loc:T attribute.net_change}" />
                         <SelectableTextBlock Classes="BodyText" 
-                                             Foreground="{DynamicResource Primary400}"
                                              IsVisible="{Binding IsTotalChangeGain}" 
                                              Text="{Binding TotalChangeText}" />
                         <SelectableTextBlock Classes="BodyText" 

@@ -1,0 +1,50 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="430"
+                   x:Class="WheelWizard.Views.Popups.Generic.ThemeColorPickerWindow">
+    <Grid Width="340" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14">
+        <StackPanel Grid.Row="0" Spacing="3">
+            <TextBlock x:Name="PickerTitle" Text="Choose color" FontSize="18" FontWeight="SemiBold"
+                        Foreground="{DynamicResource Neutral50}" />
+            <TextBlock Text="Pick a color below, then select Use color."
+                        Classes="TinyText" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Height="290" ClipToBounds="True">
+            <ColorView x:Name="Picker" Width="340" Margin="0,-48,0,0"
+                       ColorModel="Hsva"
+                       ColorSpectrumComponents="SaturationValue"
+                       ColorSpectrumShape="Box"
+                       IsAlphaEnabled="False"
+                       IsAlphaVisible="False"
+                       IsAccentColorsVisible="False"
+                       IsColorPaletteVisible="False"
+                       IsColorPreviewVisible="False"
+                       IsColorSpectrumVisible="True"
+                       IsColorSpectrumSliderVisible="True"
+                       IsColorComponentsVisible="False"
+                       IsComponentSliderVisible="False"
+                       IsComponentTextInputVisible="False"
+                       IsColorModelVisible="False"
+                       IsHexInputVisible="False"
+                       ColorChanged="Picker_OnColorChanged" />
+        </Border>
+
+        <StackPanel Grid.Row="2" Spacing="5">
+            <TextBlock Text="HEX COLOR" FontSize="10" FontWeight="Bold"
+                       Foreground="{DynamicResource Neutral400}" />
+            <TextBox x:Name="HexTextBox" PlaceholderText="#FFFFFF" MaxLength="7"
+                     TextChanged="HexTextBox_OnTextChanged" />
+        </StackPanel>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8">
+            <components:Button Text="Cancel" Variant="Default" Click="Cancel_OnClick" />
+            <components:Button Grid.Column="1" Text="Use color" Variant="Primary"
+                               IconData="{StaticResource CheckMark}" Click="UseColor_OnClick" />
+        </Grid>
+    </Grid>
+</base:PopupContent>
