@@ -41,20 +41,23 @@ automatic readability adjustments.
   <img src="docs/screenshots/custom-themes.png" alt="BetterWheelWizard custom theme editor" width="680" />
 </p>
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>Mii Downloader</h3>
-      <p>Find an RWFC player by friend code or browse random public Miis, then import a fresh copy into My Miis.</p>
-      <img src="docs/screenshots/mii-downloader.png" alt="BetterWheelWizard Mii Downloader" width="100%" />
-    </td>
-    <td width="50%" valign="top">
-      <h3>Better room browsing</h3>
-      <p>Search rooms and players, filter by average VR, and sort the room list from one compact control panel.</p>
-      <img src="docs/screenshots/better-rooms.png" alt="BetterWheelWizard room search and VR filters" width="100%" />
-    </td>
-  </tr>
-</table>
+### Mii Downloader
+
+Find an RWFC player by friend code or browse random public Miis, then import a
+fresh copy into My Miis.
+
+<p align="center">
+  <img src="docs/screenshots/mii-downloader.png" alt="BetterWheelWizard Mii Downloader" width="680" />
+</p>
+
+### Better room browsing
+
+Search rooms and players, filter by average VR, and sort the room list from one
+compact control panel.
+
+<p align="center">
+  <img src="docs/screenshots/better-rooms.png" alt="BetterWheelWizard room search and VR filters" width="680" />
+</p>
 
 ## Download
 
