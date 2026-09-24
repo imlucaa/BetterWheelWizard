@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using WheelWizard.Models.RRInfo;
 using WheelWizard.Services.LiveData;
 using WheelWizard.Utilities.RepeatedTasks;
+using WheelWizard.Views.Popups.Generic;
 
 namespace WheelWizard.Views.Pages;
 
@@ -16,7 +17,6 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
     private int? _minimumAverageVr;
     private int? _maximumAverageVr;
     private int _averageVrSort;
-    private bool _isPageReady;
 
     private readonly ObservableCollection<RrRoom> _rooms = [];
     private readonly DispatcherTimer _raceTimer = new() { Interval = TimeSpan.FromSeconds(1) };
@@ -47,7 +47,6 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
     {
         InitializeComponent();
         DataContext = this;
-        _isPageReady = true;
         RRLiveRooms.Instance.Subscribe(this);
 
         _raceTimer.Tick += RaceTimer_OnTick;
@@ -127,29 +126,80 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
             room.RefreshRaceTime();
     }
 
-    private void PlayerSearchField_OnTextChanged(object? sender, TextChangedEventArgs e)
+    private void PlayerSearchField_OnTextChanged(object? sender, TextChangedEventArgs e) { }
+
+    private void VrFilter_OnTextChanged(object? sender, TextChangedEventArgs e) { }
+
+    private void AverageVrSortDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) { }
+
+    private async void RoomsSearchButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (e.Source is not TextBox textBox)
+        var input = await new TextInputWindow()
+            .SetMainText("Search rooms")
+            .SetExtraText("Search by room ID, player name, or friend code.")
+            .SetPlaceholderText("Room, player, or friend code")
+            .SetInitialText(_searchQuery ?? string.Empty)
+            .SetButtonText("Clear", "Search")
+            .ShowDialog();
+
+        if (input == null)
+        {
+            _searchQuery = null;
+            ApplyFilters();
             return;
-        _searchQuery = textBox.Text;
+        }
+
+        _searchQuery = string.IsNullOrWhiteSpace(input) ? null : input.Trim();
         ApplyFilters();
     }
 
-    private void VrFilter_OnTextChanged(object? sender, TextChangedEventArgs e)
+    private async void RoomsVrFilterButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        _minimumAverageVr = ParseVrFilter(MinimumVrField.Text);
-        _maximumAverageVr = ParseVrFilter(MaximumVrField.Text);
+        var minInput = await new TextInputWindow()
+            .SetMainText("Minimum average VR")
+            .SetExtraText("Leave blank to remove the minimum VR filter.")
+            .SetPlaceholderText("Min avg. VR")
+            .SetInitialText(_minimumAverageVr?.ToString() ?? string.Empty)
+            .SetButtonText("Clear", "Next")
+            .ShowDialog();
+
+        if (minInput == null)
+        {
+            _minimumAverageVr = null;
+        }
+        else
+        {
+            _minimumAverageVr = ParseVrFilter(minInput);
+        }
+
+        var maxInput = await new TextInputWindow()
+            .SetMainText("Maximum average VR")
+            .SetExtraText("Leave blank to remove the maximum VR filter.")
+            .SetPlaceholderText("Max avg. VR")
+            .SetInitialText(_maximumAverageVr?.ToString() ?? string.Empty)
+            .SetButtonText("Clear", "Apply")
+            .ShowDialog();
+
+        if (maxInput == null)
+        {
+            _maximumAverageVr = null;
+        }
+        else
+        {
+            _maximumAverageVr = ParseVrFilter(maxInput);
+        }
+
         ApplyFilters();
     }
 
-    private void AverageVrSortDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void RoomsSortButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        // SelectedIndex is applied while InitializeComponent is still constructing the page.
-        // Do not touch the remaining named controls until the page has finished loading.
-        if (!_isPageReady || sender is not ComboBox comboBox)
+        var selectedSort = await new RoomSortWindow().AwaitAnswer();
+        if (selectedSort == null)
             return;
 
-        _averageVrSort = comboBox.SelectedIndex;
+        _averageVrSort = selectedSort.Value;
+
         ApplyFilters();
     }
 

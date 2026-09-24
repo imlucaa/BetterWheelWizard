@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using Testably.Abstractions;
 using WheelWizard.CustomCharacters;
 using WheelWizard.Helpers;
@@ -26,12 +27,26 @@ namespace WheelWizard.Views.Pages;
 
 public sealed record SuggestedOnlineMii(Mii Mii, string Name, string FriendCode);
 
+public sealed record OnlineSearchMatch(Mii Mii, string Name, string FriendCode, int? Vr);
+
+public enum OnlineMiiPreviewSource
+{
+    None,
+    Search,
+    Suggested,
+}
+
 public partial class MiiListPage : UserControlBase
 {
     public ObservableCollection<MiiListRow> MiiRows { get; } = [];
     public ObservableCollection<SuggestedOnlineMii> SuggestedOnlineMiis { get; } = [];
     private readonly List<MiiListEntry> _miiEntries = [];
+    private readonly List<OnlineSearchMatch> _onlineSearchMatches = [];
     private Mii? _selectedOnlineMii;
+    private string _savedMiiSearchText = string.Empty;
+    private int _selectedOnlineMatchIndex = -1;
+    private int _selectedSuggestedMiiIndex = -1;
+    private OnlineMiiPreviewSource _onlinePreviewSource;
     private bool _isPageReady;
 
     [Inject]
@@ -106,88 +121,148 @@ public partial class MiiListPage : UserControlBase
     private void ShowOnlineMiis(bool showOnline)
     {
         MiiList.IsVisible = !showOnline;
-        SavedMiiSearchField.IsVisible = !showOnline;
         OnlineMiiPanel.IsVisible = showOnline;
+        SavedMiiFilterPanel.IsVisible = !showOnline;
+        SearchOnlineMiiButton.IsVisible = showOnline;
     }
 
-    private void SavedMiiSearch_OnTextChanged(object? sender, TextChangedEventArgs e)
+    private void SavedMiiSearch_OnTextChanged(object? sender, TextChangedEventArgs e) { }
+
+    private async void SearchSavedMiiButton_OnClick(object? sender, RoutedEventArgs e)
     {
+        var input = await new TextInputWindow()
+            .SetMainText("Filter My Miis")
+            .SetExtraText("Search your saved Miis by name.")
+            .SetPlaceholderText("Mii name")
+            .SetInitialText(_savedMiiSearchText)
+            .SetButtonText("Clear", "Search")
+            .ShowDialog();
+
+        if (input == null)
+        {
+            if (string.IsNullOrWhiteSpace(_savedMiiSearchText))
+                return;
+
+            _savedMiiSearchText = string.Empty;
+            ClearSelectedEntries();
+            RebuildRows();
+            ChangeTopButtons();
+            return;
+        }
+
+        _savedMiiSearchText = input.Trim();
+
         if (!_isPageReady)
             return;
 
         ClearSelectedEntries();
-        RebuildRows(SavedMiiSearchField.Text);
+        RebuildRows(_savedMiiSearchText);
         ChangeTopButtons();
-    }
-
-    private void ToggleSavedMiiSearch_OnClick(object? sender, RoutedEventArgs e)
-    {
-        SavedMiiSearchField.IsVisible = !SavedMiiSearchField.IsVisible;
-        if (SavedMiiSearchField.IsVisible)
-        {
-            SavedMiiSearchField.Focus();
-            return;
-        }
-
-        SavedMiiSearchField.Text = string.Empty;
     }
 
     private void OnlineMiiSearch_OnTextChanged(object? sender, TextChangedEventArgs e) => OnlineMiiLookupStatus.Text = string.Empty;
 
-    private void OnlineMiiSearch_OnKeyDown(object? sender, KeyEventArgs e)
+    private void OnlineMiiSearch_OnKeyDown(object? sender, KeyEventArgs e) { }
+
+    private async void SearchFriendCode_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (e.Key != Key.Enter)
+        var input = await new TextInputWindow()
+            .SetMainText("Search RWFC Miis")
+            .SetExtraText("Search by player name or 12-digit friend code.")
+            .SetPlaceholderText("Player or 0000-0000-0000")
+            .SetButtonText("Cancel", "Search")
+            .ShowDialog();
+
+        if (input == null)
             return;
 
-        e.Handled = true;
-        SearchFriendCode();
+        await SearchOnlineMii(input);
     }
 
-    private void SearchFriendCode_OnClick(object? sender, RoutedEventArgs e) => SearchFriendCode();
-
-    private async void SearchFriendCode()
+    private async Task SearchOnlineMii(string? requestedQuery = null)
     {
-        var normalizedFriendCode = NormalizeFriendCode(OnlineMiiSearchField.Text);
-        if (normalizedFriendCode == null)
+        var query = requestedQuery?.Trim();
+        if (string.IsNullOrWhiteSpace(query))
         {
-            SetOnlineLookupStatus("Enter all 12 digits of the friend code.", isError: true);
+            SetOnlineLookupStatus("Enter a player name or all 12 digits of the friend code.", isError: true);
             return;
         }
 
+        var normalizedFriendCode = NormalizeFriendCode(query);
+
         SearchOnlineMiiButton.IsEnabled = false;
-        OnlineMiiSearchField.IsEnabled = false;
-        SetOnlineLookupStatus($"Looking up {normalizedFriendCode}…", isError: false);
+        SetOnlineLookupStatus(
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
+            isError: false
+        );
 
         try
         {
-            var result = await ApiCaller.CallApiAsync(api => api.GetPlayerProfileAsync(normalizedFriendCode));
-            if (result.IsFailure || result.Value == null)
+            if (normalizedFriendCode != null)
             {
-                SetOnlineLookupStatus($"No RWFC profile was found for {normalizedFriendCode}.", isError: true);
+                var result = await ApiCaller.CallApiAsync(api => api.GetPlayerProfileAsync(normalizedFriendCode));
+                if (result.IsFailure || result.Value == null)
+                {
+                    SetOnlineLookupStatus($"No RWFC profile was found for {normalizedFriendCode}.", isError: true);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(result.Value.MiiData))
+                {
+                    SetOnlineLookupStatus("That RWFC profile does not have Mii data.", isError: true);
+                    return;
+                }
+
+                var miiResult = MiiSerializer.Deserialize(result.Value.MiiData);
+                if (miiResult.IsFailure)
+                {
+                    SetOnlineLookupStatus("RWFC returned Mii data that Wheel Wizard could not read.", isError: true);
+                    return;
+                }
+
+                SetOnlineMii(miiResult.Value, result.Value.Name, normalizedFriendCode);
+                SetOnlineSearchMatches([new OnlineSearchMatch(miiResult.Value, result.Value.Name, normalizedFriendCode, result.Value.Vr)]);
+                SetOnlineLookupStatus($"Loaded from RWFC · {result.Value.Vr:N0} VR", isError: false);
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(result.Value.MiiData))
+            var searchResult = await ApiCaller.CallApiAsync(api => api.SearchLeaderboardAsync(query));
+            if (searchResult.IsFailure || searchResult.Value == null)
             {
-                SetOnlineLookupStatus("That RWFC profile does not have Mii data.", isError: true);
+                SetOnlineLookupStatus("RWFC name search failed. Try again in a moment.", isError: true);
                 return;
             }
 
-            var miiResult = MiiSerializer.Deserialize(result.Value.MiiData);
-            if (miiResult.IsFailure)
+            var matchingPlayers = searchResult
+                .Value.Players.Where(entry => !string.IsNullOrWhiteSpace(entry.MiiData) && !string.IsNullOrWhiteSpace(entry.FriendCode))
+                .Select(entry =>
+                {
+                    var parsed = MiiSerializer.Deserialize(entry.MiiData!);
+                    if (parsed.IsFailure)
+                        return null;
+
+                    return new OnlineSearchMatch(
+                        parsed.Value,
+                        string.IsNullOrWhiteSpace(entry.Name) ? parsed.Value.Name.ToString() : entry.Name,
+                        entry.FriendCode,
+                        entry.Vr
+                    );
+                })
+                .Where(match => match != null)
+                .Cast<OnlineSearchMatch>()
+                .ToList();
+
+            if (matchingPlayers.Count == 0)
             {
-                SetOnlineLookupStatus("RWFC returned Mii data that Wheel Wizard could not read.", isError: true);
+                SetOnlineLookupStatus($"No RWFC players with downloadable Mii data matched \"{query}\".", isError: true);
                 return;
             }
 
-            SetOnlineMii(miiResult.Value, result.Value.Name, normalizedFriendCode);
-            SetOnlineLookupStatus($"Loaded from RWFC · {result.Value.Vr:N0} VR", isError: false);
+            SetOnlineSearchMatches(matchingPlayers, searchResult.Value.TotalCount);
         }
         finally
         {
             SearchOnlineMiiButton.IsEnabled = true;
-            OnlineMiiSearchField.IsEnabled = true;
-            OnlineMiiSearchField.Focus();
         }
     }
 
@@ -204,6 +279,98 @@ public partial class MiiListPage : UserControlBase
         OnlineMiiName.Text = string.IsNullOrWhiteSpace(playerName) ? mii.Name.ToString() : playerName;
         OnlineMiiFriendCode.Text = friendCode;
         ImportOnlineMiiButton.IsEnabled = true;
+    }
+
+    private int _onlineSearchTotalMatches;
+
+    private void SetOnlineSearchMatches(List<OnlineSearchMatch> matches, int totalMatches = 0)
+    {
+        _onlinePreviewSource = matches.Count > 0 ? OnlineMiiPreviewSource.Search : OnlineMiiPreviewSource.None;
+        _selectedSuggestedMiiIndex = -1;
+        _onlineSearchMatches.Clear();
+        _onlineSearchMatches.AddRange(matches);
+        _onlineSearchTotalMatches = totalMatches > 0 ? totalMatches : matches.Count;
+        _selectedOnlineMatchIndex = matches.Count > 0 ? 0 : -1;
+        ApplyCurrentOnlineSearchMatch();
+    }
+
+    private void ApplyCurrentOnlineSearchMatch()
+    {
+        if (_selectedOnlineMatchIndex < 0 || _selectedOnlineMatchIndex >= _onlineSearchMatches.Count)
+        {
+            RefreshOnlinePreviewNavigation();
+            return;
+        }
+
+        var match = _onlineSearchMatches[_selectedOnlineMatchIndex];
+        SetOnlineMii(match.Mii, match.Name, match.FriendCode);
+        var vrText = match.Vr.HasValue ? $" · {match.Vr.Value:N0} VR" : string.Empty;
+        SetOnlineLookupStatus($"Loaded match {_selectedOnlineMatchIndex + 1} of {_onlineSearchTotalMatches}{vrText}", isError: false);
+
+        RefreshOnlinePreviewNavigation();
+    }
+
+    private void RefreshOnlinePreviewNavigation()
+    {
+        if (_onlinePreviewSource == OnlineMiiPreviewSource.Search)
+        {
+            PreviousOnlineMiiButton.IsEnabled = _onlineSearchMatches.Count > 1;
+            NextOnlineMiiButton.IsEnabled = _onlineSearchMatches.Count > 1;
+            OnlineMiiMatchIndex.Text =
+                _onlineSearchMatches.Count > 1 ? $"{_selectedOnlineMatchIndex + 1}/{_onlineSearchMatches.Count}" : string.Empty;
+            return;
+        }
+
+        if (_onlinePreviewSource == OnlineMiiPreviewSource.Suggested)
+        {
+            PreviousOnlineMiiButton.IsEnabled = SuggestedOnlineMiis.Count > 1;
+            NextOnlineMiiButton.IsEnabled = SuggestedOnlineMiis.Count > 1;
+            OnlineMiiMatchIndex.Text =
+                SuggestedOnlineMiis.Count > 1 ? $"{_selectedSuggestedMiiIndex + 1}/{SuggestedOnlineMiis.Count}" : string.Empty;
+            return;
+        }
+
+        PreviousOnlineMiiButton.IsEnabled = false;
+        NextOnlineMiiButton.IsEnabled = false;
+        OnlineMiiMatchIndex.Text = string.Empty;
+    }
+
+    private void PreviousOnlineMii_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_onlinePreviewSource == OnlineMiiPreviewSource.Search)
+        {
+            if (_onlineSearchMatches.Count <= 1)
+                return;
+
+            _selectedOnlineMatchIndex = (_selectedOnlineMatchIndex - 1 + _onlineSearchMatches.Count) % _onlineSearchMatches.Count;
+            ApplyCurrentOnlineSearchMatch();
+            return;
+        }
+
+        if (_onlinePreviewSource != OnlineMiiPreviewSource.Suggested || SuggestedOnlineMiis.Count <= 1)
+            return;
+
+        _selectedSuggestedMiiIndex = (_selectedSuggestedMiiIndex - 1 + SuggestedOnlineMiis.Count) % SuggestedOnlineMiis.Count;
+        ApplySuggestedOnlineMiiSelection();
+    }
+
+    private void NextOnlineMii_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_onlinePreviewSource == OnlineMiiPreviewSource.Search)
+        {
+            if (_onlineSearchMatches.Count <= 1)
+                return;
+
+            _selectedOnlineMatchIndex = (_selectedOnlineMatchIndex + 1) % _onlineSearchMatches.Count;
+            ApplyCurrentOnlineSearchMatch();
+            return;
+        }
+
+        if (_onlinePreviewSource != OnlineMiiPreviewSource.Suggested || SuggestedOnlineMiis.Count <= 1)
+            return;
+
+        _selectedSuggestedMiiIndex = (_selectedSuggestedMiiIndex + 1) % SuggestedOnlineMiis.Count;
+        ApplySuggestedOnlineMiiSelection();
     }
 
     private void SetOnlineLookupStatus(string message, bool isError)
@@ -252,10 +419,16 @@ public partial class MiiListPage : UserControlBase
             foreach (var suggestion in suggestions)
                 SuggestedOnlineMiis.Add(suggestion);
 
+            if (_onlinePreviewSource == OnlineMiiPreviewSource.Suggested)
+            {
+                _selectedSuggestedMiiIndex = SuggestedOnlineMiis.Count > 0 ? 0 : -1;
+                ApplySuggestedOnlineMiiSelection();
+            }
+
             _suggestionsLoaded = suggestions.Count > 0;
             SuggestedMiisStatus.Text =
                 suggestions.Count > 0
-                    ? "Refresh for a different set. Download adds a new copy to My Miis."
+                    ? "Refresh for a different set. Click a card to preview it above."
                     : "RWFC did not return any downloadable Miis. Try again later.";
         }
         finally
@@ -264,12 +437,37 @@ public partial class MiiListPage : UserControlBase
         }
     }
 
-    private void DownloadSuggestedMii_OnClick(object? sender, RoutedEventArgs e)
+    private void SuggestedMiiCard_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            return;
+
+        var sourceControl = e.Source as Control;
+        if (sourceControl?.GetSelfAndVisualAncestors().OfType<Avalonia.Controls.Button>().Any() == true)
+            return;
+
         if (sender is not Control { DataContext: SuggestedOnlineMii suggestion })
             return;
 
-        ImportOnlineMii(suggestion.Mii);
+        _onlinePreviewSource = OnlineMiiPreviewSource.Suggested;
+        _selectedOnlineMatchIndex = -1;
+        _selectedSuggestedMiiIndex = SuggestedOnlineMiis.IndexOf(suggestion);
+        ApplySuggestedOnlineMiiSelection();
+    }
+
+    private void ApplySuggestedOnlineMiiSelection()
+    {
+        if (_selectedSuggestedMiiIndex < 0 || _selectedSuggestedMiiIndex >= SuggestedOnlineMiis.Count)
+        {
+            _onlinePreviewSource = OnlineMiiPreviewSource.None;
+            RefreshOnlinePreviewNavigation();
+            return;
+        }
+
+        var suggestion = SuggestedOnlineMiis[_selectedSuggestedMiiIndex];
+        SetOnlineMii(suggestion.Mii, suggestion.Name, suggestion.FriendCode);
+        SetOnlineLookupStatus("Preview loaded from Discover Miis. Use the arrows to cycle through this set.", isError: false);
+        RefreshOnlinePreviewNavigation();
     }
 
     private void ImportOnlineMii_OnClick(object? sender, RoutedEventArgs e)
@@ -361,16 +559,17 @@ public partial class MiiListPage : UserControlBase
         if (count < 100)
             _miiEntries.Add(MiiListEntry.CreateAddEntry());
 
-        RebuildRows(SavedMiiSearchField.Text);
+        RebuildRows(_savedMiiSearchText);
         ChangeTopButtons();
     }
 
     private void RebuildRows(string? searchText = null)
     {
         var query = searchText?.Trim();
+        var normalizedQuery = string.IsNullOrWhiteSpace(query) ? null : CustomCharactersService.NormalizeToAscii(query);
         var visibleEntries = string.IsNullOrWhiteSpace(query)
             ? _miiEntries
-            : _miiEntries.Where(entry => entry.Mii?.Name.ToString().Contains(query, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            : _miiEntries.Where(entry => MiiNameMatchesQuery(entry, query, normalizedQuery)).ToList();
 
         MiiRows.Clear();
         for (var i = 0; i < visibleEntries.Count; i += 4)
@@ -378,6 +577,22 @@ public partial class MiiListPage : UserControlBase
             var chunk = visibleEntries.Skip(i).Take(4).ToList();
             MiiRows.Add(new MiiListRow(chunk));
         }
+    }
+
+    private bool MiiNameMatchesQuery(MiiListEntry entry, string query, string? normalizedQuery)
+    {
+        var miiName = entry.Mii?.Name.ToString();
+        if (string.IsNullOrWhiteSpace(miiName))
+            return false;
+
+        if (miiName.Contains(query, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (string.IsNullOrWhiteSpace(normalizedQuery))
+            return false;
+
+        var normalizedMiiName = CustomCharactersService.NormalizeToAscii(miiName);
+        return normalizedMiiName.Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase);
     }
 
     private void ClearSelectedEntries()
@@ -706,16 +921,17 @@ public partial class MiiListPage : UserControlBase
             ExportMiisButton.IsVisible = false;
             EditMiisButton.IsVisible = false;
             DuplicateMiisButton.IsVisible = false;
-            ImportMiiButton.IsVisible = true;
+            HeaderImportMiiButton.IsVisible = true;
             SearchSavedMiiButton.IsVisible = true;
+            SavedMiiFilterPanel.IsVisible = !OnlineMiiPanel.IsVisible;
             FavoriteMiiButton.IsVisible = false;
             return;
         }
 
         FavoriteMiiButton.IsVisible = true;
         EditMiisButton.IsVisible = selectedMiis.Length == 1;
-        ImportMiiButton.IsVisible = false;
-        SearchSavedMiiButton.IsVisible = false;
+        HeaderImportMiiButton.IsVisible = false;
+        SearchSavedMiiButton.IsVisible = true;
         DeleteMiisButton.IsVisible = true;
         ExportMiisButton.IsVisible = true;
         DuplicateMiisButton.IsVisible = true;

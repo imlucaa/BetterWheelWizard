@@ -15,8 +15,6 @@
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" 
                 HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" 
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <TextBlock Grid.Row="0" Text="{loc:T page_title.settings}" HorizontalAlignment="Left" VerticalAlignment="Top"
                    Classes="PageTitleText" />
         

@@ -270,7 +270,7 @@
         <Thickness x:Key="SidebarSectionGap">10,20,10,0</Thickness>
 
         <!-- Grid Constants -->
-        <GridLength x:Key="TopRowSize">64</GridLength>
+        <GridLength x:Key="TopRowSize">72</GridLength>
     
         <!-- Button Resources -->
         <CornerRadius x:Key="ButtonCornerRadius">4</CornerRadius>

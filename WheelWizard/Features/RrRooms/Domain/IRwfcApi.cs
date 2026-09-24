@@ -14,6 +14,12 @@ public interface IRwfcApi
     [Get("/api/leaderboard/player/{friendCode}")]
     Task<PlayerProfileResponse> GetPlayerProfileAsync(string friendCode);
 
+    [Get("/api/leaderboard")]
+    Task<RwfcLeaderboardSearchResponse> SearchLeaderboardAsync([AliasAs("search")] string search);
+
+    [Get("/api/leaderboard")]
+    Task<RwfcLeaderboardSearchResponse> GetLeaderboardPageAsync([AliasAs("page")] int page);
+
     [Get("/api/leaderboard/player/{friendCode}/history")]
     Task<RwfcPlayerVrHistoryResponse> GetPlayerVrHistoryAsync(string friendCode, [AliasAs("days")] int days);
 }

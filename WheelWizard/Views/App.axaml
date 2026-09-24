@@ -7,7 +7,7 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <FontFamily x:Key="DefaultFont">avares://WheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://WheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
+            <FontFamily x:Key="DefaultFont">avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
 
             <!-- CONSTANTS -->
             <ResourceDictionary.MergedDictionaries>

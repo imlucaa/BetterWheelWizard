@@ -17,9 +17,6 @@
         <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom" />
 
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                     Spacing="6">
             <TextBlock Text="{loc:T page_title.friends}" Classes="PageTitleText" />

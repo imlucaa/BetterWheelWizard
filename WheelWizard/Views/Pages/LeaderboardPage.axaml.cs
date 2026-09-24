@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using WheelWizard.Models;
@@ -9,8 +10,10 @@ using WheelWizard.RrRooms;
 using WheelWizard.Services.LiveData;
 using WheelWizard.Settings;
 using WheelWizard.Shared.DependencyInjection;
+using WheelWizard.Shared.Services;
 using WheelWizard.Utilities.Generators;
 using WheelWizard.Views.Popups;
+using WheelWizard.Views.Popups.Generic;
 using WheelWizard.Views.Popups.MiiManagement;
 using WheelWizard.WheelWizardData;
 using WheelWizard.WheelWizardData.Domain;
@@ -44,6 +47,8 @@ public sealed record LeaderboardPlayerItem
     public bool IsOpenHost => false;
 }
 
+public sealed record LeaderboardSearchMatch(int Rank, string Name, string FriendCode, string VrText, Mii? Mii, bool IsSuspicious);
+
 public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
 {
     private static readonly LeaderboardPlayerItem EmptyPodiumPlayer = new()
@@ -73,6 +78,12 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
     [Inject]
     private ISettingsManager SettingsManager { get; set; } = null!;
 
+    [Inject]
+    private IApiCaller<IRwfcApi> ApiCaller { get; set; } = null!;
+
+    [Inject]
+    private IMiiDbService MiiDbService { get; set; } = null!;
+
     private bool _hasLoadedOnce;
     private bool _isLoading;
     private bool _hasError;
@@ -82,6 +93,10 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
     private LeaderboardPlayerItem? _podiumFirst;
     private LeaderboardPlayerItem? _podiumSecond;
     private LeaderboardPlayerItem? _podiumThird;
+    private readonly List<LeaderboardSearchMatch> _searchMatches = [];
+    private int _selectedSearchMatchIndex = -1;
+    private int _currentLeaderboardPage = 1;
+    private int _totalLeaderboardPages = 1;
 
     public ObservableCollection<LeaderboardPlayerItem> RemainingPlayers { get; } = [];
 
@@ -146,6 +161,18 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
     }
 
     public string RemainingCountText => $"{RemainingPlayers.Count} players";
+    public string LeaderboardPageText => $"Page {_currentLeaderboardPage} / {_totalLeaderboardPages}";
+    public bool CanGoToPreviousPage => _currentLeaderboardPage > 1 && !IsLoading;
+    public bool CanGoToNextPage => _currentLeaderboardPage < _totalLeaderboardPages && !IsLoading;
+    public bool HasActiveSearchResult => _selectedSearchMatchIndex >= 0 && _selectedSearchMatchIndex < _searchMatches.Count;
+    public string PodiumTitleText =>
+        HasActiveSearchResult ? "Player"
+        : _currentLeaderboardPage == 1 ? "Top 3 Podium"
+        : "Page leaders";
+    public string PodiumCaptionText =>
+        HasActiveSearchResult ? string.Empty
+        : _currentLeaderboardPage == 1 ? "Live from RWFC"
+        : LeaderboardPageText;
 
     public LeaderboardPlayerItem? PodiumFirst
     {
@@ -198,12 +225,250 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         OnPropertyChanged(nameof(RemainingCountText));
     }
 
+    private void LeaderboardSearchField_OnTextChanged(object? sender, TextChangedEventArgs e) =>
+        LeaderboardSearchStatus.Text = string.Empty;
+
+    private void LeaderboardSearchField_OnKeyDown(object? sender, KeyEventArgs e) { }
+
+    private async void SearchLeaderboardPlayer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var input = await new TextInputWindow()
+            .SetMainText("Search leaderboard")
+            .SetExtraText("Search by player name or 12-digit friend code.")
+            .SetPlaceholderText("Player or 0000-0000-0000")
+            .SetButtonText("Cancel", "Search")
+            .ShowDialog();
+
+        if (input == null)
+            return;
+
+        await SearchLeaderboardPlayer(input);
+    }
+
+    private async Task SearchLeaderboardPlayer(string? requestedQuery = null)
+    {
+        var query = requestedQuery?.Trim();
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            ClearLeaderboardSearchResult();
+            if (_currentLeaderboardPage != 1 || !HasData)
+                await ReloadLeaderboardAsync(1);
+            return;
+        }
+
+        var normalizedFriendCode = TryNormalizeFriendCode(query);
+        LeaderboardSearchButton.IsEnabled = false;
+
+        SetLeaderboardSearchStatus(
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
+            false
+        );
+
+        try
+        {
+            if (normalizedFriendCode != null)
+            {
+                var profileResult = await ApiCaller.CallApiAsync(api => api.GetPlayerProfileAsync(normalizedFriendCode));
+                if (profileResult.IsFailure || profileResult.Value == null)
+                {
+                    SetLeaderboardSearchStatus($"No RWFC profile was found for {normalizedFriendCode}.", true);
+                    return;
+                }
+
+                var rank = profileResult.Value.Rank > 0 ? profileResult.Value.Rank : 0;
+                SetLeaderboardSearchMatches(
+                    [
+                        new LeaderboardSearchMatch(
+                            rank,
+                            string.IsNullOrWhiteSpace(profileResult.Value.Name) ? "Unknown Player" : profileResult.Value.Name,
+                            normalizedFriendCode,
+                            profileResult.Value.Vr.ToString("N0"),
+                            DeserializeMii(profileResult.Value.MiiData),
+                            profileResult.Value.IsSuspicious
+                        ),
+                    ],
+                    1
+                );
+                return;
+            }
+
+            var searchResult = await ApiCaller.CallApiAsync(api => api.SearchLeaderboardAsync(query));
+            if (searchResult.IsFailure || searchResult.Value == null)
+            {
+                SetLeaderboardSearchStatus("RWFC leaderboard search failed. Try again in a moment.", true);
+                return;
+            }
+
+            var matches = searchResult
+                .Value.Players.Select((entry, index) => new { Entry = entry, Rank = ResolveRank(entry, index) })
+                .Where(item => !string.IsNullOrWhiteSpace(item.Entry.FriendCode))
+                .Select(item => new LeaderboardSearchMatch(
+                    item.Rank,
+                    string.IsNullOrWhiteSpace(item.Entry.Name) ? "Unknown Player" : item.Entry.Name,
+                    item.Entry.FriendCode,
+                    item.Entry.Vr?.ToString("N0") ?? "--",
+                    DeserializeMii(item.Entry.MiiData),
+                    item.Entry.IsSuspicious
+                ))
+                .ToList();
+
+            if (matches.Count == 0)
+            {
+                SetLeaderboardSearchStatus($"No leaderboard players matched \"{query}\".", true);
+                return;
+            }
+
+            SetLeaderboardSearchMatches(matches, searchResult.Value.TotalCount);
+        }
+        finally
+        {
+            LeaderboardSearchButton.IsEnabled = true;
+        }
+    }
+
     private async void RetryButton_OnClick(object? sender, RoutedEventArgs e)
     {
         await ReloadLeaderboardAsync();
     }
 
-    private async Task ReloadLeaderboardAsync()
+    private async void PreviousLeaderboardPage_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_currentLeaderboardPage <= 1)
+            return;
+
+        ClearLeaderboardSearchResult();
+        await ReloadLeaderboardAsync(_currentLeaderboardPage - 1);
+    }
+
+    private async void NextLeaderboardPage_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_currentLeaderboardPage >= _totalLeaderboardPages)
+            return;
+
+        ClearLeaderboardSearchResult();
+        await ReloadLeaderboardAsync(_currentLeaderboardPage + 1);
+    }
+
+    private int _leaderboardSearchTotalMatches;
+
+    private void SetLeaderboardSearchMatches(List<LeaderboardSearchMatch> matches, int totalMatches)
+    {
+        _searchMatches.Clear();
+        _searchMatches.AddRange(matches);
+        _leaderboardSearchTotalMatches = totalMatches > 0 ? totalMatches : matches.Count;
+        _selectedSearchMatchIndex = matches.Count > 0 ? 0 : -1;
+        ApplyCurrentLeaderboardSearchMatch();
+    }
+
+    private void ClearLeaderboardSearchResult()
+    {
+        _searchMatches.Clear();
+        _selectedSearchMatchIndex = -1;
+        _leaderboardSearchTotalMatches = 0;
+        LeaderboardSearchStatus.Text = string.Empty;
+        ApplyCurrentLeaderboardSearchMatch();
+        OnPropertyChanged(nameof(HasActiveSearchResult));
+        OnPropertyChanged(nameof(PodiumTitleText));
+        OnPropertyChanged(nameof(PodiumCaptionText));
+    }
+
+    private void ApplyCurrentLeaderboardSearchMatch()
+    {
+        if (_selectedSearchMatchIndex < 0 || _selectedSearchMatchIndex >= _searchMatches.Count)
+        {
+            LeaderboardSearchResultCard.IsVisible = false;
+            DefaultPodiumFirstCard.IsVisible = HasPodiumFirst;
+            DefaultPodiumSecondCard.IsVisible = HasPodiumSecond;
+            DefaultPodiumThirdCard.IsVisible = HasPodiumThird;
+            SearchResultPodiumControls.IsVisible = false;
+            SearchResultSingleLayout.IsVisible = false;
+            CloseSearchResultButton.IsVisible = false;
+            LeaderboardSearchOpenProfileButton.IsVisible = false;
+            PreviousSearchMatchButton.IsEnabled = false;
+            NextSearchMatchButton.IsEnabled = false;
+            LeaderboardSearchOpenProfileButton.IsEnabled = false;
+            LeaderboardSearchMatchIndex.Text = string.Empty;
+            SearchResultCompactCard.IsVisible = false;
+            SearchResultRankText.Text = string.Empty;
+            SearchResultPlayerName.Text = string.Empty;
+            SearchResultVrText.Text = string.Empty;
+            SearchResultMiiImage.Mii = null;
+            OnPropertyChanged(nameof(HasActiveSearchResult));
+            OnPropertyChanged(nameof(PodiumTitleText));
+            OnPropertyChanged(nameof(PodiumCaptionText));
+            return;
+        }
+
+        var match = _searchMatches[_selectedSearchMatchIndex];
+        LeaderboardSearchResultCard.IsVisible = false;
+        DefaultPodiumFirstCard.IsVisible = false;
+        DefaultPodiumSecondCard.IsVisible = false;
+        DefaultPodiumThirdCard.IsVisible = false;
+        SearchResultPodiumControls.IsVisible = true;
+        SearchResultSingleLayout.IsVisible = true;
+        CloseSearchResultButton.IsVisible = true;
+        SearchResultCompactCard.IsVisible = true;
+        SearchResultRankText.Text = match.Rank > 0 ? $"#{match.Rank}" : "Search hit";
+        SearchResultPlayerName.Text = match.Name;
+        SearchResultVrText.Text = match.VrText;
+        SearchResultMiiImage.Mii = match.Mii;
+        LeaderboardSearchOpenProfileButton.IsEnabled = !string.IsNullOrWhiteSpace(match.FriendCode);
+        LeaderboardSearchOpenProfileButton.IsVisible = LeaderboardSearchOpenProfileButton.IsEnabled;
+        PreviousSearchMatchButton.IsEnabled = _searchMatches.Count > 1;
+        NextSearchMatchButton.IsEnabled = _searchMatches.Count > 1;
+        LeaderboardSearchMatchIndex.Text = string.Empty;
+
+        OnPropertyChanged(nameof(HasActiveSearchResult));
+        OnPropertyChanged(nameof(PodiumTitleText));
+        OnPropertyChanged(nameof(PodiumCaptionText));
+    }
+
+    private void SetLeaderboardSearchStatus(string message, bool isError)
+    {
+        LeaderboardSearchResultCard.IsVisible = !string.IsNullOrWhiteSpace(message) && !HasActiveSearchResult;
+        LeaderboardSearchStatus.Text = message;
+        LeaderboardSearchStatus.Foreground = new Avalonia.Media.SolidColorBrush(
+            isError ? ViewUtils.Colors.Danger400 : ViewUtils.Colors.Neutral400
+        );
+        OnPropertyChanged(nameof(PodiumCaptionText));
+    }
+
+    private void PreviousSearchMatch_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_searchMatches.Count <= 1)
+            return;
+
+        _selectedSearchMatchIndex = (_selectedSearchMatchIndex - 1 + _searchMatches.Count) % _searchMatches.Count;
+        ApplyCurrentLeaderboardSearchMatch();
+    }
+
+    private void NextSearchMatch_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_searchMatches.Count <= 1)
+            return;
+
+        _selectedSearchMatchIndex = (_selectedSearchMatchIndex + 1) % _searchMatches.Count;
+        ApplyCurrentLeaderboardSearchMatch();
+    }
+
+    private void OpenSearchProfile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_selectedSearchMatchIndex < 0 || _selectedSearchMatchIndex >= _searchMatches.Count)
+            return;
+
+        var match = _searchMatches[_selectedSearchMatchIndex];
+        if (string.IsNullOrWhiteSpace(match.FriendCode))
+            return;
+
+        new PlayerProfileWindow(match.FriendCode).Show();
+    }
+
+    private void CloseSearchResult_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ClearLeaderboardSearchResult();
+    }
+
+    private async Task ReloadLeaderboardAsync(int page = 1)
     {
         CancelCurrentLoad();
         _loadCts = new();
@@ -213,7 +478,7 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         ClearLeaderboardData();
         await Task.Yield();
 
-        var leaderboardResult = await LeaderboardService.GetTopPlayersAsync(50);
+        var leaderboardResult = await ApiCaller.CallApiAsync(api => api.GetLeaderboardPageAsync(page));
         if (cancellationToken.IsCancellationRequested)
             return;
 
@@ -223,10 +488,24 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
             return;
         }
 
-        var orderedEntries = leaderboardResult
-            .Value.Select((entry, index) => new { Entry = entry, Rank = ResolveRank(entry, index) })
+        var leaderboardPage = leaderboardResult.Value;
+        if (leaderboardPage == null)
+        {
+            SetErrorState("Unable to fetch leaderboard.");
+            return;
+        }
+
+        _currentLeaderboardPage = leaderboardPage.CurrentPage > 0 ? leaderboardPage.CurrentPage : page;
+        _totalLeaderboardPages = leaderboardPage.TotalPages > 0 ? leaderboardPage.TotalPages : 1;
+        OnPropertyChanged(nameof(LeaderboardPageText));
+        OnPropertyChanged(nameof(CanGoToPreviousPage));
+        OnPropertyChanged(nameof(CanGoToNextPage));
+        OnPropertyChanged(nameof(PodiumTitleText));
+        OnPropertyChanged(nameof(PodiumCaptionText));
+
+        var orderedEntries = leaderboardPage
+            .Players.Select((entry, index) => new { Entry = entry, Rank = ResolveRank(entry, index) })
             .OrderBy(entry => entry.Rank)
-            .Take(50)
             .ToList();
 
         var friendProfileIds = GameDataService
@@ -322,14 +601,28 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         return index + 1;
     }
 
-    private static string GetPlacementLabel(int rank) =>
-        rank switch
+    private string GetPlacementLabel(int rank)
+    {
+        if (_currentLeaderboardPage == 1)
         {
-            1 => "Champion",
-            2 => "2nd Place",
-            3 => "3rd Place",
+            return rank switch
+            {
+                1 => "Champion",
+                2 => "2nd Place",
+                3 => "3rd Place",
+                _ => $"#{rank}",
+            };
+        }
+
+        var pageSlot = rank - ((_currentLeaderboardPage - 1) * 50);
+        return pageSlot switch
+        {
+            1 => "Page lead",
+            2 => "Page 2",
+            3 => "Page 3",
             _ => $"#{rank}",
         };
+    }
 
     private static Mii? DeserializeMii(string? miiData)
     {
@@ -371,6 +664,8 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         HasNoData = false;
         HasData = false;
         ErrorMessage = string.Empty;
+        OnPropertyChanged(nameof(CanGoToPreviousPage));
+        OnPropertyChanged(nameof(CanGoToNextPage));
     }
 
     private void SetErrorState(string message)
@@ -380,6 +675,8 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         HasNoData = false;
         HasData = false;
         ErrorMessage = string.IsNullOrWhiteSpace(message) ? "Failed to load leaderboard." : message;
+        OnPropertyChanged(nameof(CanGoToPreviousPage));
+        OnPropertyChanged(nameof(CanGoToNextPage));
     }
 
     private void SetEmptyState()
@@ -388,6 +685,8 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         HasError = false;
         HasNoData = true;
         HasData = false;
+        OnPropertyChanged(nameof(CanGoToPreviousPage));
+        OnPropertyChanged(nameof(CanGoToNextPage));
     }
 
     private void SetDataState()
@@ -396,6 +695,17 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         HasError = false;
         HasNoData = false;
         HasData = true;
+        if (HasActiveSearchResult)
+        {
+            DefaultPodiumFirstCard.IsVisible = false;
+            DefaultPodiumSecondCard.IsVisible = false;
+            DefaultPodiumThirdCard.IsVisible = false;
+            SearchResultSingleLayout.IsVisible = true;
+            SearchResultCompactCard.IsVisible = true;
+            SearchResultPodiumControls.IsVisible = true;
+        }
+        OnPropertyChanged(nameof(CanGoToPreviousPage));
+        OnPropertyChanged(nameof(CanGoToNextPage));
     }
 
     private void ClearLeaderboardData()
@@ -403,6 +713,9 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         PodiumFirst = null;
         PodiumSecond = null;
         PodiumThird = null;
+        DefaultPodiumFirstCard.IsVisible = false;
+        DefaultPodiumSecondCard.IsVisible = false;
+        DefaultPodiumThirdCard.IsVisible = false;
         RemainingPlayers.Clear();
         OnPropertyChanged(nameof(RemainingCountText));
     }
@@ -527,6 +840,55 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         ViewUtils.ShowSnackbar($"Added {player.Name} to your friend list.");
     }
 
+    private void CopyMii_OnClick(object sender, RoutedEventArgs e)
+    {
+        var player = GetContextPlayer(sender);
+        if (player is not { FirstMii: not null })
+        {
+            ViewUtils.ShowSnackbar("This player has no valid Mii data.", ViewUtils.SnackbarType.Warning);
+            return;
+        }
+
+        var serialized = MiiSerializer.Serialize(player.FirstMii);
+        if (serialized.IsFailure)
+        {
+            ViewUtils.ShowSnackbar(serialized.Error.Message, ViewUtils.SnackbarType.Danger);
+            return;
+        }
+
+        var copy = MiiSerializer.Deserialize(serialized.Value);
+        if (copy.IsFailure)
+        {
+            ViewUtils.ShowSnackbar(copy.Error.Message, ViewUtils.SnackbarType.Danger);
+            return;
+        }
+
+        var save = MiiDbService.AddToDatabase(copy.Value, "02:11:11:11:11:11");
+        if (save.IsFailure)
+        {
+            ViewUtils.ShowSnackbar(save.Error.Message, ViewUtils.SnackbarType.Danger);
+            return;
+        }
+
+        ViewUtils.ShowSnackbar($"Copied {player.Name}'s Mii to My Miis.");
+    }
+
+    private void ViewPlayerOnRwfc_OnClick(object sender, RoutedEventArgs e)
+    {
+        var player = GetContextPlayer(sender);
+        if (player == null)
+            return;
+
+        var normalizedFriendCode = NormalizeFriendCode(player.FriendCode);
+        if (normalizedFriendCode.IsFailure)
+        {
+            ViewUtils.ShowSnackbar("This player has no valid RWFC profile link.", ViewUtils.SnackbarType.Warning);
+            return;
+        }
+
+        ViewUtils.OpenLink($"https://rwfc.net/player/{Uri.EscapeDataString(normalizedFriendCode.Value)}");
+    }
+
     private void JoinRoom_OnClick(string friendCode)
     {
         if (string.IsNullOrWhiteSpace(friendCode))
@@ -566,6 +928,15 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
             return Fail("Invalid friend code.");
 
         return formatted;
+    }
+
+    private static string? TryNormalizeFriendCode(string? friendCode)
+    {
+        if (string.IsNullOrWhiteSpace(friendCode))
+            return null;
+
+        var digits = new string(friendCode.Where(char.IsDigit).ToArray());
+        return digits.Length == 12 ? $"{digits[..4]}-{digits.Substring(4, 4)}-{digits.Substring(8, 4)}" : null;
     }
 
     public new event PropertyChangedEventHandler? PropertyChanged;

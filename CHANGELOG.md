@@ -6,6 +6,29 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.13] - 2026-09-25
+
+### Added
+
+- Added RWFC leaderboard search by friend code or player/Mii name.
+- Added duplicate-result browsing for leaderboard and Mii downloader searches.
+- Added popup-based search entry for the leaderboard, My Miis, and Mii Downloader.
+- Added a dedicated Rooms sort popup for cleaner room-browser controls.
+
+### Changed
+
+- Refined the leaderboard header and player result card to better match the app's native styling.
+- Reworked Rooms controls into centered popup actions for search, VR filtering, and sorting.
+- Cleaned up page chrome, spacing, separators, and window-control padding across the app.
+- Updated the README with current screenshots and clearer setup and feature documentation.
+
+### Fixed
+
+- Fixed RWFC Mii downloader lookups for both friend code and player-name searches.
+- Fixed leaderboard search reset behavior so clearing a search returns to the default ranked view.
+- Fixed font/resource URI usage for BetterWheelWizard branding assets.
+- Removed the unused Rooms page warning and deleted an unused converter.
+
 ## [2.5.12] - 2026-09-24
 
 ### Added
@@ -55,7 +78,8 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.12...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.13...HEAD
+[2.5.13]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.12...v2.5.13
 [2.5.12]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...v2.5.12
 [2.5.11]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.10...v2.5.11
 [2.5.10]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.9...v2.5.10

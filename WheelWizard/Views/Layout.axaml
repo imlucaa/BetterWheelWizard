@@ -27,6 +27,7 @@
                 Background="Black" Opacity="0.3" />
 
         <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Margin="0,4,8,0"
                    x:Name="TopBarButtons">
             <Button Width="30" Height="25" Click="MinimizeButton_Click" Classes="TopButton">
                 <PathIcon Data="{StaticResource MinMark}" Width="12" Height="12"

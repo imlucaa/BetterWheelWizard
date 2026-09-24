@@ -48,7 +48,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Classes="BoxItemBackground">
-                    <Grid ColumnDefinitions="Auto,130,80,*">
+                    <Grid ColumnDefinitions="Auto,150,78,*">
                         <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
                                 Background="{DynamicResource Neutral950}" Width="50" Height="50" Margin="0,3">
                             <behaviorComponent:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -74,10 +74,10 @@
                                        Margin="10,0,0,0" />
                         </StackPanel>
 
-                        <Grid Grid.Column="3" ColumnDefinitions="*,Auto,Auto,Auto" VerticalAlignment="Center">
+                        <Grid Grid.Column="3" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8" VerticalAlignment="Center">
                             <Border Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch"
                                     IsVisible="{TemplateBinding HasBadges}" Margin="0,0,6,0"
-                                    CornerRadius="6" Height="40" BorderThickness="1"
+                                    MinWidth="0" MaxWidth="165" CornerRadius="6" Height="40" BorderThickness="1"
                                     BorderBrush="{DynamicResource Neutral600}" VerticalAlignment="Center">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                                     <StackPanel Orientation="Horizontal" x:Name="PART_BadgeContainer" Spacing="3">
@@ -94,7 +94,7 @@
                                                IconSize="11"
                                                FontSize="12"
                                                Padding="8,5"
-                                               Margin="0,0,8,0"
+                                               Margin="0"
                                                VerticalAlignment="Center"
                                                HorizontalAlignment="Right"
                                                ToolTip.Tip="{loc:T action.view_room}"
@@ -106,7 +106,7 @@
                             <Border x:Name="PART_TopLabelBadge"
                                     Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"
                                     IsVisible="{TemplateBinding IsTopPlayer}"
-                                    Padding="10,6" CornerRadius="8" Margin="0,0,10,0">
+                                    Padding="10,6" CornerRadius="8" Margin="0">
                                 <TextBlock x:Name="PART_TopLabelText"
                                            Text="{TemplateBinding TopLabel}" FontWeight="SemiBold" FontSize="13"
                                            />
@@ -116,10 +116,10 @@
                                        IsVisible="{TemplateBinding IsOpenHost}"
                                        Data="{StaticResource LockOpen}" Width="16" Height="16"
                                        Foreground="{DynamicResource BodyTextColor}"
-                                      Margin="0,0,10,0"
-                                      ToolTip.Tip="Open Host"
-                                      ToolTip.Placement="Top"
-                                      ToolTip.ShowDelay="20" />
+                                       Margin="0"
+                                       ToolTip.Tip="Open Host"
+                                       ToolTip.Placement="Top"
+                                       ToolTip.ShowDelay="20" />
                         </Grid>
                     </Grid>
                 </Border>

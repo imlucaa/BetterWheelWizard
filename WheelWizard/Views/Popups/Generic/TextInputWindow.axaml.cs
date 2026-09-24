@@ -110,7 +110,8 @@ public partial class TextInputWindow : PopupContent
                 Padding = new(0),
                 Margin = new(1),
             };
-            button.Click += (_, _) => InputField.Text += c;
+
+            button.Click += (_, _) => InputField.Text = string.Concat(InputField.Text ?? string.Empty, c);
             CustomChars.Children.Add(button);
         }
     }
