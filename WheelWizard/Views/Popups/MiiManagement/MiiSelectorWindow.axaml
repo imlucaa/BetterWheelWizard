@@ -21,7 +21,7 @@
                                IsEnabled="True" Text="{loc:T action.cancel}" 
                                IconData="{StaticResource XMark}"
                                Click="noButton_Click" Margin="0,0,5,0"/>
-            <components:Button x:Name="SaveButton" Variant="Primary"
+            <components:Button x:Name="SaveButton" Variant="Confirm"
                                IsEnabled="True" Text="{loc:T action.save}"
                                IconData="{StaticResource CheckMark}"
                                Click="yesButton_Click" Margin="5,0,0,0"/>

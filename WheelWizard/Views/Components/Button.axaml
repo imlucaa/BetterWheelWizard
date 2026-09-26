@@ -129,6 +129,20 @@
         <Setter Property="Background" Value="{DynamicResource Primary500}" />
     </Style>
 
+    <!-- CONFIRM: popup-only affirmative action matching the neutral cancel button -->
+    <Style Selector="components1|Button.Confirm">
+        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+    </Style>
+    <Style Selector="components1|Button.Confirm:pointerover">
+        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral600}" />
+    </Style>
+    <Style Selector="components1|Button.Confirm:pressed">
+        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+    </Style>
+
     <!-- PLAY: use the selected theme's accent palette -->
     <Style Selector="components1|Button.Play">
         <Setter Property="Foreground" Value="{DynamicResource Primary50}" />

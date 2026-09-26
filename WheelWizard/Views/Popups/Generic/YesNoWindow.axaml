@@ -25,7 +25,7 @@
                                IsEnabled="True" Text="{loc:T action.no}"
                                IconData="{StaticResource XMark}"
                                Click="noButton_Click" Margin="0,0,5,0"/>
-            <components:Button x:Name="YesButton" Variant="Default"
+            <components:Button x:Name="YesButton" Variant="Confirm"
                                IsEnabled="True" Text="{loc:T action.yes}"
                                IconData="{StaticResource CheckMark}"
                                Click="yesButton_Click" Margin="5,0,0,0"/>

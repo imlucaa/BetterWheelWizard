@@ -590,12 +590,12 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         };
     }
 
-    private static int ResolveRank(RwfcLeaderboardEntry entry, int index)
+    internal static int ResolveRank(RwfcLeaderboardEntry entry, int index)
     {
-        if (entry.Rank is > 0 and <= 50000)
+        if (entry.Rank is > 0)
             return entry.Rank.Value;
 
-        if (entry.ActiveRank is > 0 and <= 50000)
+        if (entry.ActiveRank is > 0)
             return entry.ActiveRank.Value;
 
         return index + 1;
@@ -614,13 +614,21 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
             };
         }
 
-        var pageSlot = rank - ((_currentLeaderboardPage - 1) * 50);
-        return pageSlot switch
+        return $"{rank}{GetOrdinalSuffix(rank)} Place";
+    }
+
+    internal static string GetOrdinalSuffix(int value)
+    {
+        var lastTwoDigits = value % 100;
+        if (lastTwoDigits is >= 11 and <= 13)
+            return "th";
+
+        return (value % 10) switch
         {
-            1 => "Page lead",
-            2 => "Page 2",
-            3 => "Page 3",
-            _ => $"#{rank}",
+            1 => "st",
+            2 => "nd",
+            3 => "rd",
+            _ => "th",
         };
     }
 

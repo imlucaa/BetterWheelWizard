@@ -50,7 +50,7 @@
                                Margin="0,0,6,0"
                                Click="Cancel_OnClick" />
             <components:Button Text="Add Friend"
-                               Variant="Primary"
+                                Variant="Confirm"
                                IconData="{StaticResource CheckMark}"
                                Margin="6,0,0,0"
                                Click="AddFriend_OnClick" />

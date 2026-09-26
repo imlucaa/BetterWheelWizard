@@ -41,7 +41,7 @@
                     VerticalAlignment="Top" HorizontalAlignment="Right" Spacing="10">
             <components:Button Text="{loc:T action.cancel}" Variant="Warning"
                                IconData="{StaticResource XMark}" Click="CancelButton_OnClick" />
-            <components:Button Text="{loc:T action.save}" Variant="Primary"
+            <components:Button Text="{loc:T action.save}" Variant="Confirm"
                                x:Name="SaveButton"
                                IconData="{StaticResource CheckMark}" Click="SaveButton_OnClick" />
         </StackPanel>

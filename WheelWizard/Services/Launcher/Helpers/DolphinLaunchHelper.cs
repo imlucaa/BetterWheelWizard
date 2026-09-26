@@ -157,7 +157,7 @@ public static class DolphinLaunchHelper
         }
 
         var popup = new YesNoWindow()
-            .SetButtonVariants(Button.ButtonsVariantType.Primary, Button.ButtonsVariantType.Danger)
+            .SetButtonVariants(Button.ButtonsVariantType.Confirm, Button.ButtonsVariantType.Danger)
             .SetButtonText(t("action.update"), t("action.play_anyway"))
             .SetMainText(t("question.dolphin_outdated.title"))
             .SetExtraText(t("question.dolphin_outdated.extra", version ?? t("state.unknown"), DolphinVersion.MinimumDisplayText));

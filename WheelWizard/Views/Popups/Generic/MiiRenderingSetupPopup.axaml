@@ -67,7 +67,7 @@
                                Click="SkipButton_OnClick" />
             <components:Button x:Name="DownloadButton"
                                Margin="0,0,0,0"
-                               Variant="Primary"
+                                Variant="Confirm"
                                Text="Download"
                                Click="DownloadButton_OnClick" />
         </UniformGrid>

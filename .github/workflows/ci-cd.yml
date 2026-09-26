@@ -3,8 +3,6 @@ name: CI for BetterWheelWizard
 on:
   push:
     branches:
-      - main
-      - dev
       - custom
   pull_request:
 

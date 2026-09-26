@@ -14,7 +14,7 @@
         <behavior:Mii3DRender x:Name="Carousel" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="280" 
                                ImageVariant="{x:Static miiVars:MiiImageVariants.FullBodyCarousel}"/>
         <components:Button Grid.Row="1" x:Name="SaveMiiButton" Text="Save to My Miis"
-                           Variant="Primary" HorizontalAlignment="Center" Margin="0,4,0,8"
+                           Variant="Confirm" HorizontalAlignment="Center" Margin="0,4,0,8"
                            Click="SaveMii_OnClick" />
     </Grid>
 </base:PopupContent>

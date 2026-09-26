@@ -79,6 +79,9 @@ public partial class ThemesPage : UserControlBase
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
     private static string ThemesFolderPath => Path.Combine(PathManager.WheelWizardAppdataPath, "Themes");
     private static string DeletedBuiltInThemesPath => Path.Combine(ThemesFolderPath, "deleted-built-in-themes.json");
+    private readonly List<ThemeChoice> _themeChoices = [];
+    private ThemeChoice? _selectedTheme;
+    private string _editorThemeName = string.Empty;
     private bool _isLoadingTheme;
 
     [Inject]
@@ -94,12 +97,12 @@ public partial class ThemesPage : UserControlBase
 
     private void ReloadThemeChoices(string? selectName = null)
     {
-        ThemeDropdown.Items.Clear();
+        _themeChoices.Clear();
         Directory.CreateDirectory(ThemesFolderPath);
         var deletedBuiltIns = LoadDeletedBuiltInThemes();
         RestorePresetsButton.IsVisible = deletedBuiltIns.Count > 0;
         foreach (var theme in BuiltInThemes.Where(theme => !deletedBuiltIns.Contains(theme.Name)))
-            ThemeDropdown.Items.Add(new ThemeChoice(FormatThemeName(theme, true), theme, null, true));
+            _themeChoices.Add(new ThemeChoice(FormatThemeName(theme, true), theme, null, true));
 
         foreach (
             var file in Directory.EnumerateFiles(ThemesFolderPath, "*.bwwtheme").OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
@@ -107,11 +110,11 @@ public partial class ThemesPage : UserControlBase
         {
             var theme = TryReadTheme(file);
             if (theme != null)
-                ThemeDropdown.Items.Add(new ThemeChoice(FormatThemeName(theme, false), theme, file, false));
+                _themeChoices.Add(new ThemeChoice(FormatThemeName(theme, false), theme, file, false));
         }
 
         if (!string.IsNullOrWhiteSpace(selectName))
-            ThemeDropdown.SelectedItem = ThemeDropdown.Items.OfType<ThemeChoice>().LastOrDefault(item => item.Theme.Name == selectName);
+            SelectTheme(_themeChoices.LastOrDefault(item => item.Theme.Name == selectName), loadEditor: false);
     }
 
     private void LoadCurrentTheme()
@@ -122,18 +125,30 @@ public partial class ThemesPage : UserControlBase
         BackgroundColorTextBox.Text = SettingsService.Get<string>(SettingsService.LAUNCHER_BACKGROUND_COLOR);
     }
 
-    private void ThemeDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void ChooseTheme_OnClick(object? sender, RoutedEventArgs e)
     {
-        DeleteThemeButton.IsEnabled = ThemeDropdown.SelectedItem is ThemeChoice;
-        if (ThemeDropdown.SelectedItem is not ThemeChoice choice)
+        var selectedIndex = await new ThemeLibraryWindow(_themeChoices.Select(choice => choice.DisplayName).ToArray()).AwaitAnswer();
+        if (selectedIndex is not >= 0 || selectedIndex >= _themeChoices.Count)
             return;
+
+        SelectTheme(_themeChoices[selectedIndex.Value], loadEditor: true);
+    }
+
+    private void SelectTheme(ThemeChoice? choice, bool loadEditor)
+    {
+        _selectedTheme = choice;
+        DeleteThemeButton.IsEnabled = choice != null;
+        SelectedThemeText.Text = choice?.Theme.Name ?? "Current colors";
+        if (choice == null || !loadEditor)
+            return;
+
         SetEditor(choice.Theme);
         ThemeStatusText.Text = $"Loaded {choice.Theme.Name}. Apply to use it.";
     }
 
     private async void DeleteTheme_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ThemeDropdown.SelectedItem is not ThemeChoice choice)
+        if (_selectedTheme is not ThemeChoice choice)
             return;
 
         var confirmed = await new YesNoWindow()
@@ -158,9 +173,10 @@ public partial class ThemesPage : UserControlBase
         {
             File.Delete(choice.FilePath);
         }
-        ThemeDropdown.SelectedItem = null;
+        _selectedTheme = null;
         ReloadThemeChoices();
         DeleteThemeButton.IsEnabled = false;
+        SelectedThemeText.Text = "Current colors";
         ThemeStatusText.Text = $"Deleted {choice.Theme.Name}.";
     }
 
@@ -171,7 +187,7 @@ public partial class ThemesPage : UserControlBase
             .SetExtraText("Deleted built-in color presets will return to the theme library.")
             .SetButtonText("Restore", "Cancel")
             .SetButtonVariants(
-                WheelWizard.Views.Components.Button.ButtonsVariantType.Default,
+                WheelWizard.Views.Components.Button.ButtonsVariantType.Confirm,
                 WheelWizard.Views.Components.Button.ButtonsVariantType.Default
             )
             .AwaitAnswer();
@@ -189,7 +205,7 @@ public partial class ThemesPage : UserControlBase
         _isLoadingTheme = true;
         try
         {
-            ThemeNameTextBox.Text = theme.Name;
+            _editorThemeName = theme.Name;
             ColorTextBox.Text = theme.Accent;
             BrandColorTextBox.Text = theme.Branding;
             TextColorTextBox.Text = theme.Text;
@@ -218,6 +234,17 @@ public partial class ThemesPage : UserControlBase
 
     private async void SaveTheme_OnClick(object? sender, RoutedEventArgs e)
     {
+        var requestedName = await new TextInputWindow()
+            .SetMainText("Save current colors")
+            .SetExtraText("Give this theme a name so it appears in your library.")
+            .SetPlaceholderText("Theme name")
+            .SetInitialText(_editorThemeName)
+            .SetButtonText("Cancel", "Save")
+            .ShowDialog();
+        if (requestedName == null)
+            return;
+
+        _editorThemeName = requestedName.Trim();
         var theme = ReadEditor(requireName: true);
         if (theme == null)
             return;
@@ -230,7 +257,7 @@ public partial class ThemesPage : UserControlBase
                 .SetExtraText("A saved theme with this name already exists.")
                 .SetButtonText("Replace", "Cancel")
                 .SetButtonVariants(
-                    WheelWizard.Views.Components.Button.ButtonsVariantType.Default,
+                    WheelWizard.Views.Components.Button.ButtonsVariantType.Confirm,
                     WheelWizard.Views.Components.Button.ButtonsVariantType.Default
                 )
                 .AwaitAnswer();
@@ -240,6 +267,7 @@ public partial class ThemesPage : UserControlBase
         var path = existing ?? Path.Combine(ThemesFolderPath, $"{MakeSafeFileName(theme.Name)}.bwwtheme");
         File.WriteAllText(path, JsonSerializer.Serialize(theme, JsonOptions));
         ReloadThemeChoices(theme.Name);
+        SelectedThemeText.Text = theme.Name;
         ThemeStatusText.Text = existing == null ? $"{theme.Name} saved." : $"{theme.Name} updated.";
     }
 
@@ -274,13 +302,17 @@ public partial class ThemesPage : UserControlBase
         BrandColorTextBox.Text = theme.Branding;
         TextColorTextBox.Text = theme.Text;
         BackgroundColorTextBox.Text = theme.Background;
+        _editorThemeName = string.Empty;
+        _selectedTheme = null;
+        SelectedThemeText.Text = "Imported colors";
+        DeleteThemeButton.IsEnabled = false;
         UpdatePreview();
         ThemeStatusText.Text = "Theme code loaded. Apply or save it when ready.";
     }
 
     private LauncherThemeFile? ReadEditor(bool requireName)
     {
-        var name = ThemeNameTextBox.Text?.Trim() ?? string.Empty;
+        var name = _editorThemeName.Trim();
         var theme = new LauncherThemeFile(
             name,
             NormalizeHex(ColorTextBox.Text),

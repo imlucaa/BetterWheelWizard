@@ -25,7 +25,7 @@ public partial class MessageBoxWindow : PopupContent
     public MessageBoxWindow SetMessageType(MessageType newType)
     {
         messageType = newType;
-        CancelButton.Variant = messageType == MessageType.Message ? Button.ButtonsVariantType.Primary : Button.ButtonsVariantType.Default;
+        CancelButton.Variant = messageType == MessageType.Message ? Button.ButtonsVariantType.Confirm : Button.ButtonsVariantType.Default;
 
         Window.WindowTitle = messageType.ToString();
         TitleBorder.Classes.Add(messageType.ToString());

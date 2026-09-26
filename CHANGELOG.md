@@ -6,6 +6,28 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.14] - 2026-09-27
+
+### Added
+
+- Added a popup Theme Library for choosing built-in and saved themes.
+- Added compact palette cards with larger color swatches and aligned HEX inputs.
+- Added animated gold highlighting for searched leaderboard players.
+
+### Changed
+
+- Simplified theme choosing, saving, sharing, and deletion into compact actions.
+- Improved leaderboard page spacing, ranked-player rows, pagination, and later-page placement labels.
+- Made popup confirmation buttons use the same neutral style as popup cancel buttons.
+- Simplified the README and release automation.
+
+### Fixed
+
+- Fixed RWFC search ranks above 50,000 being replaced with the search-result position.
+- Fixed imported theme codes retaining the previously selected theme name and delete state.
+- Fixed later leaderboard pages showing page-slot labels instead of actual placements.
+- Fixed the searched-player profile button not matching the adjacent Back button.
+
 ## [2.5.13] - 2026-09-25
 
 ### Added
@@ -78,7 +100,8 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.13...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.14...HEAD
+[2.5.14]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.13...v2.5.14
 [2.5.13]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.12...v2.5.13
 [2.5.12]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...v2.5.12
 [2.5.11]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.10...v2.5.11

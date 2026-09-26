@@ -31,17 +31,63 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
         </Style>
-        <Style Selector="components|Button.SearchResultActionButton">
-            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
         <Style Selector="components|Button.SearchResultNavButton">
             <Setter Property="Background" Value="{DynamicResource Neutral800}" />
             <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
             <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.SearchResultGoldCard">
+            <Style.Animations>
+                <Animation Duration="0:0:5.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="TranslateTransform.Y" Value="-5" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldAura">
+            <Style.Animations>
+                <Animation Duration="0:0:4.4" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.18" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="0.38" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.18" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldShimmer">
+            <Style.Animations>
+                <Animation Duration="0:0:3.8" IterationCount="INFINITE" Easing="CircularEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="TranslateTransform.X" Value="-90" />
+                    </KeyFrame>
+                    <KeyFrame Cue="20%"><Setter Property="Opacity" Value="0.2" /></KeyFrame>
+                    <KeyFrame Cue="80%"><Setter Property="Opacity" Value="0.2" /></KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="TranslateTransform.X" Value="230" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldParticleA">
+            <Style.Animations>
+                <Animation Duration="0:0:3.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="1" /><Setter Property="TranslateTransform.Y" Value="-8" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.3" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldParticleB">
+            <Style.Animations>
+                <Animation Duration="0:0:2.9" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.2" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="0.9" /><Setter Property="TranslateTransform.Y" Value="-7" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.2" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
         <Style Selector="Border.LeaderboardSearchHero">
             <Setter Property="CornerRadius" Value="10" />
@@ -84,15 +130,8 @@
             </Setter>
         </Style>
 
-        <!-- Match RoomDetailsPage entry background treatment for PlayerListItem -->
-        <Style Selector="patterns|PlayerListItem /template/ Border.BoxItemBackground">
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Margin" Value="0,3" />
-            <Setter Property="Padding" Value="7,0" />
-            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
-        </Style>
-        <Style Selector="patterns|PlayerListItem:pointerover /template/ Border.BoxItemBackground">
-            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        <Style Selector="patterns|PlayerListItem">
+            <Setter Property="MinHeight" Value="66" />
         </Style>
         <Style Selector="patterns|PlayerListItem /template/ Border#PART_TopLabelBadge">
             <Setter Property="Background" Value="{DynamicResource Neutral800}" />
@@ -104,8 +143,8 @@
         </Style>
         <Style Selector="patterns|PlayerListItem /template/ Border.BoxItemBackground">
             <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Margin" Value="0,4" />
-            <Setter Property="Padding" Value="10,4" />
+            <Setter Property="Margin" Value="0,3" />
+            <Setter Property="Padding" Value="12,5" />
             <Setter Property="Background" Value="{DynamicResource Neutral950}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
             <Setter Property="BorderThickness" Value="1" />
@@ -117,7 +156,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="72" />
+            <RowDefinition Height="64" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Classes="LeaderboardSearchHero">
@@ -205,12 +244,12 @@
             </StackPanel>
 
             <ScrollViewer IsVisible="{Binding HasData}"
-                          Margin="10,10,10,0"
+                          Margin="12,8,12,0"
                           HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Hidden"
                           IsScrollInertiaEnabled="True">
-                <StackPanel Spacing="14"
-                            Margin="0,0,0,12">
+                <StackPanel Spacing="12"
+                            Margin="0,0,0,16">
                     <Border x:Name="LeaderboardSearchResultCard"
                             IsVisible="False"
                             Classes="LeaderboardSectionCard"
@@ -280,7 +319,7 @@
                     </Border>
 
                     <Border Classes="LeaderboardSectionCard"
-                            Padding="12,10">
+                            Padding="14,12">
                         <Grid RowDefinitions="Auto,Auto,Auto"
                               ClipToBounds="False">
                             <StackPanel Orientation="Horizontal"
@@ -299,16 +338,15 @@
                                        ColumnDefinitions="Auto,Auto"
                                        ColumnSpacing="8"
                                        HorizontalAlignment="Center">
-                                    <components:Button Grid.Column="0"
-                                                        x:Name="LeaderboardSearchOpenProfileButton"
-                                                        IsVisible="False"
-                                                       Classes="SearchResultActionButton"
-                                                       Text="View profile"
-                                                       MinWidth="84"
-                                                       ButtonSize="Compact"
-                                                        Variant="Default"
-                                                        Click="OpenSearchProfile_OnClick"
-                                                        IsEnabled="False" />
+                                     <components:Button Grid.Column="0"
+                                                         x:Name="LeaderboardSearchOpenProfileButton"
+                                                         IsVisible="False"
+                                                         Text="View profile"
+                                                         MinWidth="84"
+                                                         ButtonSize="Compact"
+                                                         Variant="Default"
+                                                         Click="OpenSearchProfile_OnClick"
+                                                         IsEnabled="False" />
                                     <components:Button Grid.Column="1"
                                                         x:Name="CloseSearchResultButton"
                                                         IsVisible="False"
@@ -329,8 +367,8 @@
                             </Grid>
 
                             <Grid Grid.Row="2"
-                                  Margin="0,8,0,0"
-                                  MinHeight="176"
+                                  Margin="0,12,0,0"
+                                  MinHeight="204"
                                   IsVisible="True">
                                 <Grid x:Name="SearchResultSingleLayout"
                                        IsVisible="False"
@@ -353,18 +391,38 @@
                                                        IsEnabled="False"
                                                        ToolTip.Tip="Previous matching player" />
 
+                                    <Grid Grid.Column="1"
+                                          ClipToBounds="False">
+                                        <Border Classes="SearchResultGoldAura"
+                                                Width="150"
+                                                Height="150"
+                                                CornerRadius="9999"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Background="#A8E0B91C"
+                                                Opacity="0.28"
+                                                Effect="blur(58)"
+                                                IsHitTestVisible="False" />
+
                                      <Border x:Name="SearchResultCompactCard"
-                                             Grid.Column="1"
+                                             Classes="SearchResultGoldCard"
                                              IsVisible="False"
                                              Width="184"
-                                             MinHeight="168"
+                                             MinHeight="196"
                                              Padding="12,12,12,11"
                                              CornerRadius="18"
-                                             Background="#18343A42"
                                              BorderBrush="#E0D54A"
                                              BorderThickness="1"
+                                             BoxShadow="0 0 22 2 #58E0D54A, 0 16 30 0 #30000000"
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#52341B07" Offset="0" />
+                                                <GradientStop Color="#493A2710" Offset="0.55" />
+                                                <GradientStop Color="#321B1608" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
                                         <Border.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Header="{loc:T action.copy_friend_code}"
@@ -382,6 +440,31 @@
                                                           Click="ViewPlayerOnRwfc_OnClick" />
                                             </ContextMenu>
                                         </Border.ContextMenu>
+
+                                        <Grid ClipToBounds="True">
+                                            <Border Classes="SearchResultGoldShimmer"
+                                                    Width="64" Height="250" Margin="-84,-24,0,0"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                    RenderTransform="rotate(24deg)" Opacity="0.16"
+                                                    IsHitTestVisible="False">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                        <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                        <GradientStop Color="#CFFFFFFF" Offset="0.5" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+                                            <Border Classes="SearchResultGoldParticleA"
+                                                    Width="6" Height="6" CornerRadius="9999"
+                                                    Background="#D8FFF0A0" HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top" Margin="12,12,0,0"
+                                                    Effect="blur(1)" IsHitTestVisible="False" />
+                                            <Border Classes="SearchResultGoldParticleB"
+                                                    Width="4" Height="4" CornerRadius="9999"
+                                                    Background="#D8FFF0A0" HorizontalAlignment="Right"
+                                                    VerticalAlignment="Top" Margin="0,28,16,0"
+                                                    Effect="blur(1)" IsHitTestVisible="False" />
 
                                          <StackPanel Spacing="8"
                                                      HorizontalAlignment="Center"
@@ -441,8 +524,10 @@
                                                            Foreground="{StaticResource Neutral100}"
                                                            VerticalAlignment="Center" />
                                             </StackPanel>
-                                        </StackPanel>
-                                    </Border>
+                                             </StackPanel>
+                                        </Grid>
+                                     </Border>
+                                    </Grid>
 
                                     <components:Button x:Name="NextSearchMatchButton"
                                                        Grid.Column="2"
@@ -572,10 +657,10 @@
                         </Grid>
                     </Border>
 
-                    <Border Classes="LeaderboardSectionCard">
-                        <Grid RowDefinitions="Auto,*" RowSpacing="10">
+                    <Border Classes="LeaderboardSectionCard" Padding="14,12">
+                        <Grid RowDefinitions="Auto,*" RowSpacing="12">
                             <Grid RowDefinitions="Auto,Auto"
-                                  RowSpacing="8">
+                                  RowSpacing="10">
                                 <StackPanel Spacing="2"
                                             HorizontalAlignment="Center">
                                     <TextBlock Text="Ranked players"
@@ -584,51 +669,52 @@
                                                Classes="LeaderboardSectionCaption" />
                                 </StackPanel>
                                 <Grid Grid.Row="1"
-                                      ColumnDefinitions="*,Auto,Auto,Auto,Auto,*"
-                                      ColumnSpacing="6"
+                                      Margin="0,2,0,0"
                                       VerticalAlignment="Center">
-                                    <components:Button Text=""
-                                                        Grid.Column="1"
-                                                        Width="30"
-                                                        Height="30"
-                                                        Padding="0"
-                                                        ButtonSize="Compact"
-                                                        IconData="{StaticResource ArrowLeft}"
-                                                       Click="PreviousLeaderboardPage_OnClick"
-                                                       IsEnabled="{Binding CanGoToPreviousPage}"
-                                                       ToolTip.Tip="Previous leaderboard page" />
-                                    <Border Background="{DynamicResource Neutral900}"
-                                            Grid.Column="2"
-                                            CornerRadius="999"
-                                            Padding="10,5"
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding LeaderboardPageText}"
-                                                   Classes="TinyText"
-                                                   Foreground="{StaticResource Neutral100}" />
-                                    </Border>
-                                    <components:Button Text=""
-                                                        Grid.Column="3"
-                                                        Width="30"
-                                                        Height="30"
-                                                        Padding="0"
-                                                        ButtonSize="Compact"
-                                                        IconData="{StaticResource ArrowRight}"
-                                                       Click="NextLeaderboardPage_OnClick"
-                                                       IsEnabled="{Binding CanGoToNextPage}"
-                                                       ToolTip.Tip="Next leaderboard page" />
-                                    <Border Background="{DynamicResource Neutral900}"
-                                            Grid.Column="4"
-                                            CornerRadius="999"
-                                            Padding="10,5"
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding RemainingCountText}"
-                                                   Classes="TinyText"
-                                                   Foreground="{StaticResource Neutral100}" />
-                                    </Border>
+                                    <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                HorizontalAlignment="Center">
+                                        <components:Button Text=""
+                                                            Width="30"
+                                                            Height="30"
+                                                            Padding="0"
+                                                            ButtonSize="Compact"
+                                                            IconData="{StaticResource ArrowLeft}"
+                                                            Click="PreviousLeaderboardPage_OnClick"
+                                                            IsEnabled="{Binding CanGoToPreviousPage}"
+                                                            ToolTip.Tip="Previous leaderboard page" />
+                                        <Border Background="{DynamicResource Neutral900}"
+                                                CornerRadius="999"
+                                                Padding="10,5"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding LeaderboardPageText}"
+                                                       Classes="TinyText"
+                                                       Foreground="{StaticResource Neutral100}" />
+                                        </Border>
+                                        <components:Button Text=""
+                                                            Width="30"
+                                                            Height="30"
+                                                            Padding="0"
+                                                            ButtonSize="Compact"
+                                                            IconData="{StaticResource ArrowRight}"
+                                                            Click="NextLeaderboardPage_OnClick"
+                                                            IsEnabled="{Binding CanGoToNextPage}"
+                                                            ToolTip.Tip="Next leaderboard page" />
+                                        <Border Background="{DynamicResource Neutral900}"
+                                                CornerRadius="999"
+                                                Padding="10,5"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding RemainingCountText}"
+                                                       Classes="TinyText"
+                                                       Foreground="{StaticResource Neutral100}" />
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
                             </Grid>
 
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding RemainingPlayers}">
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding RemainingPlayers}"
+                                          Margin="0,2,0,0">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="pages:LeaderboardPlayerItem">
                                         <patterns:PlayerListItem UserName="{Binding Name}"

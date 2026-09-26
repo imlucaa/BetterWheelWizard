@@ -11,7 +11,8 @@ public class WindowsUpdatePlatform(IFileSystem fileSystem) : IUpdatePlatform
 {
     public GithubAsset? GetAssetForCurrentPlatform(GithubRelease release)
     {
-        return release.Assets.FirstOrDefault(asset => asset.Name.Equals("BetterWheelWizardWindows.exe", StringComparison.OrdinalIgnoreCase))
+        return release.Assets.FirstOrDefault(asset => asset.Name.Equals("BetterWheelWizard.exe", StringComparison.OrdinalIgnoreCase))
+            ?? release.Assets.FirstOrDefault(asset => asset.Name.Equals("BetterWheelWizardWindows.exe", StringComparison.OrdinalIgnoreCase))
             ?? release.Assets.FirstOrDefault(asset => asset.Name.Equals("WheelWizardWindows.exe", StringComparison.OrdinalIgnoreCase));
     }
 

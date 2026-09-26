@@ -10,11 +10,11 @@ public class AutoUpdateAssetTests
     [Fact]
     public void WindowsUpdater_PrefersBrandedReleaseAsset()
     {
-        var release = CreateRelease("unrelated.exe", "WheelWizardWindows.exe", "BetterWheelWizardWindows.exe");
+        var release = CreateRelease("unrelated.exe", "WheelWizardWindows.exe", "BetterWheelWizardWindows.exe", "BetterWheelWizard.exe");
 
         var platform = new WindowsUpdatePlatform(Substitute.For<IFileSystem>());
 
-        Assert.Equal("BetterWheelWizardWindows.exe", platform.GetAssetForCurrentPlatform(release)?.Name);
+        Assert.Equal("BetterWheelWizard.exe", platform.GetAssetForCurrentPlatform(release)?.Name);
     }
 
     [Fact]
