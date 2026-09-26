@@ -20,9 +20,11 @@ The Windows build is standalone. It does not need an installer or a separate .NE
 
 ## Screenshots
 
-| Themes | Leaderboard | Rooms |
-| --- | --- | --- |
-| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) | [![Rooms](docs/screenshots/better-rooms.png)](docs/screenshots/better-rooms.png) |
+| Themes | Leaderboard |
+| --- | --- |
+| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) |
+| Rooms | Mii Downloader |
+| [![Rooms](docs/screenshots/better-rooms.png)](docs/screenshots/better-rooms.png) | [![Mii Downloader](docs/screenshots/mii-downloader.png)](docs/screenshots/mii-downloader.png) |
 
 ## Setup
 
