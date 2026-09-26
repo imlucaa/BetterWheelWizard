@@ -4,9 +4,13 @@ A community version of [WheelWizard](https://github.com/TeamWheelWizard/WheelWiz
 
 ## Download
 
-**[Download BetterWheelWizard for Windows](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard.exe)**
+| Platform | Download |
+| --- | --- |
+| Windows x64 | [BetterWheelWizard.exe](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard.exe) |
+| Linux x64 | [BetterWheelWizard_Linux](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard_Linux) |
+| Linux ARM64 | [BetterWheelWizard_ARM64_Linux](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard_ARM64_Linux) |
 
-The Windows build is standalone. It does not need an installer or a separate .NET installation.
+All builds are standalone single files. No installer or separate .NET installation is required.
 
 ## Features
 
