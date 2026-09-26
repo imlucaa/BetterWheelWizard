@@ -10,18 +10,19 @@ The Windows build is standalone. It does not need an installer or a separate .NE
 
 ## Features
 
-- Launch and update Retro Rewind
-- Browse rooms and search the RWFC leaderboard
-- Find, import, and manage Miis
-- Create and share launcher themes
+- Search the RWFC leaderboard by player name or friend code
+- Browse rooms with quick search, VR filters, and sorting
+- Find, import, edit, and manage Miis
+- Create, save, share, and import custom launcher themes
 - Back up Mario Kart Wii saves and Retro Rewind ratings
-- Use Dolphin or WiiCompiled
+- Enjoy cleaner popups, compact controls, and other QoL improvements
+- Launch Retro Rewind with Dolphin or WiiCompiled
 
 ## Screenshots
 
-| Themes | Leaderboard |
-| --- | --- |
-| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) |
+| Themes | Leaderboard | Rooms |
+| --- | --- | --- |
+| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) | [![Rooms](docs/screenshots/better-rooms.png)](docs/screenshots/better-rooms.png) |
 
 ## Setup
 
