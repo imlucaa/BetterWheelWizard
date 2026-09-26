@@ -15,7 +15,6 @@ The Windows build is standalone. It does not need an installer or a separate .NE
 - Find, import, edit, and manage Miis
 - Create, save, share, and import custom launcher themes
 - Back up Mario Kart Wii saves and Retro Rewind ratings
-- Enjoy cleaner popups, compact controls, and other QoL improvements
 - Launch Retro Rewind with Dolphin or WiiCompiled
 
 ## Screenshots
