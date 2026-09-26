@@ -17,6 +17,12 @@ The Windows build is standalone. It does not need an installer or a separate .NE
 - Back up Mario Kart Wii saves and Retro Rewind ratings
 - Use Dolphin or WiiCompiled
 
+## Screenshots
+
+| Themes | Leaderboard |
+| --- | --- |
+| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) |
+
 ## Setup
 
 1. Download and open `BetterWheelWizard.exe`.
