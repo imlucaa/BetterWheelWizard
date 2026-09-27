@@ -8,27 +8,27 @@
     <!-- Color 1 = Face Fill -->
     <!-- Color 2 = Face Border -->
     <!-- Color 3 = Mustache Color -->
-    
+
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral400}">
+        <Border Padding="20" Background="{DynamicResource Neutral400}">
             <UniformGrid Columns="5">
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMustache00}" IconName="MiiMustache00"
                                                  Color4="{StaticResource Danger500}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMustache01}" IconName="MiiMustache01"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMustache02}" IconName="MiiMustache02"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMustache03}" IconName="MiiMustache03"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
             </UniformGrid>
         </Border>

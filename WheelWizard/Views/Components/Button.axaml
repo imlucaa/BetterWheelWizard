@@ -1,9 +1,9 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:components1="clr-namespace:WheelWizard.Views.Components">
 
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral950}">
+        <Border Padding="20" Background="{DynamicResource Neutral950}">
             <StackPanel Spacing="5">
                 <components1:Button Width="150" Text="Default" Variant="Default"/>
                 <components1:Button Width="150" Text="Ugly Light" Variant="UglyLight"/>
@@ -13,7 +13,7 @@
                 <components1:Button Width="150" Text="Secondary" Variant="Warning" />
                 <components1:Button Width="150" Text="Danger" Variant="Danger" FontSize="30"/>
                 <components1:Button x:Name="PlayButton"
-                                   IsEnabled="False" 
+                                   IsEnabled="False"
                                    Variant="Warning"
                                    Text="Loading..."
                                    IconData="{StaticResource ArrowRight}"
@@ -65,9 +65,9 @@
         <Setter Property="IconSize" Value="16" />
         <Setter Property="FontSize" Value="13" />
     </Style>
-    
+
     <!-- ================
-     THE ACTUAL COLORS: 
+     THE ACTUAL COLORS:
      ================ -->
      <Style Selector="components1|Button:pointerover">
         <Setter Property="Cursor" Value="Hand"/>
@@ -75,18 +75,18 @@
 
     <!-- DEFAULT -->
     <Style Selector="components1|Button.Default">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="Background" Value="{StaticResource Neutral700}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
     </Style>
     <Style Selector="components1|Button.Default:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="Background" Value="{StaticResource Neutral600}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral600}" />
     </Style>
     <Style Selector="components1|Button.Default:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral500}" />
     </Style>
-    
+
     <!-- DANGER -->
     <Style Selector="components1|Button.Danger">
         <Setter Property="Foreground" Value="{StaticResource Danger100}" />
@@ -100,7 +100,7 @@
         <Setter Property="Foreground" Value="{StaticResource Danger50}" />
         <Setter Property="Background" Value="{StaticResource Danger400}" />
     </Style>
-    
+
     <!-- WARNING -->
     <Style Selector="components1|Button.Warning">
         <Setter Property="Foreground" Value="{StaticResource Warning100}" />
@@ -114,39 +114,39 @@
         <Setter Property="Foreground" Value="{StaticResource Warning50}" />
         <Setter Property="Background" Value="{StaticResource Warning500}" />
     </Style>
-    
+
     <!-- PRIMARY -->
     <Style Selector="components1|Button.Primary">
-        <Setter Property="Foreground" Value="{StaticResource Primary50}" />
-        <Setter Property="Background" Value="{StaticResource Primary700}" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary700}" />
     </Style>
     <Style Selector="components1|Button.Primary:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Primary50}" />
-        <Setter Property="Background" Value="{StaticResource Primary600}" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary600}" />
     </Style>
     <Style Selector="components1|Button.Primary:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Primary50}" />
-        <Setter Property="Background" Value="{StaticResource Primary500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary50}" />
+        <Setter Property="Background" Value="{DynamicResource Primary500}" />
     </Style>
-    
+
     <!-- UGLY LIGHT -->
     <Style Selector="components1|Button.UglyLight">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral500}" />
     </Style>
     <Style Selector="components1|Button.UglyLight:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral400}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral400}" />
     </Style>
     <Style Selector="components1|Button.UglyLight:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral300}" />
     </Style>
-        
+
     <Style Selector="components1|Button:disabled /template/ Border">
-        <Setter Property="Background" Value="{StaticResource Neutral800}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral800}" />
     </Style>
     <Style Selector="components1|Button:disabled /template/ components1|IconLabel">
-        <Setter Property="Foreground" Value="{StaticResource Neutral950}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral950}" />
     </Style>
 </Styles>

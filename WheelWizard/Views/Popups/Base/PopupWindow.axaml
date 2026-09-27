@@ -29,9 +29,9 @@
                             <components:StateBox Text="Beta" Variant="Warning" IconSize="0" Margin="0,-1,0,0"
                                                  IsVisible="{Binding BetaFlag}"/>
                             <TextBlock FontSize="16" Text="{Binding WindowTitle}"
-                                       Foreground="{StaticResource Neutral300}" />
+                                       Foreground="{DynamicResource Neutral300}" />
                         </StackPanel>
-                       
+
 
                         <DockPanel HorizontalAlignment="Right" VerticalAlignment="Center">
 

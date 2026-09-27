@@ -8,18 +8,18 @@
              x:DataType="pages:ModListItem">
 
     <Border x:Name="RootCardBorder"
-            CornerRadius="8" Background="{StaticResource Neutral900}"
+            CornerRadius="8" Background="{DynamicResource Neutral900}"
             ClipToBounds="True" Margin="4" Height="160">
         <Grid>
             <!-- Image area -->
-            <Border Background="{StaticResource Neutral700}" ClipToBounds="True">
+            <Border Background="{DynamicResource Neutral700}" ClipToBounds="True">
                 <Panel>
                     <Image Source="{Binding Preview.Image}" Stretch="UniformToFill" />
                     <!-- Placeholder icon when no image is loaded -->
                     <PathIcon IsVisible="{Binding Preview.ShowPlaceholder}"
                               Data="{StaticResource CubesStacked}"
                               Width="36" Height="36"
-                              Foreground="{StaticResource Neutral500}"
+                              Foreground="{DynamicResource Neutral500}"
                               HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Panel>
             </Border>
@@ -29,8 +29,8 @@
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                         <GradientStop Color="Transparent" Offset="0.0" />
-                        <GradientStop Color="{StaticResource Neutral900}" Offset="0.7" />
-                        <GradientStop Color="{StaticResource Neutral900}" Offset="1.0" />
+                        <GradientStop Color="{DynamicResource Neutral900}" Offset="0.7" />
+                        <GradientStop Color="{DynamicResource Neutral900}" Offset="1.0" />
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
@@ -50,17 +50,17 @@
                         <StackPanel MaxWidth="300">
                             <TextBlock Text="{x:Static patches:ModPatchCompatibilityText.IncompatibleTitle}"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Neutral50}" />
+                                       Foreground="{DynamicResource Neutral50}" />
                             <TextBlock Text="{x:Static patches:ModPatchCompatibilityText.IncompatibleMessage}"
                                        TextWrapping="Wrap"
-                                       Foreground="{StaticResource Neutral100}" />
+                                       Foreground="{DynamicResource Neutral100}" />
                         </StackPanel>
                     </ToolTip.Tip>
                 </Border>
 
                 <!-- Title -->
                 <TextBlock Grid.Row="1" Text="{Binding Mod.Title}" FontSize="13" FontWeight="SemiBold"
-                           Foreground="{StaticResource Neutral100}"
+                           Foreground="{DynamicResource Neutral100}"
                            TextTrimming="CharacterEllipsis"
                            Margin="10,0,10,4" />
 
@@ -75,7 +75,7 @@
                         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
                                     VerticalAlignment="Center">
                             <TextBlock Text="#" FontSize="13"
-                                       Foreground="{StaticResource Neutral500}"
+                                       Foreground="{DynamicResource Neutral500}"
                                        VerticalAlignment="Center" />
                             <TextBox x:Name="PriorityTextBox"
                                      Text="{Binding Mod.Priority, Mode=OneWay}"
@@ -107,7 +107,7 @@
         <!-- Hover effect -->
         <Border.Styles>
             <Style Selector="Border#RootCardBorder:pointerover">
-                <Setter Property="Background" Value="{StaticResource Neutral700}" />
+                <Setter Property="Background" Value="{DynamicResource Neutral700}" />
             </Style>
         </Border.Styles>
     </Border>

@@ -18,7 +18,7 @@
         <UniformGrid Grid.Row="2" Columns="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                      x:Name="ButtonContainer"  Margin="0,10,0,0">
             <components:Button x:Name="CancelButton" Variant="Default"
-                               IsEnabled="True" Text="{loc:T action.cancel}" 
+                               IsEnabled="True" Text="{loc:T action.cancel}"
                                IconData="{StaticResource XMark}"
                                Click="noButton_Click" Margin="0,0,5,0"/>
             <components:Button x:Name="SaveButton" Variant="Primary"

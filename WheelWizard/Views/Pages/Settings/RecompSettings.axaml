@@ -13,7 +13,7 @@
                         CornerRadius="9999"
                         Effect="blur(150)"
                         Opacity="0.1" />
-                <Border Background="{StaticResource Neutral700}"
+                <Border Background="{DynamicResource Neutral700}"
                         BorderBrush="{StaticResource Warning500}"
                         BorderThickness="1"
                         CornerRadius="{StaticResource GlobalCornerRadius}">
@@ -27,7 +27,7 @@
                                              TextWrapping="Wrap"
                                              VerticalAlignment="Center"
                                              Text="{loc:T status.recomp_not_installed}"
-                                             Foreground="{StaticResource Neutral200}" />
+                                             Foreground="{DynamicResource Neutral200}" />
                     </Grid>
                 </Border>
             </Grid>

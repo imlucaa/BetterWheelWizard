@@ -15,7 +15,7 @@
         <components:IconLabelButton Grid.Row="0" Text="{loc:T action.back}" IconData="{StaticResource ArrowLeft}"
                                     Click="BackButton_OnClick" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0"
                                     Foreground="{StaticResource TitleTextColor}" FontSize="16"
-                                    HoverForeground="{StaticResource Primary200}"/>
+                                    HoverForeground="{DynamicResource Primary200}"/>
 
         <!-- END OF EVERY EDITOR PAGE -->
 
@@ -37,12 +37,12 @@
                         <!-- Generated elements -->
                     </UniformGrid>
                 </StackPanel>
-                
+
                 <StackPanel x:Name="MustacheTransformOptions">
                      <!-- Vertical Position (Up/Down) -->
                     <StackPanel>
                         <components:FormFieldLabel Text="{loc:T attribute.mii.mustache_vertical_position}"/>
-                        <Border Background="{StaticResource Neutral950}" CornerRadius="6" Padding="2" HorizontalAlignment="Left">
+                        <Border Background="{DynamicResource Neutral950}" CornerRadius="6" Padding="2" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                                 <components:Button x:Name="VerticalDecreaseButton" IconData="{StaticResource ArrowUp}" IconSize="14" Padding="4" Click="VerticalDecrease_Click" />
                                 <TextBlock x:Name="VerticalValueText" Classes="BodyText" MinWidth="30" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
@@ -54,7 +54,7 @@
                     <!-- Size (Zoom In/Out) -->
                     <StackPanel>
                         <components:FormFieldLabel Text="{loc:T attribute.mii.mustache_size}"/>
-                        <Border Background="{StaticResource Neutral950}" CornerRadius="6" Padding="2" HorizontalAlignment="Left">
+                        <Border Background="{DynamicResource Neutral950}" CornerRadius="6" Padding="2" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                                 <components:Button x:Name="SizeDecreaseButton" IconData="{StaticResource MinMark}" IconSize="14" Padding="4" Click="SizeDecrease_Click"/>
                                 <TextBlock x:Name="SizeValueText" Classes="BodyText" MinWidth="30" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
@@ -63,7 +63,7 @@
                         </Border>
                     </StackPanel>
                 </StackPanel>
-                
+
                 <StackPanel> <!-- Beard Type -->
                     <components:FormFieldLabel Text="{loc:T attribute.mii.beard_type}"/>
                     <UniformGrid Columns="5" x:Name="BeardTypesGrid">

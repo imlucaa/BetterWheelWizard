@@ -1,4 +1,4 @@
-﻿<base:PopupContent xmlns="https://github.com/avaloniaui"
+<base:PopupContent xmlns="https://github.com/avaloniaui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,8 +10,8 @@
                    x:Class="WheelWizard.Views.Popups.MiiManagement.MiiCarouselWindow">
     <Grid Width="440" Height="300">
         <components:LoadingIcon HorizontalAlignment="Center" VerticalAlignment="Center" Width="180" Height="180"
-                                x:Name="MiiLoadingIcon" Foreground="{StaticResource Neutral800}" />
-        <behavior:Mii3DRender x:Name="Carousel" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="280" 
+                                x:Name="MiiLoadingIcon" Foreground="{DynamicResource Neutral800}" />
+        <behavior:Mii3DRender x:Name="Carousel" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="280"
                               ImageVariant="{x:Static miiVars:MiiImageVariants.FullBodyCarousel}"/>
     </Grid>
 </base:PopupContent>

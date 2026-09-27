@@ -1,4 +1,4 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,7 +13,7 @@
         WindowDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
         CanResize='False' Background="Transparent">
-    <Grid ColumnDefinitions="192,*" RowDefinitions="27,17,18,96,*,80" x:Name="CompleteGrid"
+    <Grid ColumnDefinitions="222,*" RowDefinitions="27,17,18,96,*,80" x:Name="CompleteGrid"
           Background="{StaticResource FrameColor}">
 
         <Border Grid.ColumnSpan="2"
@@ -38,12 +38,18 @@
             </Button>
         </DockPanel>
 
-        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Bottom">
-            <components:IconLabel IconData="{StaticResource WheelIcon}" x:Name="TitleLabel"
-                                  Foreground="{StaticResource Neutral400}"
-                                  FontSize="20" IconSize="31"
-                                  Margin="10,10,0,18"
-                                  PointerPressed="TitleLabel_OnPointerPressed" />
+        <Border x:Name="TitleBrandContainer" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+                VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="222">
+            <StackPanel x:Name="TitleBrandRow" Orientation="Horizontal" Spacing="4"
+                        Margin="0,10,0,18" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        PointerPressed="TitleLabel_OnPointerPressed">
+                <PathIcon x:Name="TitleWheelIcon" Data="{StaticResource WheelIcon}" Width="25" Height="25"
+                          HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Foreground="{DynamicResource LauncherBrandColor}" />
+                <TextBlock x:Name="TitleLabel" FontSize="15" FontWeight="SemiBold"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Foreground="{DynamicResource BodyTextColor}" />
+            </StackPanel>
         </Border>
 
         <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="5"
@@ -64,7 +70,7 @@
               ClipToBounds="False">
             <Border x:Name="SidebarProfileBlock"
                     Background="Transparent"
-                    BorderBrush="{StaticResource Neutral600}"
+                    BorderBrush="{DynamicResource Neutral600}"
                     BorderThickness="1"
                     CornerRadius="{StaticResource GlobalCornerRadius}"
                     ClipToBounds="True"
@@ -74,7 +80,7 @@
                 <Grid>
                     <Border CornerRadius="99999" IsVisible="False" Opacity="0.3" Name="SidebarProfileHoverEffect"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Background="{StaticResource Primary200}" Height="46" Width="46" Effect="blur(150)" />
+                            Background="{DynamicResource Primary200}" Height="46" Width="46" Effect="blur(150)" />
 
                     <patterns:CurrentUserProfile x:Name="SidebarCurrentUserProfile"
                                                  Margin="5,0"
@@ -90,14 +96,14 @@
                                      VerticalAlignment="Bottom"
                                      IsHitTestVisible="False"
                                      LoadingColor="Transparent"
-                                     FallBackColor="{StaticResource Neutral600}"
+                                     FallBackColor="{DynamicResource Neutral600}"
                                      Mii="{Binding Mii, ElementName=SidebarCurrentUserProfile}"
                                      ImageVariant="{x:Static miiVars:MiiImageVariants.FriendsSideProfile}" />
         </Grid>
 
         <TextBlock Text="{loc:T category.general}" Classes="SidebarSectionText"
                    VerticalAlignment="Bottom" Grid.Row="3" /> <!-- Repurposing this translation from settings -->
-        <StackPanel x:Name="SidePanelButtons" Grid.Column="0" Grid.Row="4" Width="192" VerticalAlignment="Top">
+        <StackPanel x:Name="SidePanelButtons" Grid.Column="0" Grid.Row="4" Width="222" VerticalAlignment="Top">
             <patterns:SidebarRadioButton IconData="{StaticResource Home}"
                                            Text="{loc:T page_title.home}"
                                            PageType="{x:Type pages:HomePage}"
@@ -111,6 +117,9 @@
             <patterns:SidebarRadioButton IconData="{StaticResource Shirt}"
                                            PageType="{x:Type pages:MiiListPage}"
                                            Text="{loc:T page_title.my_miis}" />
+            <patterns:SidebarRadioButton IconData="{StaticResource ThemePalette}"
+                                           PageType="{x:Type pages:ThemesPage}"
+                                           Text="Themes" />
             <TextBlock Text="{loc:T attribute.status_online}" Classes="SidebarSectionText" />
             <!-- Repurposing this translation from values -->
             <patterns:SidebarRadioButton IconData="{StaticResource RoomUsers}"
@@ -143,8 +152,8 @@
                                     x:Name="SupportUsButton"
                                     IconData="{StaticResource CoffeeIcon}"
                                     Text="{loc:T action.link.support}"
-                                    Foreground="{StaticResource Neutral400}"
-                                    HoverForeground="{StaticResource Primary300}"
+                                    Foreground="{DynamicResource Neutral400}"
+                                    HoverForeground="{DynamicResource Primary300}"
                                     FontSize="13"
                                     IconSize="20"
                                     Click="SupportUs_OnClick"
@@ -177,11 +186,11 @@
                         <Setter Property="Data" Value="{StaticResource ErrorTip}" />
                     </Style>
                     <Style Selector="Border.Success PathIcon">
-                        <Setter Property="Foreground" Value="{StaticResource Primary300}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Primary300}" />
                         <Setter Property="Data" Value="{StaticResource SuccessTip}" />
                     </Style>
                     <Style Selector="Border.Info PathIcon">
-                        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
                         <Setter Property="Data" Value="{StaticResource InfoTip}" />
                     </Style>
                     <Style Selector="Border.Question PathIcon">
@@ -279,7 +288,7 @@
             <Border Grid.Column="6"
                     Height="26"
                     BorderThickness="1"
-                    BorderBrush="{StaticResource Neutral600}"
+                    BorderBrush="{DynamicResource Neutral600}"
                     Background="Transparent"
                     CornerRadius="999"
                     HorizontalAlignment="Stretch"
@@ -288,7 +297,7 @@
                            Text="v0.0.0"
                            Classes="TinyText"
                            FontSize="13"
-                           Foreground="{StaticResource Neutral300}"
+                           Foreground="{DynamicResource Neutral300}"
                            FontWeight="Medium"
                            Margin="0,0,8,0"
                            HorizontalAlignment="Right"
@@ -300,19 +309,19 @@
                     <Setter Property="Cursor" Value="Hand" />
                 </Style>
                 <Style Selector="PathIcon#SidebarInfoIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
                 </Style>
                 <Style Selector="PathIcon#SidebarSettingsIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
                 </Style>
                 <Style Selector="Border#SidebarInfoButton:pointerover PathIcon#SidebarInfoIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
                 </Style>
                 <Style Selector="Border#SidebarSettingsButton:pointerover PathIcon#SidebarSettingsIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
                 </Style>
                 <Style Selector="Border#LiveStatusBorder:pointerover PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
                 </Style>
             </Grid.Styles>
         </Grid>
@@ -324,20 +333,20 @@
             <Border HorizontalAlignment="Stretch" x:Name="SnackbarBlur"
                     VerticalAlignment="Stretch" CornerRadius="9999" Effect="blur(150)" Opacity="0.1" />
 
-            <Border Background="{StaticResource Neutral700}" HorizontalAlignment="Stretch"
+            <Border Background="{DynamicResource Neutral700}" HorizontalAlignment="Stretch"
                     BorderThickness="1" x:Name="SnackbarContainer"
                     CornerRadius="{StaticResource GlobalCornerRadius}">
                 <Grid VerticalAlignment="Center" ColumnDefinitions="40,*,40">
                     <PathIcon Width="20" /> <!-- check mark, warning or error icon -->
                     <TextBlock Grid.Column="1" Classes="BodyText" VerticalAlignment="Center"
-                               Foreground="{StaticResource Neutral200}"
+                               Foreground="{DynamicResource Neutral200}"
                                x:Name="SnackbarText">
                         Example text
                     </TextBlock>
                     <components:IconLabelButton Grid.Column="2" IconData="{StaticResource XMark}"
-                                                Foreground="{StaticResource Neutral400}"
+                                                Foreground="{DynamicResource Neutral400}"
                                                 Click="CloseSnackbar_OnClick" HorizontalAlignment="Center"
-                                                HoverForeground="{StaticResource Neutral100}"
+                                                HoverForeground="{DynamicResource Neutral100}"
                                                 Text="" IconSize="14" />
                 </Grid>
             </Border>
@@ -350,13 +359,13 @@
                 <Style Selector="Grid#Snackbar.success">
                     <Style Selector="^ PathIcon">
                         <Setter Property="Data" Value="{StaticResource SuccessTip}" />
-                        <Setter Property="Foreground" Value="{StaticResource Primary400}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Primary400}" />
                     </Style>
                     <Style Selector="^ Border#SnackbarBlur">
-                        <Setter Property="Background" Value="{StaticResource Primary300}" />
+                        <Setter Property="Background" Value="{DynamicResource Primary300}" />
                     </Style>
                     <Style Selector="^ Border#SnackbarContainer">
-                        <Setter Property="BorderBrush" Value="{StaticResource Primary400}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
                     </Style>
                 </Style>
 

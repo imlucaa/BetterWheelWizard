@@ -8,24 +8,24 @@
     <!-- Color 1 = Face Fill -->
     <!-- Color 2 = Face Border -->
     <!-- Color 3 = Goatee Color -->
-    
+
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral400}">
+        <Border Padding="20" Background="{DynamicResource Neutral400}">
             <UniformGrid Columns="5">
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGoatee00}" IconName="MiiGoatee00"
                                                  Color4="{StaticResource Danger500}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGoatee01}" IconName="MiiGoatee01"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGoatee02}" IconName="MiiGoatee02"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGoatee03}" IconName="MiiGoatee03"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
             </UniformGrid>
         </Border>
     </Design.PreviewWith>

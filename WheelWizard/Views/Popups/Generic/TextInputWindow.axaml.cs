@@ -97,6 +97,7 @@ public partial class TextInputWindow : PopupContent
                 Text = c.ToString(),
                 IconSize = 0,
                 FontSize = 24,
+                FontFamily = (Avalonia.Media.FontFamily)Avalonia.Application.Current!.FindResource("MiiFont")!,
                 Padding = new(0),
                 Margin = new(1),
             };

@@ -20,7 +20,7 @@
                 Margin="0,18,0,0"
                 Padding="14"
                 Background="#12000000"
-                BorderBrush="{StaticResource Neutral700}"
+                BorderBrush="{DynamicResource Neutral700}"
                 BorderThickness="1"
                 CornerRadius="10">
             <StackPanel Spacing="8">

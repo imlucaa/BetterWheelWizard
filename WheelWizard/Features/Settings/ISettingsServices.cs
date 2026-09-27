@@ -50,6 +50,10 @@ public interface ISettingsProperties
     Setting SAVED_WINDOW_SCALE { get; }
     Setting RR_REGION { get; }
     Setting WW_LANGUAGE { get; }
+    Setting LAUNCHER_THEME_COLOR { get; }
+    Setting LAUNCHER_TEXT_COLOR { get; }
+    Setting LAUNCHER_BODY_TEXT_COLOR { get; }
+    Setting LAUNCHER_BACKGROUND_COLOR { get; }
     Setting NAND_ROOT_PATH { get; }
     Setting LOAD_PATH { get; }
     Setting VSYNC { get; }

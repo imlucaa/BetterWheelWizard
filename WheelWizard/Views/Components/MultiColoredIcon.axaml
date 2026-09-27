@@ -5,7 +5,7 @@
         <Border Padding="5" Background="#8B91A5">
             <UniformGrid Columns="5">
                 <controls:MultiColoredIcon Width="40" Height="40" IconData="{DynamicResource Hair34}"/>
-                
+
                 <controls:MultiColoredIcon Width="40" Height="40" Color1="Aqua" IconData="{DynamicResource Hair35}"/>
             </UniformGrid>
         </Border>

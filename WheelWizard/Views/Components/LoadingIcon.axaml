@@ -5,38 +5,38 @@
     <Design.PreviewWith >
         <StackPanel Orientation="Vertical" Spacing="5" Background="Black">
             <StackPanel Orientation="Horizontal" Spacing="5">
-                <Border Background="{StaticResource Neutral950}" Width="400" Height="400" Padding="10" CornerRadius="3">
+                <Border Background="{DynamicResource Neutral950}" Width="400" Height="400" Padding="10" CornerRadius="3">
                     <components:LoadingIcon VerticalAlignment="Center"/>
                 </Border>
 
-                <Border Background="{StaticResource Neutral900}" Padding="10" CornerRadius="3">
-                    <components:LoadingIcon Foreground="{StaticResource Neutral600}"
+                <Border Background="{DynamicResource Neutral900}" Padding="10" CornerRadius="3">
+                    <components:LoadingIcon Foreground="{DynamicResource Neutral600}"
                                          VerticalAlignment="Center"/>
                 </Border>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="5">
-                <Border Background="{StaticResource Neutral950}" Padding="10" CornerRadius="3">
+                <Border Background="{DynamicResource Neutral950}" Padding="10" CornerRadius="3">
                     <components:LoadingIcon VerticalAlignment="Center"/>
                 </Border>
 
-                <Border Background="{StaticResource Neutral900}" Width="400" Height="400" Padding="10" CornerRadius="3">
-                    <components:LoadingIcon Foreground="{StaticResource Neutral600}" FontSize="20"
+                <Border Background="{DynamicResource Neutral900}" Width="400" Height="400" Padding="10" CornerRadius="3">
+                    <components:LoadingIcon Foreground="{DynamicResource Neutral600}" FontSize="20"
                                          VerticalAlignment="Center"/>
                 </Border>
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
     <Style Selector="components|LoadingIcon">
-   <Setter Property="Foreground" Value="{StaticResource Neutral800}"/>
+   <Setter Property="Foreground" Value="{DynamicResource Neutral800}"/>
         <Setter Property="Template">
-            
+
             <ControlTemplate>
                 <components:AspectGrid Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Path Data="{StaticResource Spinner}"
-                          Fill="{TemplateBinding Foreground}" 
+                          Fill="{TemplateBinding Foreground}"
                           Stretch="Uniform" HorizontalAlignment="Center"
                           VerticalAlignment="Center">
-                   
+
                         <Path.Styles>
                             <Style Selector="Path">
                                 <Style.Animations>
@@ -50,7 +50,7 @@
                                     </Animation>
                                 </Style.Animations>
                             </Style>
-                        
+
                         </Path.Styles>
                     </Path>
                 </components:AspectGrid>

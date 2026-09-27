@@ -12,30 +12,32 @@
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" 
+        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1"
                 HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" 
+        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1"
                 HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <TextBlock Grid.Row="0" Text="{loc:T page_title.settings}" HorizontalAlignment="Left" VerticalAlignment="Top"
                    Classes="PageTitleText" />
-        
+
         <ScrollViewer Grid.Row="0"  HorizontalScrollBarVisibility="Auto">
             <StackPanel Orientation="Horizontal" x:Name="SettingPages" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                <RadioButton Classes="TopBar" Tag="WhWzSettings" 
+                <RadioButton Classes="TopBar" Tag="WhWzSettings"
                              Click="TopBarRadio_OnClick" Content="Wheel Wizard" IsChecked="True" />
                 <RadioButton x:Name="RecompSettingsTab" Classes="TopBar" Tag="RecompSettings"
                              Click="TopBarRadio_OnClick" Content="WiiCompiled" IsVisible="False" />
                 <RadioButton x:Name="VideoSettingsTab" Classes="TopBar" Tag="VideoSettings"
                              Click="TopBarRadio_OnClick" Content="{loc:T category.dolphin}"/>
-                <RadioButton Classes="TopBar" Tag="OtherSettings" 
+                <RadioButton Classes="TopBar" Tag="OtherSettings"
                              Click="TopBarRadio_OnClick" Content="{loc:T category.other}" />
+                <RadioButton Classes="TopBar" Tag="BackupSettings"
+                             Click="TopBarRadio_OnClick" Content="Backup" />
                 <RadioButton Classes="TopBar" Tag="AppInfo"
                              Click="TopBarRadio_OnClick" Content="{loc:T category.about}" />
             </StackPanel>
         </ScrollViewer>
-        
+
         <ContentControl Grid.Row="1" x:Name="SettingsContent" />
-        
+
         <components:Button Grid.Row="0" x:Name="DevButton" IsVisible="False"
                            Variant="Warning" Text="Dev Tool" Margin="3,12"
                            HorizontalAlignment="Right" VerticalAlignment="Top"

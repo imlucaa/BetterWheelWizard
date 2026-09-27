@@ -161,14 +161,14 @@
 
                     <Border Width="255" Height="30" Background="{DynamicResource Black}" Margin="0,2,0,0">
                         <TextBlock Text="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
-                    </Border>   
+                    </Border>
                 </StackPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <!-- Color Resources -->
-    
+
         <!-- Neutral Scale -->
         <Color x:Key="Neutral50">#F6F7F9</Color>
         <Color x:Key="Neutral100">#EDEDF1</Color>
@@ -195,6 +195,9 @@
         <Color x:Key="Danger800">#A4102B</Color>
         <Color x:Key="Danger900">#881429</Color>
         <Color x:Key="Danger950">#4A0511</Color>
+
+        <!-- Semantic success color: remains positive even when the selected theme is red. -->
+        <Color x:Key="Success400">#25C982</Color>
 
         <!-- Warning Scale -->
         <Color x:Key="Warning50">#FFFEE7</Color>
@@ -234,25 +237,25 @@
         <Color x:Key="Primary800">#08675A</Color>
         <Color x:Key="Primary900">#0C554A</Color>
         <Color x:Key="Primary950">#00342F</Color>
-    
+
         <Color x:Key="BlackIsh">#090A0C</Color>
-    
+
 
         <!-- IMPORTANT -->
         <!-- Any color that is going to be re-used in different components, and should ALWAYS stay the same. they can be defined here -->
         <!-- This is to ensure that if we ever want to change a color, we only have to change it in one place -->
-        <SolidColorBrush x:Key="BackgroundColor" Color="{StaticResource Neutral950}" />
-        <SolidColorBrush x:Key="FrameColor" Color="{StaticResource Neutral900}" />
-        <SolidColorBrush x:Key="BackgroundLineColor" Color="{StaticResource Neutral700}" />
-    
+        <SolidColorBrush x:Key="BackgroundColor" Color="{DynamicResource Neutral950}" />
+        <SolidColorBrush x:Key="FrameColor" Color="{DynamicResource Neutral900}" />
+        <SolidColorBrush x:Key="BackgroundLineColor" Color="{DynamicResource Neutral700}" />
+
         <!-- Text Brushes -->
-        <SolidColorBrush x:Key="BodyTextColor" Color="{StaticResource Neutral400}" />
-        <SolidColorBrush x:Key="TitleTextColor" Color="{StaticResource Neutral400}" />
-        <SolidColorBrush x:Key="TitleIconColor" Color="{StaticResource Neutral500}" />
-        <SolidColorBrush x:Key="TitleTextHoverColor" Color="{StaticResource Neutral300}" />
-        <SolidColorBrush x:Key="FormFieldLabelColor" Color="{StaticResource Neutral300}" />
-        <SolidColorBrush x:Key="IntenseTitleColor" Color="{StaticResource Neutral50}" />
-    
+        <SolidColorBrush x:Key="BodyTextColor" Color="{DynamicResource Neutral400}" />
+        <SolidColorBrush x:Key="TitleTextColor" Color="{DynamicResource Neutral400}" />
+        <SolidColorBrush x:Key="TitleIconColor" Color="{DynamicResource Neutral500}" />
+        <SolidColorBrush x:Key="TitleTextHoverColor" Color="{DynamicResource Neutral300}" />
+        <SolidColorBrush x:Key="FormFieldLabelColor" Color="{DynamicResource Neutral300}" />
+        <SolidColorBrush x:Key="IntenseTitleColor" Color="{DynamicResource Neutral50}" />
+
         <!-- Layout Constants -->
         <CornerRadius x:Key="GlobalCornerRadius">6</CornerRadius>
         <CornerRadius x:Key="WindowCornerRadius">0</CornerRadius>
@@ -270,23 +273,23 @@
 
         <!-- Grid Constants -->
         <GridLength x:Key="TopRowSize">95</GridLength>
-    
+
         <!-- Button Resources -->
         <CornerRadius x:Key="ButtonCornerRadius">4</CornerRadius>
-    
-        <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource Neutral700}" />
+
+        <SolidColorBrush x:Key="ButtonBackground" Color="{DynamicResource Neutral700}" />
         <SolidColorBrush x:Key="ButtonBorderBrush" Color="Transparent" />
-        <SolidColorBrush x:Key="ButtonForeground" Color="{StaticResource Neutral300}" />
-    
-        <SolidColorBrush x:Key="ButtonPointerOverBackground" Color="{StaticResource Neutral600}" />
+        <SolidColorBrush x:Key="ButtonForeground" Color="{DynamicResource Neutral300}" />
+
+        <SolidColorBrush x:Key="ButtonPointerOverBackground" Color="{DynamicResource Neutral600}" />
         <SolidColorBrush x:Key="ButtonPointerOverBorderBrush" Color="Transparent" />
-        <SolidColorBrush x:Key="ButtonPointerOverForeground" Color="{StaticResource Neutral300}" />
-    
-        <SolidColorBrush x:Key="ButtonPressedBackground" Color="{StaticResource Neutral500}" />
+        <SolidColorBrush x:Key="ButtonPointerOverForeground" Color="{DynamicResource Neutral300}" />
+
+        <SolidColorBrush x:Key="ButtonPressedBackground" Color="{DynamicResource Neutral500}" />
         <SolidColorBrush x:Key="ButtonPressedBorderBrush" Color="Transparent" />
-        <SolidColorBrush x:Key="ButtonPressedForeground" Color="{StaticResource Neutral300}" />
-    
-        <SolidColorBrush x:Key="ButtonDisabledBackground" Color="{StaticResource Neutral800}" />
+        <SolidColorBrush x:Key="ButtonPressedForeground" Color="{DynamicResource Neutral300}" />
+
+        <SolidColorBrush x:Key="ButtonDisabledBackground" Color="{DynamicResource Neutral800}" />
         <SolidColorBrush x:Key="ButtonDisabledBorderBrush" Color="Transparent" />
-        <SolidColorBrush x:Key="ButtonDisabledForeground" Color="{StaticResource Neutral950}" />
+        <SolidColorBrush x:Key="ButtonDisabledForeground" Color="{DynamicResource Neutral950}" />
 </ResourceDictionary>

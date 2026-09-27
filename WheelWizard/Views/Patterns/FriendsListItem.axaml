@@ -7,7 +7,7 @@
         xmlns:behaviorComponent="clr-namespace:WheelWizard.Views.Patterns"
         xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns">
     <Design.PreviewWith>
-        <StackPanel Spacing="6" Background="{StaticResource Neutral950}">
+        <StackPanel Spacing="6" Background="{DynamicResource Neutral950}">
             <patterns:FriendsListItem Width="428" Height="124"
                                         FriendCode="1234-5678-9012"
                                         UserName="Lum Patch"
@@ -48,21 +48,21 @@
     <Style Selector="patterns|FriendsListItem">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{StaticResource Neutral900}" CornerRadius="6" Padding="10,5"
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="6" Padding="10,5"
                         x:Name="PART_BaseBorder"
                         ClipToBounds="True">
                     <Grid ColumnDefinitions="2*, 5*, 5*">
-                        <Border Grid.Column="0" Background="{StaticResource Neutral700}"
+                        <Border Grid.Column="0" Background="{DynamicResource Neutral700}"
                                 Margin="-10,-5,0,-5" CornerRadius="7,0,0,7" />
                         <behaviorComponent:MiiImageLoader Grid.Column="0" Grid.ColumnSpan="2" Margin="-180,-25,0,-5"
                                                           HorizontalAlignment="Stretch"
                                                           VerticalAlignment="Stretch"
                                                           Mii="{TemplateBinding Mii}"
-                                                          FallBackColor="{StaticResource Neutral500}"
+                                                          FallBackColor="{DynamicResource Neutral500}"
                                                           ImageVariant="{x:Static miiVars:MiiImageVariants.FriendsSideProfile}"
                                                           LoadingColor="Transparent" />
 
-                        <Border Grid.Column="0" Grid.ColumnSpan="2" Background="{StaticResource Neutral900}"
+                        <Border Grid.Column="0" Grid.ColumnSpan="2" Background="{DynamicResource Neutral900}"
                                 Margin="-10,-5,0,-5" CornerRadius="7,0,0,7">
                             <Border.OpacityMask>
                                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
@@ -76,7 +76,7 @@
                                    FontSize="12" Foreground="{StaticResource Warning400}" />
                         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"
                                    Text="{loc:T attribute.status_online}"
-                                   FontSize="12" Foreground="{StaticResource Neutral200}">
+                                   FontSize="12" Foreground="{DynamicResource Neutral200}">
                             <TextBlock.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <Binding Path="IsOnline" RelativeSource="{RelativeSource TemplatedParent}" />
@@ -88,7 +88,7 @@
                         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"
                                    Text="{loc:T attribute.status_offline}"
                                    FontSize="12"
-                                   Foreground="{StaticResource Neutral200}">
+                                   Foreground="{DynamicResource Neutral200}">
                             <TextBlock.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <Binding Path="IsOnline" RelativeSource="{RelativeSource TemplatedParent}"
@@ -101,7 +101,7 @@
 
                         <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" CornerRadius="99999"
                                 Opacity="0.5" HorizontalAlignment="Right"
-                                Background="{StaticResource Primary200}"
+                                Background="{DynamicResource Primary200}"
                                 Margin="0,-100,20,0"
                                 Height="175" Width="100" Effect="blur(250)">
                             <Border.IsVisible>
@@ -171,11 +171,11 @@
                             </StackPanel>
                         </Grid>
 
-                        <Border Grid.Column="2" Background="{StaticResource Neutral950}" HorizontalAlignment="Left"
+                        <Border Grid.Column="2" Background="{DynamicResource Neutral950}" HorizontalAlignment="Left"
                                 VerticalAlignment="Top" Margin="10,10,0,0" x:Name="PART_BadgeBorder"
                                 CornerRadius="6" Height="40" Width="105" BorderThickness="1"
                                 IsVisible="{TemplateBinding HasBadges}"
-                                BorderBrush="{StaticResource Neutral600}">
+                                BorderBrush="{DynamicResource Neutral600}">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto" Padding="3">
                                 <ItemsControl ItemsSource="{TemplateBinding BadgeVariants}" x:Name="PART_BadgeContainer">
                                         <ItemsControl.ItemsPanel>
@@ -216,7 +216,7 @@
     <Style
         Selector="patterns|FriendsListItem[IsOnline=true][IsPending=false] /template/ Border#PART_BorderColor,
                      patterns|FriendsListItem[IsOnline=true][IsPending=false] /template/ Border#PART_BadgeBorder">
-        <Setter Property="BorderBrush" Value="{StaticResource Primary400}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
     </Style>
 
     <Style

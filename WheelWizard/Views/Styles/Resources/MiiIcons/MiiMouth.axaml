@@ -9,130 +9,130 @@
     <!-- Color 2 = Lip Bottom -->
     <!-- Color 3 = Lip Border/Line -->
     <!-- Color 4 = Teeth -->
-    
+
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral400}">
+        <Border Padding="20" Background="{DynamicResource Neutral400}">
             <UniformGrid Columns="5">
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth00}" IconName="MiiMouth00"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth01}" IconName="MiiMouth01"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth02}" IconName="MiiMouth02"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth03}" IconName="MiiMouth03"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth04}" IconName="MiiMouth04"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth05}" IconName="MiiMouth05"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth06}" IconName="MiiMouth06"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth07}" IconName="MiiMouth07"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth08}" IconName="MiiMouth08"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth09}" IconName="MiiMouth09"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth10}" IconName="MiiMouth10"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth11}" IconName="MiiMouth11"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth12}" IconName="MiiMouth12"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth13}" IconName="MiiMouth13"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth14}" IconName="MiiMouth14"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth15}" IconName="MiiMouth15"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth16}" IconName="MiiMouth16"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth17}" IconName="MiiMouth17"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth18}" IconName="MiiMouth18"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth19}" IconName="MiiMouth19"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth20}" IconName="MiiMouth20"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth21}" IconName="MiiMouth21"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth22}" IconName="MiiMouth22"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiMouth23}" IconName="MiiMouth23"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
-                                                 Color4="{StaticResource Neutral800}"/>
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
+                                                 Color4="{DynamicResource Neutral800}"/>
             </UniformGrid>
         </Border>
     </Design.PreviewWith>

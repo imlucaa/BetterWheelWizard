@@ -24,19 +24,19 @@
         <TextBlock Grid.Row="0" Text="{loc:T page_title.room_details}"
                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
                    Classes="PageTitleText" />
-        
+
         <PathIcon HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30" Width="30" Margin="3,12"
                   Data="{StaticResource Lock}" Foreground="{StaticResource TitleTextColor}">
             <PathIcon.IsVisible>
                 <Binding Path="Room.Type" Converter="{StaticResource IsEqualTo}" ConverterParameter="private" />
             </PathIcon.IsVisible>
         </PathIcon>
-     
+
         <components:IconLabelButton Grid.Row="0"
                                     IconData="{StaticResource ArrowLeft}"
                                     Text="{loc:T page_title.rooms}"
                                     Foreground="{StaticResource TitleTextColor}"
-                                    HoverForeground="{StaticResource Primary200}"
+                                    HoverForeground="{DynamicResource Primary200}"
                                     VerticalAlignment="Top" HorizontalAlignment="Left"
                                     FontSize="16" Click="GoBackClick" />
 
@@ -77,7 +77,7 @@
                 </StackPanel>
                 <Border Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
                         VerticalAlignment="Bottom" />
-                
+
             </Grid>
 
             <ListBox Grid.Row="1" x:Name="PlayersListView" SelectionMode="Single" BorderThickness="0"

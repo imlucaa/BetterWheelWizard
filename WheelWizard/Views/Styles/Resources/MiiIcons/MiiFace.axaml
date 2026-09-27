@@ -8,54 +8,54 @@
     <!-- Color 1 = Face Fill -->
     <!-- Color 2 = Face Border -->
     <!-- Color 3 = Face Features (Smile) -->
-    
+
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral400}">
+        <Border Padding="20" Background="{DynamicResource Neutral400}">
             <UniformGrid Columns="5">
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace00}" IconName="MiiFace00"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace01}" IconName="MiiFace01"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace02}" IconName="MiiFace02"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace03}" IconName="MiiFace03"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace04}" IconName="MiiFace04"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace05}" IconName="MiiFace05"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace06}" IconName="MiiFace06"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiFace07}" IconName="MiiFace07"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}"
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}"
                                                  />
             </UniformGrid>
         </Border>
     </Design.PreviewWith>
-    
+
     <DrawingImage x:Key="MiiColorBall">
         <DrawingGroup>
             <GeometryDrawing Brush="{StaticResource TemplateColor1}"
@@ -66,7 +66,7 @@
             </GeometryDrawing>
         </DrawingGroup>
     </DrawingImage>
-    
+
     <DrawingImage x:Key="MiiFace00">
         <DrawingGroup>
             <GeometryDrawing Brush="{StaticResource TemplateColor1}"

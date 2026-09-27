@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:WheelWizard.Views.Converters"
         xmlns:controls="using:WheelWizard.Views.Components">
-    <!-- 
+    <!--
     <Styles.Resources>
         <x:Double x:Key="HeightMultiplier">5.0</x:Double>
     </Styles.Resources> -->
@@ -85,7 +85,7 @@
                             <MultiBinding Converter="{x:Static conv:NumberConverters.MultiplyDouble}">
                                 <Binding Path="Width" RelativeSource="{RelativeSource Self}" />
                                 <Binding Path="RelativeLength" RelativeSource="{RelativeSource TemplatedParent}" />
-                                <!-- 
+                                <!--
                             If you want to do a constant, you can do it like this. And then add the constant to a resource like i did above
                             <Binding Source="{StaticResource HeightMultiplier}" /> -->
                             </MultiBinding>
@@ -123,7 +123,7 @@
                             </LinearGradientBrush>
                         </Border.Background>
                     </Border>
-            
+
             </ControlTemplate>
         </Setter>
     </Style>

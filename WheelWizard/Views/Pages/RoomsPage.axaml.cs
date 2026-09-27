@@ -1,11 +1,15 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using WheelWizard.Models.RRInfo;
 using WheelWizard.RrRooms;
 using WheelWizard.Shared.Polling;
 using WheelWizard.Views.Navigation;
+using WheelWizard.Views.Popups;
+using WheelWizard.Views.Popups.Generic;
 using WheelWizard.WheelWizardData;
 
 namespace WheelWizard.Views.Pages;
@@ -17,6 +21,10 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
     private LiveRoomsService LiveRooms { get; }
 
     private string? _searchQuery;
+    private int? _minimumAverageVr;
+    private int? _maximumAverageVr;
+    private int _averageVrSort;
+    private readonly DispatcherTimer _raceTimer = new() { Interval = TimeSpan.FromSeconds(1) };
 
     private readonly ObservableCollection<RrRoom> _rooms = [];
 
@@ -42,13 +50,18 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         }
     }
 
-    public RoomsPage(INavigationService navigation, LiveRoomsService liveRooms)
+    private IPopupFactory Popups { get; }
+
+    public RoomsPage(INavigationService navigation, LiveRoomsService liveRooms, IPopupFactory popups)
     {
         Navigation = navigation;
         LiveRooms = liveRooms;
+        Popups = popups;
         InitializeComponent();
         DataContext = this;
         LiveRooms.Subscribe(this);
+        _raceTimer.Tick += RaceTimer_OnTick;
+        _raceTimer.Start();
 
         OnUpdate(LiveRooms);
         Unloaded += RoomsPage_Unloaded;
@@ -59,18 +72,52 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         if (sender is not LiveRoomsService liveRooms)
             return;
 
-        Rooms.Clear();
         var count = liveRooms.RoomCount;
         EmptyRoomsView.IsVisible = count == 0;
         RoomsListViewContainer.IsVisible = count != 0;
         if (count == 0)
             return;
 
-        foreach (var room in liveRooms.CurrentRooms)
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        var query = _searchQuery?.Trim();
+        IEnumerable<RrRoom> filteredRooms = LiveRooms
+            .CurrentRooms.Where(room => room.PlayerCount > 0)
+            .Where(room => !_minimumAverageVr.HasValue || room.AverageVr >= _minimumAverageVr.Value)
+            .Where(room => !_maximumAverageVr.HasValue || room.AverageVr <= _maximumAverageVr.Value)
+            .Where(room =>
+                string.IsNullOrWhiteSpace(query)
+                || room.Id.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || room.GameMode.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || room.GameModeAbbrev.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || room.Players.Any(player =>
+                    player.Name.Contains(query, StringComparison.OrdinalIgnoreCase)
+                    || player.FriendCode.Contains(query, StringComparison.OrdinalIgnoreCase)
+                )
+            );
+
+        filteredRooms = _averageVrSort switch
+        {
+            1 => filteredRooms.OrderBy(room => room.AverageVr),
+            2 => filteredRooms.OrderByDescending(room => room.AverageVr),
+            3 => filteredRooms.OrderBy(room => room.AverageVr).Take(1),
+            4 => filteredRooms.OrderByDescending(room => room.AverageVr).Take(1),
+            _ => filteredRooms,
+        };
+
+        var visibleRooms = filteredRooms.ToList();
+        Rooms.Clear();
+        foreach (var room in visibleRooms)
             Rooms.Add(room);
 
-        RoomsListItemCount.Text = liveRooms.CurrentRooms.Count.ToString();
-        PerformSearch(_searchQuery);
+        Players.Clear();
+        RoomsListItemCount.Text = visibleRooms.Count.ToString();
+        RoomsListViewContainer.IsVisible = visibleRooms.Count != 0;
+        PlayerListViewContainer.IsVisible = false;
+        EmptyRoomsView.IsVisible = visibleRooms.Count == 0;
     }
 
     private void PerformSearch(string? query)
@@ -101,16 +148,69 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
 
     private void RoomsPage_Unloaded(object? sender, RoutedEventArgs e)
     {
+        _raceTimer.Stop();
         LiveRooms.Unsubscribe(this);
     }
 
-    private void PlayerSearchField_OnTextChanged(object? sender, TextChangedEventArgs e)
+    private void RaceTimer_OnTick(object? sender, EventArgs e)
     {
-        if (e.Source is not TextBox textBox)
-            return;
-        _searchQuery = textBox.Text;
-        PerformSearch(textBox.Text);
+        foreach (var room in Rooms)
+            room.RefreshRaceTime();
     }
+
+    private async void RoomsSearchButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var input = await Popups
+            .Create<TextInputWindow>()
+            .SetMainText("Search rooms")
+            .SetExtraText("Search by room ID, game mode, player name, or friend code.")
+            .SetPlaceholderText("Room, player, or friend code")
+            .SetInitialText(_searchQuery ?? string.Empty)
+            .SetButtonText("Clear", "Search")
+            .ShowDialog();
+
+        _searchQuery = string.IsNullOrWhiteSpace(input) ? null : input.Trim();
+        ApplyFilters();
+    }
+
+    private async void RoomsVrFilterButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var minInput = await Popups
+            .Create<TextInputWindow>()
+            .SetMainText("Minimum average VR")
+            .SetExtraText("Leave blank to remove the minimum VR filter.")
+            .SetPlaceholderText("Min avg. VR")
+            .SetInitialText(_minimumAverageVr?.ToString() ?? string.Empty)
+            .SetButtonText("Clear", "Next")
+            .ShowDialog();
+        _minimumAverageVr = ParseVrFilter(minInput);
+
+        var maxInput = await Popups
+            .Create<TextInputWindow>()
+            .SetMainText("Maximum average VR")
+            .SetExtraText("Leave blank to remove the maximum VR filter.")
+            .SetPlaceholderText("Max avg. VR")
+            .SetInitialText(_maximumAverageVr?.ToString() ?? string.Empty)
+            .SetButtonText("Clear", "Apply")
+            .ShowDialog();
+        _maximumAverageVr = ParseVrFilter(maxInput);
+        ApplyFilters();
+    }
+
+    private async void RoomsSortButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var selectedSort = await Popups.Create<RoomSortWindow>().AwaitAnswer();
+        if (selectedSort == null)
+            return;
+
+        _averageVrSort = selectedSort.Value;
+        ApplyFilters();
+    }
+
+    internal static int? ParseVrFilter(string? text) =>
+        int.TryParse(text, NumberStyles.Integer | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out var value) && value >= 0
+            ? value
+            : null;
 
     private void RoomsView_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

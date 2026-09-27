@@ -1,11 +1,11 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Note that all checkboxes and radio buttons are toggle buttons. 
-    This means that if we style the toggleButton instead of the checkbox or radio button, 
+    <!-- Note that all checkboxes and radio buttons are toggle buttons.
+    This means that if we style the toggleButton instead of the checkbox or radio button,
     we can apply the checkbox style to a radio button and vice versa if we want. -->
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical">
-            <Border Height="40" Background="{StaticResource Neutral950}">
+            <Border Height="40" Background="{DynamicResource Neutral950}">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                     <RadioButton Content="Option 1" Classes="TopBar" IsChecked="True" />
                     <RadioButton Content="Option 2" Classes="TopBar" />
@@ -14,10 +14,10 @@
                 </StackPanel>
 
             </Border>
-            <Border Background="{StaticResource Neutral900}" Height="2"
+            <Border Background="{DynamicResource Neutral900}" Height="2"
                     HorizontalAlignment="Stretch" />
             <StackPanel Orientation="Horizontal">
-                <Border Padding="20" Background="{StaticResource Neutral950}">
+                <Border Padding="20" Background="{DynamicResource Neutral950}">
                     <StackPanel>
                         <ToggleButton Content="Toggle button" IsEnabled="False" />
                         <TextBlock Classes="TinyText" Margin="0,5">CheckBox:</TextBlock>
@@ -41,7 +41,7 @@
                         <CheckBox Classes="Switch" Content="Switch 3" IsEnabled="False" />
                     </StackPanel>
                 </Border>
-                <Border Padding="20" Background="{StaticResource Neutral900}">
+                <Border Padding="20" Background="{DynamicResource Neutral900}">
                     <StackPanel>
                         <ToggleButton Content="Toggle button" />
                         <TextBlock Classes="TinyText" Margin="0,5">CheckBox:</TextBlock>
@@ -73,15 +73,15 @@
     <!-- Note that all these colors are only accessible in this file. so that's pretty cool -->
     <Styles.Resources>
         <ResourceDictionary>
-            <SolidColorBrush x:Key="Default-CheckedColor" Color="{StaticResource Primary400}" />
-            <SolidColorBrush x:Key="Default-InnerWhite" Color="{StaticResource Neutral50}" />
-            <SolidColorBrush x:Key="Default-Background" Color="{StaticResource Neutral950}" />
-            <SolidColorBrush x:Key="Default-BorderColor" Color="{StaticResource Neutral500}" />
+            <SolidColorBrush x:Key="Default-CheckedColor" Color="{DynamicResource Primary400}" />
+            <SolidColorBrush x:Key="Default-InnerWhite" Color="{DynamicResource Neutral50}" />
+            <SolidColorBrush x:Key="Default-Background" Color="{DynamicResource Neutral950}" />
+            <SolidColorBrush x:Key="Default-BorderColor" Color="{DynamicResource Neutral500}" />
 
-            <SolidColorBrush x:Key="Disabled-CheckedColor" Color="{StaticResource Neutral700}" />
-            <SolidColorBrush x:Key="Disabled-InnerWhite" Color="{StaticResource Neutral500}" />
-            <SolidColorBrush x:Key="Disabled-Background" Color="{StaticResource Neutral900}" />
-            <SolidColorBrush x:Key="Disabled-BorderColor" Color="{StaticResource Neutral700}" />
+            <SolidColorBrush x:Key="Disabled-CheckedColor" Color="{DynamicResource Neutral700}" />
+            <SolidColorBrush x:Key="Disabled-InnerWhite" Color="{DynamicResource Neutral500}" />
+            <SolidColorBrush x:Key="Disabled-Background" Color="{DynamicResource Neutral900}" />
+            <SolidColorBrush x:Key="Disabled-BorderColor" Color="{DynamicResource Neutral700}" />
         </ResourceDictionary>
     </Styles.Resources>
 
@@ -89,12 +89,12 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Style Selector="^:disabled /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         </Style>
         <Style Selector="^[IsEnabled=True] /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         </Style>
     </Style>
 
@@ -188,10 +188,10 @@
 
 
     <Style Selector="CheckBox.Switch, RadioButton.Switch">
-        <Setter Property="Background" Value="{StaticResource Neutral700}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
 
         <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="{StaticResource Neutral500}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral500}" />
         </Style>
 
         <Style Selector="^[IsChecked=True]">
@@ -202,7 +202,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
             <Style Selector="^ /template/ Ellipse#SwitchNob">
                 <Setter Property="Fill" Value="{StaticResource Disabled-InnerWhite}" />
             </Style>
@@ -241,7 +241,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
             <Style Selector="^ /template/ Ellipse#SwitchNob">
                 <Setter Property="Fill" Value="{StaticResource Disabled-InnerWhite}" />
             </Style>
@@ -271,26 +271,26 @@
 
     <Style Selector="ToggleButton">
         <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
-        <Setter Property="Background" Value="{StaticResource Neutral600}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral600}" />
         <Style Selector="^:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
         </Style>
         <Style Selector="^[IsChecked=True] /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Primary600}" />
+            <Setter Property="Background" Value="{DynamicResource Primary600}" />
         </Style>
         <Style Selector="^:pointerover[IsChecked=True] /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Primary700}" />
+            <Setter Property="Background" Value="{DynamicResource Primary700}" />
         </Style>
         <Style Selector="^[IsEnabled=False] /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Neutral800}" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         </Style>
     </Style>
 
     <Style Selector="RadioButton.TopBar, CheckBox.TopBar">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         <Setter Property="Background" Value="Transparent" />
 
         <Setter Property="Template">
@@ -307,12 +307,12 @@
 
 
         <Style Selector="^:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
-            <Setter Property="Foreground" Value="{StaticResource Primary300}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary300}" />
         </Style>
         <Style Selector="^[IsChecked=True] /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
-            <Setter Property="Foreground" Value="{StaticResource Primary100}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary100}" />
         </Style>
 
         <Style Selector="^[IsEnabled=False] /template/ ContentPresenter">

@@ -1,17 +1,17 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:conv="clr-namespace:WheelWizard.Views.Converters"
         xmlns:components1="clr-namespace:WheelWizard.Views.Components">
 
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral300}">
+        <Border Padding="20" Background="{DynamicResource Neutral300}">
             <StackPanel Spacing="5">
                 <components1:StateBox Text="Active" IconSize="0"/>
                 <components1:StateBox Text="Dark" Variant="Dark" IconSize="0" />
                 <components1:StateBox Text="Success" Variant="Success" IconData="{StaticResource CheckMark}"/>
                 <components1:StateBox Text="Warning" Variant="Warning" IconData="{StaticResource WarningTip}"/>
                 <components1:StateBox Text="Danger" Variant="Danger" IconData="{StaticResource XMark}"/>
-                <components1:StateBox IconData="{StaticResource Hourglass}" 
+                <components1:StateBox IconData="{StaticResource Hourglass}"
                                      IconSize="14" Text="Cross"/>
                 <components1:StateBox x:Name="PlayerCountBox"  Text="0" IconSize="16"
                                      IconData="{StaticResource UserCouple}"
@@ -24,7 +24,7 @@
     <Style Selector="components1|StateBox">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border x:Name="PART_StateBox_Root" 
+                <Border x:Name="PART_StateBox_Root"
                         CornerRadius="3"
                         Padding="6,3"
                         ToolTip.Tip="{TemplateBinding TipText}"
@@ -32,18 +32,18 @@
                         ToolTip.ShowDelay="20">
                     <Grid ColumnDefinitions="Auto,Auto,*">
                         <!-- Icon (always visible if IconData is set) -->
-                        <Border Background="Transparent" 
+                        <Border Background="Transparent"
                                 IsVisible="{TemplateBinding IconData, Converter={x:Static ObjectConverters.IsNotNull}}"
                                 Width="{TemplateBinding IconSize}" Height="{TemplateBinding IconSize}">
                             <Path Data="{TemplateBinding IconData}" x:Name="PART_StateBox_IconPath"
                                   Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        
+
                         <!-- Spacer between icon and text/content -->
                         <Rectangle Grid.Column="1" Width="4"
-                                   IsVisible="{TemplateBinding IconSize, 
+                                   IsVisible="{TemplateBinding IconSize,
                                    Converter={x:Static conv:NumberConverters.GreaterThan0 }}"/>
-                        
+
                         <!-- Text (visible when Content is null) -->
                         <TextBlock Grid.Column="2" x:Name="PART_StateBox_Text"
                                    Margin="0,0,0,0"
@@ -51,7 +51,7 @@
                                    FontSize="{TemplateBinding FontSize}"
                                    FontWeight="Medium" VerticalAlignment="Center"
                                    IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNull}}"/>
-                        
+
                         <!-- Content (visible when Content is not null) -->
                         <ContentPresenter Grid.Column="2" x:Name="PART_ContentPresenter"
                                           Content="{TemplateBinding Content}"
@@ -65,57 +65,57 @@
 
     <Style Selector="components1|StateBox">
         <Style Selector="^ /template/ Border#PART_StateBox_Root">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
         </Style>
         <Style Selector="^ /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
         </Style>
         <Style Selector="^ /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Neutral500}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral500}" />
         </Style>
         <Style Selector="^:pointerover /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
         </Style>
         <Style Selector="^:pointerover /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Neutral300}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral300}" />
         </Style>
 
 
 
         <Style Selector="^.Dark /template/ Border#PART_StateBox_Root">
-            <Setter Property="Background" Value="{StaticResource Neutral950}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
         </Style>
         <Style Selector="^.Dark /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
         </Style>
         <Style Selector="^.Dark /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Neutral600}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral600}" />
         </Style>
         <Style Selector="^.Dark:pointerover /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
         </Style>
         <Style Selector="^.Dark:pointerover /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Neutral400}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral400}" />
         </Style>
 
 
 
         <Style Selector="^.Success /template/ Border#PART_StateBox_Root">
-            <Setter Property="Background" Value="{StaticResource Primary700}" />
+            <Setter Property="Background" Value="{DynamicResource Primary700}" />
         </Style>
         <Style Selector="^.Success /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Primary200}" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary200}" />
         </Style>
         <Style Selector="^.Success /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Primary200}" />
+            <Setter Property="Fill" Value="{DynamicResource Primary200}" />
         </Style>
         <Style Selector="^.Success:pointerover /template/ TextBlock#PART_StateBox_Text">
-            <Setter Property="Foreground" Value="{StaticResource Primary100}" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary100}" />
         </Style>
         <Style Selector="^.Success:pointerover /template/ Path#PART_StateBox_IconPath">
-            <Setter Property="Fill" Value="{StaticResource Primary100}" />
+            <Setter Property="Fill" Value="{DynamicResource Primary100}" />
         </Style>
-        
+
         <Style Selector="^.Warning /template/ Border#PART_StateBox_Root">
             <Setter Property="Background" Value="{StaticResource Warning700}" />
         </Style>
@@ -131,7 +131,7 @@
         <Style Selector="^.Warning:pointerover /template/ Path#PART_StateBox_IconPath">
             <Setter Property="Fill" Value="{StaticResource Warning100}" />
         </Style>
-        
+
         <Style Selector="^.Danger /template/ Border#PART_StateBox_Root">
             <Setter Property="Background" Value="{StaticResource Danger700}" />
         </Style>

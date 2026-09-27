@@ -8,6 +8,7 @@ using WheelWizard.Settings.Types;
 using WheelWizard.Shared.IO;
 using WheelWizard.Shared.Platform;
 using WheelWizard.Shared.Processes;
+using WheelWizard.Themes;
 
 namespace WheelWizard.Settings;
 
@@ -218,6 +219,10 @@ public class SettingsManager : ISettingsManager, IDisposable
         SAVED_WINDOW_SCALE = RegisterWhWz("WindowScale", 1.0, SettingValues.IsValidWindowScale);
         RR_REGION = RegisterWhWz("RR_Region", MarioKartWiiEnums.Regions.None);
         WW_LANGUAGE = RegisterWhWz("WW_Language", "en", value => SettingValues.WhWzLanguages.ContainsKey((string)value!));
+        LAUNCHER_THEME_COLOR = RegisterWhWz("LauncherThemeColor", "#249AF3", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_TEXT_COLOR = RegisterWhWz("LauncherTextColor", "#F1F3F5", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BODY_TEXT_COLOR = RegisterWhWz("LauncherBodyTextColor", "#D7D9E0", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BACKGROUND_COLOR = RegisterWhWz("LauncherBackgroundColor", "#101216", LauncherThemeService.IsValidHexColor);
         #endregion
 
         #region Dolphin settings
@@ -325,6 +330,10 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting SAVED_WINDOW_SCALE { get; }
     public Setting RR_REGION { get; }
     public Setting WW_LANGUAGE { get; }
+    public Setting LAUNCHER_THEME_COLOR { get; }
+    public Setting LAUNCHER_TEXT_COLOR { get; }
+    public Setting LAUNCHER_BODY_TEXT_COLOR { get; }
+    public Setting LAUNCHER_BACKGROUND_COLOR { get; }
 
     public Setting NAND_ROOT_PATH { get; }
     public Setting LOAD_PATH { get; }

@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Logging;
+using WheelWizard.Themes;
 
 namespace WheelWizard.Settings;
 
 public sealed class SettingsStartupInitializer(
     ISettingsManager settingsManager,
     ISettingsLocalizationService localizationService,
+    ILauncherThemeService launcherThemeService,
     ILogger<SettingsStartupInitializer> logger
 ) : ISettingsStartupInitializer
 {
@@ -12,6 +14,7 @@ public sealed class SettingsStartupInitializer(
     {
         settingsManager.LoadSettings();
         localizationService.Initialize();
+        launcherThemeService.Initialize();
 
         var reportResult = settingsManager.ValidateCorePathSettings();
         if (reportResult.IsFailure)

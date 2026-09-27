@@ -1,0 +1,210 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="456" d:DesignHeight="776"
+             x:Class="WheelWizard.Views.Pages.ThemesPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{DynamicResource BackgroundLineColor}" Height="1"
+                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12"
+              VerticalAlignment="Center" Margin="3,8,3,8">
+            <Border Width="42" Height="42" CornerRadius="21"
+                    Background="{DynamicResource Neutral900}"
+                    BorderBrush="{DynamicResource Neutral700}" BorderThickness="1">
+                <PathIcon Data="{StaticResource ThemePalette}" Width="22" Height="22"
+                          Foreground="{DynamicResource Primary300}" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="Themes" FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource Neutral50}" />
+                <TextBlock Text="Choose, create, and share launcher colors"
+                           Classes="TinyText" />
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,18,0,6" Spacing="16">
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="Theme library" FontSize="18" />
+                            <TextBlock Text="Built-in presets and themes you save appear here."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Border Background="{DynamicResource Neutral950}" CornerRadius="8"
+                                BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="10,8">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <StackPanel Spacing="2" VerticalAlignment="Center">
+                                    <TextBlock x:Name="SelectedThemeText" Text="Current colors" FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="Choose a preset or manage these colors" Classes="TinyText" />
+                                </StackPanel>
+                                <components:Button Grid.Column="1" Text="Choose" ButtonSize="Compact" Variant="Primary"
+                                                   IconData="{StaticResource ThemePalette}" Click="ChooseTheme_OnClick" />
+                            </Grid>
+                        </Border>
+                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
+                            <components:Button Grid.Column="0" Text="Save" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource PlusMark}" Click="SaveTheme_OnClick" />
+                            <components:Button Grid.Column="1" Text="Copy" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource Copy}" Click="CopyThemeCode_OnClick"
+                                               ToolTip.Tip="Copy these four colors as a sharing code" />
+                            <components:Button Grid.Column="2" Text="Paste" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource FileImport}" Click="PasteThemeCode_OnClick"
+                                               ToolTip.Tip="Load four colors from a sharing code" />
+                            <components:Button Grid.Column="3" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
+                                               IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
+                                               IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
+                        </Grid>
+                        <components:Button x:Name="RestorePresetsButton" Text="Restore presets" ButtonSize="Compact"
+                                           Variant="Default" Click="RestorePresets_OnClick"
+                                           HorizontalAlignment="Center"
+                                           ToolTip.Tip="Restore deleted built-in themes" />
+                        <TextBlock x:Name="ThemeStatusText" Classes="TinyText" Foreground="{DynamicResource Primary300}"
+                                    TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="Choose your colors" FontSize="18" />
+                                <TextBlock Text="Enter a HEX value or click a swatch to use the color picker."
+                                           Foreground="{StaticResource BodyTextColor}" FontSize="13" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="34" Height="34" CornerRadius="17"
+                                     Background="{Binding Background, ElementName=ColorPreview}"
+                                     BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
+                        </Grid>
+
+                        <StackPanel Spacing="8">
+                            <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral800}"
+                                    BorderThickness="1" CornerRadius="10" Padding="10">
+                                <Grid ColumnDefinitions="44,*,112" ColumnSpacing="10">
+                                    <Button Width="44" Height="44" Padding="3" Background="Transparent"
+                                            BorderThickness="0" ToolTip.Tip="Pick the main color"
+                                            Click="AccentColor_OnClick">
+                                        <Border x:Name="AccentSwatch" CornerRadius="8"
+                                                BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
+                                    </Button>
+                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="Main color" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BodyTextColor}" />
+                                        <TextBlock Text="Buttons, selections, highlights, and graphs"
+                                                   Classes="TinyText" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBox Grid.Column="2" x:Name="ColorTextBox" TextChanged="Color_OnTextChanged"
+                                             PlaceholderText="#FFFFFF" MaxLength="7" Height="34"
+                                             VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral800}"
+                                    BorderThickness="1" CornerRadius="10" Padding="10">
+                                <Grid ColumnDefinitions="44,*,112" ColumnSpacing="10">
+                                    <Button Width="44" Height="44" Padding="3" Background="Transparent"
+                                            BorderThickness="0" ToolTip.Tip="Pick the wheel and title color"
+                                            Click="BrandColor_OnClick">
+                                        <Border x:Name="BrandSwatch" CornerRadius="8"
+                                                BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
+                                    </Button>
+                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="Wheel and title" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BodyTextColor}" />
+                                        <TextBlock Text="The wheel, page titles, and game title"
+                                                   Classes="TinyText" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBox Grid.Column="2" x:Name="BrandColorTextBox" TextChanged="Color_OnTextChanged"
+                                             PlaceholderText="#FFFFFF" MaxLength="7" Height="34"
+                                             VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral800}"
+                                    BorderThickness="1" CornerRadius="10" Padding="10">
+                                <Grid ColumnDefinitions="44,*,112" ColumnSpacing="10">
+                                    <Button Width="44" Height="44" Padding="3" Background="Transparent"
+                                            BorderThickness="0" ToolTip.Tip="Pick the text color"
+                                            Click="TextColor_OnClick">
+                                        <Border x:Name="TextSwatch" CornerRadius="8"
+                                                BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
+                                    </Button>
+                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="Text color" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BodyTextColor}" />
+                                        <TextBlock Text="Text, numbers, icons, and the app name"
+                                                   Classes="TinyText" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBox Grid.Column="2" x:Name="TextColorTextBox" TextChanged="Color_OnTextChanged"
+                                             PlaceholderText="#FFFFFF" MaxLength="7" Height="34"
+                                             VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Border x:Name="TextContrastNotice" IsVisible="False"
+                                    Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Warning500}"
+                                    BorderThickness="1" CornerRadius="8" Padding="10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Border x:Name="EffectiveTextColorPreview" Width="24" Height="24" CornerRadius="12"
+                                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                    <TextBlock Grid.Column="1" x:Name="TextContrastMessage"
+                                               Foreground="{DynamicResource Neutral200}" FontSize="13"
+                                               VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Neutral800}"
+                                    BorderThickness="1" CornerRadius="10" Padding="10">
+                                <Grid ColumnDefinitions="44,*,112" ColumnSpacing="10">
+                                    <Button Width="44" Height="44" Padding="3" Background="Transparent"
+                                            BorderThickness="0" ToolTip.Tip="Pick the background color"
+                                            Click="BackgroundColor_OnClick">
+                                        <Border x:Name="BackgroundSwatch" CornerRadius="8"
+                                                BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
+                                    </Button>
+                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="Background" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BodyTextColor}" />
+                                        <TextBlock Text="Window, pages, cards, menus, and popups"
+                                                   Classes="TinyText" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBox Grid.Column="2" x:Name="BackgroundColorTextBox" TextChanged="Color_OnTextChanged"
+                                             PlaceholderText="#000000" MaxLength="7" Height="34"
+                                             VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <Border IsVisible="False">
+                            <StackPanel>
+                                <Border x:Name="ColorPreview" Background="#249AF3" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Background="{DynamicResource Neutral950}"
+                BorderBrush="{DynamicResource Neutral800}" BorderThickness="0,1,0,0"
+                Padding="0,10,0,2">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock x:Name="ColorError" Text="Enter valid colors. A name is required to save."
+                           Foreground="{StaticResource Danger400}" VerticalAlignment="Center"
+                           TextWrapping="Wrap" IsVisible="False" />
+                <components:Button Grid.Column="1" Text="Apply theme" Variant="Default"
+                                   IconData="{StaticResource CheckMark}" Click="ApplyTheme_OnClick" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

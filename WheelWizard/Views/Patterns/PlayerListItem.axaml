@@ -7,7 +7,7 @@
         xmlns:miiVars="using:WheelWizard.MiiImages.Domain"
         xmlns:behaviorComponent="clr-namespace:WheelWizard.Views.Patterns">
     <Design.PreviewWith>
-        <StackPanel Background="{StaticResource Neutral950}">
+        <StackPanel Background="{DynamicResource Neutral950}">
             <patterns:PlayerListItem Width="428" Height="124"
                                        FriendCode="1234-5678-9012"
                                        UserName="Lum Patch"
@@ -51,11 +51,11 @@
                 <Border Classes="BoxItemBackground">
                     <Grid ColumnDefinitions="Auto,130,80,*">
                         <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
-                                Background="{StaticResource Neutral950}" Width="50" Height="50" Margin="0,3">
+                                Background="{DynamicResource Neutral950}" Width="50" Height="50" Margin="0,3">
                             <behaviorComponent:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                              LoadingColor="{StaticResource Neutral600}"
+                                                              LoadingColor="{DynamicResource Neutral600}"
                                                               Mii="{TemplateBinding Mii}"
-                                                              FallBackColor="{StaticResource Neutral600}"
+                                                              FallBackColor="{DynamicResource Neutral600}"
                                                               ImageVariant="{x:Static miiVars:MiiImageVariants.OnlinePlayerSmall}" />
                         </Border>
 
@@ -79,7 +79,7 @@
                             <Border Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch"
                                     IsVisible="{TemplateBinding HasBadges}" Margin="0,0,6,0"
                                     CornerRadius="6" Height="40" BorderThickness="1"
-                                    BorderBrush="{StaticResource Neutral600}" VerticalAlignment="Center">
+                                    BorderBrush="{DynamicResource Neutral600}" VerticalAlignment="Center">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                                     <ItemsControl ItemsSource="{TemplateBinding BadgeVariants}" x:Name="PART_BadgeContainer">
                                         <ItemsControl.ItemsPanel>
@@ -124,7 +124,7 @@
                             <PathIcon Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
                                       IsVisible="{TemplateBinding IsOpenHost}"
                                       Data="{StaticResource LockOpen}" Width="16" Height="16"
-                                      Foreground="{StaticResource Primary400}"
+                                      Foreground="{DynamicResource Primary400}"
                                       Margin="0,0,10,0"
                                       ToolTip.Tip="Open Host"
                                       ToolTip.Placement="Top"
@@ -137,7 +137,7 @@
     </Style>
 
     <Style Selector="patterns|PlayerListItem /template/ Border#PART_TopLabelBadge">
-        <Setter Property="Background" Value="{StaticResource Primary600}" />
+        <Setter Property="Background" Value="{DynamicResource Primary600}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 

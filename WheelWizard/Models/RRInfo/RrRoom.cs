@@ -1,14 +1,20 @@
+using System.ComponentModel;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
 
 namespace WheelWizard.Models.RRInfo;
 
-public class RrRoom
+public class RrRoom : INotifyPropertyChanged
 {
     public required string Id { get; set; }
     public required DateTime Created { get; set; }
     public required string Type { get; set; }
     public required bool Suspend { get; set; }
     public string? Rk { get; set; } // RK does not exists in private rooms
+    public string TrackName { get; set; } = string.Empty;
+    public string RoomType { get; set; } = string.Empty;
+    public int? RaceNumber { get; set; }
+    public int? CourseId { get; set; }
+    public DateTime? RaceObservedAt { get; set; }
     public required List<RrPlayer> Players { get; set; }
 
     public int PlayerCount => Players.Count;
@@ -144,6 +150,18 @@ public class RrRoom
             return vrs.Count == 0 ? 0 : (int)vrs.Average();
         }
     }
+
+    public string AverageVrDisplay => Players.Any(player => player.Vr.HasValue) ? AverageVr.ToString("N0") : "—";
+
+    public string DisplayGameMode => GameMode == "Unknown Mode" ? (IsPublic ? "Public Room" : "Private Room") : GameMode;
+
+    public string TrackDisplay => string.IsNullOrWhiteSpace(TrackName) ? "Waiting for next race" : TrackName;
+
+    public string RaceTimeDisplay => RaceObservedAt.HasValue ? tTime(DateTime.UtcNow - RaceObservedAt.Value) : "Waiting";
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public void RefreshRaceTime() => PropertyChanged?.Invoke(this, new(nameof(RaceTimeDisplay)));
 
     public RrPlayer? HostPlayer => Players.FirstOrDefault(p => p.IsOpenHost);
 

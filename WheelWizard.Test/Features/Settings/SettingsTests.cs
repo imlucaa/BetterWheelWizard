@@ -12,6 +12,7 @@ using WheelWizard.Settings;
 using WheelWizard.Settings.Types;
 using WheelWizard.Shared.Platform;
 using WheelWizard.Shared.Processes;
+using WheelWizard.Themes;
 
 namespace WheelWizard.Test.Features.Settings;
 
@@ -371,14 +372,16 @@ public class SettingsStartupInitializerTests
         var settingsManager = Substitute.For<ISettingsManager>();
         var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
         var localizationService = Substitute.For<ISettingsLocalizationService>();
+        var themeService = Substitute.For<ILauncherThemeService>();
         var logger = Substitute.For<ILogger<SettingsStartupInitializer>>();
         settingsManager.ValidateCorePathSettings().Returns(Ok(new SettingsValidationReport([])));
-        var initializer = new SettingsStartupInitializer(settingsManager, localizationService, logger);
+        var initializer = new SettingsStartupInitializer(settingsManager, localizationService, themeService, logger);
 
         initializer.Initialize();
 
         settingsManager.Received(1).LoadSettings();
         localizationService.Received(1).Initialize();
+        themeService.Received(1).Initialize();
     }
 
     [Fact]
@@ -387,15 +390,17 @@ public class SettingsStartupInitializerTests
         var settingsManager = Substitute.For<ISettingsManager>();
         var signalBus = SettingsTestUtils.CreateSettingsSignalBus();
         var localizationService = Substitute.For<ISettingsLocalizationService>();
+        var themeService = Substitute.For<ILauncherThemeService>();
         var logger = Substitute.For<ILogger<SettingsStartupInitializer>>();
         settingsManager.ValidateCorePathSettings().Returns(Fail("validation failed"));
-        var initializer = new SettingsStartupInitializer(settingsManager, localizationService, logger);
+        var initializer = new SettingsStartupInitializer(settingsManager, localizationService, themeService, logger);
 
         var exception = Record.Exception(initializer.Initialize);
 
         Assert.Null(exception);
         settingsManager.Received(1).LoadSettings();
         localizationService.Received(1).Initialize();
+        themeService.Received(1).Initialize();
     }
 }
 

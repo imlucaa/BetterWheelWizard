@@ -10,44 +10,44 @@
     <!-- Color 3 = Glass Color -->
 
     <Design.PreviewWith>
-        <Border Padding="20" Background="{StaticResource Neutral400}">
+        <Border Padding="20" Background="{DynamicResource Neutral400}">
             <UniformGrid Columns="5">
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses00}" IconName="MiiGlasses00"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses01}" IconName="MiiGlasses01"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses02}" IconName="MiiGlasses02"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses03}" IconName="MiiGlasses03"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses04}" IconName="MiiGlasses04"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses05}" IconName="MiiGlasses05"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses06}" IconName="MiiGlasses06"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses07}" IconName="MiiGlasses07"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
                 <util:MultiColorExampleComponent IconData="{DynamicResource MiiGlasses08}" IconName="MiiGlasses08"
-                                                 Color1="{StaticResource Neutral50}"
-                                                 Color2="{StaticResource Neutral300}"
-                                                 Color3="{StaticResource Neutral600}" />
+                                                 Color1="{DynamicResource Neutral50}"
+                                                 Color2="{DynamicResource Neutral300}"
+                                                 Color3="{DynamicResource Neutral600}" />
             </UniformGrid>
         </Border>
     </Design.PreviewWith>

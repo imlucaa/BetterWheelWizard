@@ -8,8 +8,8 @@
              xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
              xmlns:patches="clr-namespace:WheelWizard.Features.Patches"
              mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="876"
-             x:Class="WheelWizard.Views.Pages.ModsPage"
-             x:DataType="pages:ModsPage">
+              x:Class="WheelWizard.Views.Pages.ModsPage"
+              x:DataType="pages:ModsPage">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="{StaticResource TopRowSize}" />
@@ -28,7 +28,7 @@
         <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,12"
                     Orientation="Vertical" x:Name="TopBarButtons" Spacing="3">
             <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasMods}">
-                <components:Button Variant="Primary" 
+                <components:Button x:Name="BrowseModsButton" Variant="Default"
                                    Text="{loc:T action.browse}" IconData="{StaticResource Search}"
                                    Click="BrowseMod_Click" HorizontalAlignment="Center" />
                 <components:Button Variant="Default"
@@ -44,7 +44,7 @@
                                       BodyText="{loc:T empty_content.no_mods}"
                                       HorizontalAlignment="Center" />
             <UniformGrid Margin="0,12" Columns="2" Rows="1">
-                <components:Button Variant="Primary" Margin="3,0"
+                <components:Button Variant="Default" Margin="3,0"
                                    Text="{loc:T action.browse}" IconData="{StaticResource Search}"
                                    Click="BrowseMod_Click" HorizontalAlignment="Stretch" />
                 <components:Button Variant="Default" Margin="3,0"
@@ -123,14 +123,14 @@
                                 <Panel Grid.Column="0" Background="Transparent" Cursor="Hand"
                                        PointerPressed="DragHandle_PointerPressed">
                                     <PathIcon Data="{StaticResource Grip}" Width="12" Height="12"
-                                              Foreground="{StaticResource Neutral500}" />
+                                              Foreground="{DynamicResource Neutral500}" />
                                 </Panel>
 
                                 <CheckBox Grid.Column="1" IsChecked="{Binding Mod.IsEnabled, Mode=TwoWay}"
                                           Classes="SwitchDark" Margin="0,5"
                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding Mod.Title}" FontSize="14"
-                                           Foreground="{StaticResource Neutral100}"
+                                           Foreground="{DynamicResource Neutral100}"
                                            Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0" />
 
                                 <Border Width="34"
@@ -145,10 +145,10 @@
                                         <StackPanel MaxWidth="300">
                                             <TextBlock Text="{x:Static patches:ModPatchCompatibilityText.IncompatibleTitle}"
                                                        FontWeight="Bold"
-                                                       Foreground="{StaticResource Neutral50}" />
+                                                       Foreground="{DynamicResource Neutral50}" />
                                             <TextBlock Text="{x:Static patches:ModPatchCompatibilityText.IncompatibleMessage}"
                                                        TextWrapping="Wrap"
-                                                       Foreground="{StaticResource Neutral100}" />
+                                                       Foreground="{DynamicResource Neutral100}" />
                                         </StackPanel>
                                     </ToolTip.Tip>
                                 </Border>
@@ -159,9 +159,9 @@
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"
                                             VerticalAlignment="Center">
                                     <TextBlock Text="{loc:T attribute.priority}" FontSize="14"
-                                               Foreground="{StaticResource Neutral100}"
+                                               Foreground="{DynamicResource Neutral100}"
                                                VerticalAlignment="Center" Margin="10,0,0,0" />
-                                    <TextBlock Text=": " FontSize="14" Foreground="{StaticResource Neutral100}"
+                                    <TextBlock Text=": " FontSize="14" Foreground="{DynamicResource Neutral100}"
                                                VerticalAlignment="Center" />
                                     <TextBox Text="{Binding Mod.Priority, Mode=OneWay}" Classes="dark"
                                              TextChanged="PriorityText_OnTextChanged"

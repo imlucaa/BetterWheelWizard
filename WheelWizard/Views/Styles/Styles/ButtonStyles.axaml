@@ -2,41 +2,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:components="clr-namespace:WheelWizard.Views.Components">
     <Design.PreviewWith>
-        <Border Background="{StaticResource Neutral950}" Padding="10" >
+        <Border Background="{DynamicResource Neutral950}" Padding="10" >
             <TextBlock Classes="TitleText">Nothing to display</TextBlock>
         </Border>
     </Design.PreviewWith>
-    
+
     <Style Selector="Button.TopButton">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Template">
             <ControlTemplate TargetType="Button">
                 <Border Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
-                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                       Content="{TemplateBinding Content}"
                                       Foreground="{TemplateBinding Foreground}"/>
                 </Border>
             </ControlTemplate>
         </Setter>
     </Style>
-    
+
     <Style Selector="Button.TopButton:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
     </Style>
-    
+
     <Style Selector="Button:pointerover">
         <Setter Property="Cursor" Value="Hand"/>
     </Style>
-    
+
     <!-- Set foreground of objects in the style -->
     <!-- Add this to that object:  Foreground="{Binding $parent[Button].Foreground}" -->
     <!-- This is the alternative way to set the Foreground of the PathIcon -->
     <!-- <Style Selector="Button.TopButton PathIcon">
         <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}"/>
     </Style> -->
-    
+
 </Styles>

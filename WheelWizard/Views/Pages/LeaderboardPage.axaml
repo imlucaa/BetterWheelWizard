@@ -2,16 +2,100 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:loc="clr-namespace:WheelWizard.Localization"
-             xmlns:components="clr-namespace:WheelWizard.Views.Components"
-             xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns"
-             xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
+              xmlns:loc="clr-namespace:WheelWizard.Localization"
+              xmlns:components="clr-namespace:WheelWizard.Views.Components"
+              xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns"
+              xmlns:behaviorComponent="clr-namespace:WheelWizard.Views.Patterns"
+              xmlns:miiVars="using:WheelWizard.MiiImages.Domain"
+              xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
              mc:Ignorable="d"
              d:DesignWidth="477"
              d:DesignHeight="700"
              x:Class="WheelWizard.Views.Pages.LeaderboardPage"
              x:DataType="pages:LeaderboardPage">
     <UserControl.Styles>
+        <Style Selector="Border.LeaderboardSectionCard">
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BoxShadow" Value="0 10 26 0 #18000000" />
+        </Style>
+        <Style Selector="TextBlock.LeaderboardSectionTitle">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+        </Style>
+        <Style Selector="TextBlock.LeaderboardSectionCaption">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        </Style>
+        <Style Selector="components|Button.SearchResultNavButton">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.SearchResultGoldCard">
+            <Style.Animations>
+                <Animation Duration="0:0:5.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="TranslateTransform.Y" Value="-5" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldAura">
+            <Style.Animations>
+                <Animation Duration="0:0:4.4" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.18" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="0.38" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.18" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldShimmer">
+            <Style.Animations>
+                <Animation Duration="0:0:3.8" IterationCount="INFINITE" Easing="CircularEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="TranslateTransform.X" Value="-90" />
+                    </KeyFrame>
+                    <KeyFrame Cue="20%"><Setter Property="Opacity" Value="0.2" /></KeyFrame>
+                    <KeyFrame Cue="80%"><Setter Property="Opacity" Value="0.2" /></KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="TranslateTransform.X" Value="230" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldParticleA">
+            <Style.Animations>
+                <Animation Duration="0:0:3.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="1" /><Setter Property="TranslateTransform.Y" Value="-8" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.3" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.SearchResultGoldParticleB">
+            <Style.Animations>
+                <Animation Duration="0:0:2.9" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.2" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="0.9" /><Setter Property="TranslateTransform.Y" Value="-7" /></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.2" /><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.LeaderboardSearchHero">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
         <Style Selector="Border.PodiumStep">
             <Setter Property="CornerRadius" Value="8,8,0,0" />
             <Setter Property="BorderThickness" Value="1,1,1,0" />
@@ -46,41 +130,59 @@
             </Setter>
         </Style>
 
-        <!-- Match RoomDetailsPage entry background treatment for PlayerListItem -->
-        <Style Selector="patterns|PlayerListItem /template/ Border.BoxItemBackground">
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Margin" Value="0,3" />
-            <Setter Property="Padding" Value="7,0" />
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
-        </Style>
-        <Style Selector="patterns|PlayerListItem:pointerover /template/ Border.BoxItemBackground">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
+        <Style Selector="patterns|PlayerListItem">
+            <Setter Property="MinHeight" Value="66" />
         </Style>
         <Style Selector="patterns|PlayerListItem /template/ Border#PART_TopLabelBadge">
-            <Setter Property="Background" Value="{StaticResource Neutral800}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral600}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral600}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="patterns|PlayerListItem /template/ TextBlock#PART_TopLabelText">
-            <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+        </Style>
+        <Style Selector="patterns|PlayerListItem /template/ Border.BoxItemBackground">
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Margin" Value="0,3" />
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="patterns|PlayerListItem:pointerover /template/ Border.BoxItemBackground">
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
         </Style>
     </UserControl.Styles>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="{StaticResource TopRowSize}" />
+            <RowDefinition Height="64" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0"
-                Background="{StaticResource BackgroundLineColor}"
-                Height="1"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
-        <TextBlock Grid.Row="0"
-                   Text="Leaderboard"
-                   VerticalAlignment="Bottom"
-                   Classes="PageTitleText" />
+        <Border Grid.Row="0" Classes="LeaderboardSearchHero">
+            <Grid ColumnDefinitions="*,Auto,*">
+                <Border Grid.Column="0"
+                        Width="1"
+                        Opacity="0" />
+                <TextBlock Grid.Column="1"
+                           Text="Leaderboard"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Classes="PageTitleText" />
+                <components:Button Grid.Column="2"
+                                   x:Name="LeaderboardSearchButton"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Text=""
+                                   Width="40"
+                                   Height="34"
+                                   Padding="0"
+                                   ButtonSize="Compact"
+                                   IconData="{StaticResource Search}"
+                                   Click="SearchLeaderboardPlayer_OnClick"
+                                   ToolTip.Tip="Search leaderboard by friend code or player name" />
+            </Grid>
+        </Border>
 
         <Grid Grid.Row="1">
             <StackPanel IsVisible="{Binding IsLoading}"
@@ -90,7 +192,7 @@
                         Spacing="10">
                 <components:LoadingIcon Width="68"
                                         Height="68"
-                                        Foreground="{StaticResource Neutral700}"
+                                        Foreground="{DynamicResource Neutral700}"
                                         HorizontalAlignment="Center" />
                 <TextBlock Text="Loading leaderboard..."
                            Classes="BodyText"
@@ -113,8 +215,9 @@
                            FontSize="18"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="{Binding ErrorMessage}"
-                           Classes="BodyText"
-                           Width="310"
+                            Classes="BodyText"
+                            MaxWidth="310"
+                            TextWrapping="Wrap"
                            TextAlignment="Center"
                            HorizontalAlignment="Center" />
                 <components:Button Text="Retry"
@@ -141,42 +244,320 @@
             </StackPanel>
 
             <ScrollViewer IsVisible="{Binding HasData}"
-                          Margin="10,10,10,0"
+                          Margin="12,8,12,0"
                           HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Hidden"
                           IsScrollInertiaEnabled="True">
-                <StackPanel Spacing="10"
-                            Margin="0,0,0,12">
-                    <Border>
+                <StackPanel Spacing="12"
+                            Margin="0,0,0,16">
+                    <Border x:Name="LeaderboardSearchResultCard"
+                            IsVisible="False"
+                            Classes="LeaderboardSectionCard"
+                            Padding="10,8">
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              ColumnDefinitions="60,*,Auto,Auto"
+                              ColumnSpacing="10"
+                              RowSpacing="6">
+                            <Border Width="60" Height="60" CornerRadius="8" ClipToBounds="True"
+                                     Background="{DynamicResource Neutral950}">
+                                <patterns:MiiImageLoader x:Name="LeaderboardSearchPreview"
+                                                         LoadingColor="{DynamicResource Neutral600}"
+                                                         FallBackColor="{DynamicResource Neutral600}" />
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                <TextBlock x:Name="LeaderboardSearchName" FontSize="15" FontWeight="SemiBold"
+                                           Text="Search for a player"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock x:Name="LeaderboardSearchFriendCode" Classes="TinyText" />
+                                <TextBlock x:Name="LeaderboardSearchStatus" Classes="TinyText"
+                                            Foreground="{DynamicResource Neutral400}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                <Border Background="{DynamicResource Neutral800}" CornerRadius="10" Padding="8,4">
+                                    <TextBlock x:Name="LeaderboardSearchRank" Text="#--" FontWeight="Bold"
+                                                  HorizontalAlignment="Center" />
+                                </Border>
+                                <TextBlock x:Name="LeaderboardSearchVr" Text="--" FontWeight="SemiBold"
+                                              HorizontalAlignment="Center" />
+                            </StackPanel>
+
+                            <components:Button Grid.Column="3"
+                                               Text=""
+                                               Width="28"
+                                               Height="28"
+                                               Padding="0"
+                                               ButtonSize="Compact"
+                                               VerticalAlignment="Top"
+                                               IconData="{StaticResource Close}"
+                                               Click="CloseSearchResult_OnClick"
+                                               ToolTip.Tip="Close search result" />
+
+                            <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                  ColumnDefinitions="Auto,Auto,Auto,Auto,*" ColumnSpacing="6">
+                                <components:Button Text="" Width="28" MinWidth="28" Height="28" Padding="0"
+                                                    IconData="{StaticResource ArrowLeft}"
+                                                    ButtonSize="Compact"
+                                                    Click="PreviousSearchMatch_OnClick" IsEnabled="False"
+                                                    ToolTip.Tip="Previous matching player" />
+                                <TextBlock Grid.Column="1" Classes="TinyText"
+                                            VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <components:Button Grid.Column="2" Text="" Width="28" MinWidth="28" Height="28" Padding="0"
+                                                    IconData="{StaticResource ArrowRight}"
+                                                    ButtonSize="Compact"
+                                                    Click="NextSearchMatch_OnClick" IsEnabled="False"
+                                                    ToolTip.Tip="Next matching player" />
+                                <components:Button Grid.Column="3"
+                                                    Text="Profile"
+                                                    HorizontalAlignment="Left"
+                                                    ButtonSize="Compact"
+                                                    Click="OpenSearchProfile_OnClick"
+                                                    IsEnabled="False" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border Classes="LeaderboardSectionCard"
+                            Padding="14,12">
                         <Grid RowDefinitions="Auto,Auto,Auto"
                               ClipToBounds="False">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="7"
-                                        VerticalAlignment="Center">
-                                <PathIcon Data="{StaticResource StarIcon}"
-                                          Width="14"
-                                          Height="14"
-                                          Foreground="{StaticResource Warning500}" />
-                                <TextBlock Text="Top 3 Podium"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="White" />
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding PodiumTitleText}"
+                                            Classes="LeaderboardSectionTitle" />
                             </StackPanel>
 
-                            <TextBlock Grid.Row="1"
-                                       Margin="0,4,0,0"
-                                       Text="Live from RWFC"
-                                       Classes="TinyText"
-                                       Foreground="{StaticResource Neutral300}" />
+                            <Grid Grid.Row="1"
+                                  Margin="0,2,0,0"
+                                  ColumnDefinitions="*">
+                                <Grid x:Name="SearchResultPodiumControls"
+                                       IsVisible="False"
+                                       ColumnDefinitions="Auto,Auto"
+                                       ColumnSpacing="8"
+                                       HorizontalAlignment="Center">
+                                     <components:Button Grid.Column="0"
+                                                         x:Name="LeaderboardSearchOpenProfileButton"
+                                                         IsVisible="False"
+                                                         Text="View profile"
+                                                         MinWidth="84"
+                                                         ButtonSize="Compact"
+                                                         Variant="Default"
+                                                         Click="OpenSearchProfile_OnClick"
+                                                         IsEnabled="False" />
+                                    <components:Button Grid.Column="1"
+                                                        x:Name="CloseSearchResultButton"
+                                                        IsVisible="False"
+                                                        Text="Back"
+                                                        MinWidth="58"
+                                                        ButtonSize="Compact"
+                                                       Variant="Default"
+                                                       Click="CloseSearchResult_OnClick"
+                                                       ToolTip.Tip="Back to leaderboard" />
+                                </Grid>
+                                <TextBlock
+                                            Text="{Binding PodiumCaptionText}"
+                                            Classes="LeaderboardSectionCaption"
+                                            Margin="0,34,0,0"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            TextTrimming="CharacterEllipsis" />
+                            </Grid>
 
                             <Grid Grid.Row="2"
                                   Margin="0,12,0,0"
+                                  MinHeight="204"
+                                  IsVisible="True">
+                                <Grid x:Name="SearchResultSingleLayout"
+                                       IsVisible="False"
+                                       ColumnDefinitions="Auto,Auto,Auto"
+                                       ColumnSpacing="10"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <components:Button x:Name="PreviousSearchMatchButton"
+                                                       Grid.Column="0"
+                                                       Classes="SearchResultNavButton"
+                                                       Text=""
+                                                       Width="28"
+                                                       MinWidth="28"
+                                                       Height="28"
+                                                       Padding="0"
+                                                       ButtonSize="Compact"
+                                                       VerticalAlignment="Center"
+                                                       IconData="{StaticResource ArrowLeft}"
+                                                       Click="PreviousSearchMatch_OnClick"
+                                                       IsEnabled="False"
+                                                       ToolTip.Tip="Previous matching player" />
+
+                                    <Grid Grid.Column="1"
+                                          ClipToBounds="False">
+                                        <Border Classes="SearchResultGoldAura"
+                                                Width="150"
+                                                Height="150"
+                                                CornerRadius="9999"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Background="#A8E0B91C"
+                                                Opacity="0.28"
+                                                Effect="blur(58)"
+                                                IsHitTestVisible="False" />
+
+                                     <Border x:Name="SearchResultCompactCard"
+                                             Classes="SearchResultGoldCard"
+                                             IsVisible="False"
+                                             Width="184"
+                                             MinHeight="196"
+                                             Padding="12,12,12,11"
+                                             CornerRadius="18"
+                                             BorderBrush="#E0D54A"
+                                             BorderThickness="1"
+                                             BoxShadow="0 0 22 2 #58E0D54A, 0 16 30 0 #30000000"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#52341B07" Offset="0" />
+                                                <GradientStop Color="#493A2710" Offset="0.55" />
+                                                <GradientStop Color="#321B1608" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="{loc:T action.copy_friend_code}"
+                                                          Click="CopyFriendCode_OnClick" />
+                                                <MenuItem Header="{loc:T action.view_mii}"
+                                                          Click="OpenCarousel_OnClick" />
+                                                <MenuItem Header="Copy Mii to My Miis"
+                                                          Click="CopyMii_OnClick" />
+                                                <MenuItem Header="Add Friend"
+                                                          Click="AddFriend_OnClick" />
+                                                <Separator />
+                                                <MenuItem Header="View Profile"
+                                                          Click="OpenSearchProfile_OnClick" />
+                                                <MenuItem Header="View Player on RWFC"
+                                                          Click="ViewPlayerOnRwfc_OnClick" />
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+
+                                        <Grid ClipToBounds="True">
+                                            <Border Classes="SearchResultGoldShimmer"
+                                                    Width="64" Height="250" Margin="-84,-24,0,0"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                    RenderTransform="rotate(24deg)" Opacity="0.16"
+                                                    IsHitTestVisible="False">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                        <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                        <GradientStop Color="#CFFFFFFF" Offset="0.5" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+                                            <Border Classes="SearchResultGoldParticleA"
+                                                    Width="6" Height="6" CornerRadius="9999"
+                                                    Background="#D8FFF0A0" HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top" Margin="12,12,0,0"
+                                                    Effect="blur(1)" IsHitTestVisible="False" />
+                                            <Border Classes="SearchResultGoldParticleB"
+                                                    Width="4" Height="4" CornerRadius="9999"
+                                                    Background="#D8FFF0A0" HorizontalAlignment="Right"
+                                                    VerticalAlignment="Top" Margin="0,28,16,0"
+                                                    Effect="blur(1)" IsHitTestVisible="False" />
+
+                                         <StackPanel Spacing="8"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center">
+                                            <TextBlock x:Name="SearchResultRankText"
+                                                       HorizontalAlignment="Center"
+                                                       FontSize="13"
+                                                       FontWeight="Bold"
+                                                       Foreground="White" />
+
+                                             <Border Width="88"
+                                                     Height="88"
+                                                     CornerRadius="9999"
+                                                     BorderBrush="#64FFFFFF"
+                                                     BorderThickness="2"
+                                                    Background="#22000000"
+                                                    ClipToBounds="True"
+                                                    HorizontalAlignment="Center">
+                                                <Grid>
+                                                    <PathIcon Data="{StaticResource User}"
+                                                              Width="34"
+                                                              Height="34"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              Foreground="#52FFFFFF"
+                                                              IsHitTestVisible="False" />
+                                                    <behaviorComponent:MiiImageLoader x:Name="SearchResultMiiImage"
+                                                                                      HorizontalAlignment="Stretch"
+                                                                                      VerticalAlignment="Stretch"
+                                                                                      LoadingColor="{DynamicResource Neutral600}"
+                                                                                      FallBackColor="{DynamicResource Neutral600}"
+                                                                                      ImageVariant="{x:Static miiVars:MiiImageVariants.MiiBlockProfile}" />
+                                                </Grid>
+                                            </Border>
+
+                                             <TextBlock x:Name="SearchResultPlayerName"
+                                                        HorizontalAlignment="Center"
+                                                        TextAlignment="Center"
+                                                        Width="148"
+                                                        MinHeight="40"
+                                                        TextWrapping="Wrap"
+                                                        MaxLines="2"
+                                                        FontWeight="Bold"
+                                                        FontSize="15"
+                                                       Foreground="White" />
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="6"
+                                                        HorizontalAlignment="Center">
+                                                <PathIcon Data="{StaticResource Chart}"
+                                                          Width="13"
+                                                          Height="13"
+                                                          VerticalAlignment="Center"
+                                                          Foreground="{DynamicResource Neutral200}" />
+                                                <TextBlock x:Name="SearchResultVrText"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Neutral100}"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                             </StackPanel>
+                                        </Grid>
+                                     </Border>
+                                    </Grid>
+
+                                    <components:Button x:Name="NextSearchMatchButton"
+                                                       Grid.Column="2"
+                                                       Classes="SearchResultNavButton"
+                                                       Text=""
+                                                       Width="28"
+                                                       MinWidth="28"
+                                                       Height="28"
+                                                       Padding="0"
+                                                       ButtonSize="Compact"
+                                                       VerticalAlignment="Center"
+                                                       IconData="{StaticResource ArrowRight}"
+                                                       Click="NextSearchMatch_OnClick"
+                                                       IsEnabled="False"
+                                                       ToolTip.Tip="Next matching player" />
+
+                                    <TextBlock x:Name="LeaderboardSearchMatchIndex"
+                                               IsVisible="False" />
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="2"
+                                  Margin="0,10,0,0"
                                   RowDefinitions="Auto,16"
                                   VerticalAlignment="Center"
                                   ColumnDefinitions="*,1.1*,*">
                                 <patterns:LeaderboardPodiumCard Grid.Column="0"
                                                                   Grid.Row="0"
                                                                   Margin="4,16,4,0"
+                                                                  x:Name="DefaultPodiumSecondCard"
                                                                   IsVisible="{Binding HasPodiumSecond}"
                                                                   Classes="Silver EntrySecond FloatB"
                                                                   Rank="{Binding PodiumSecond.Rank}"
@@ -193,11 +574,15 @@
                                                       Click="CopyFriendCode_OnClick" />
                                             <MenuItem Header="{loc:T action.view_mii}"
                                                       Click="OpenCarousel_OnClick" />
+                                            <MenuItem Header="Copy Mii to My Miis"
+                                                      Click="CopyMii_OnClick" />
                                             <MenuItem Header="Add Friend"
                                                       Click="AddFriend_OnClick" />
                                             <Separator />
                                             <MenuItem Header="View Profile"
                                                       Click="ViewProfile_OnClick" />
+                                            <MenuItem Header="View Player on RWFC"
+                                                      Click="ViewPlayerOnRwfc_OnClick" />
                                         </ContextMenu>
                                     </patterns:LeaderboardPodiumCard.ContextMenu>
                                 </patterns:LeaderboardPodiumCard>
@@ -205,6 +590,7 @@
                                 <patterns:LeaderboardPodiumCard Grid.Column="1"
                                                                   Grid.Row="0"
                                                                   Margin="4,0,4,0"
+                                                                  x:Name="DefaultPodiumFirstCard"
                                                                   IsVisible="{Binding HasPodiumFirst}"
                                                                   Classes="Gold EntryFirst FloatA"
                                                                   AvatarSize="122"
@@ -222,11 +608,15 @@
                                                       Click="CopyFriendCode_OnClick" />
                                             <MenuItem Header="{loc:T action.view_mii}"
                                                       Click="OpenCarousel_OnClick" />
+                                            <MenuItem Header="Copy Mii to My Miis"
+                                                      Click="CopyMii_OnClick" />
                                             <MenuItem Header="Add Friend"
                                                       Click="AddFriend_OnClick" />
                                             <Separator />
                                             <MenuItem Header="View Profile"
                                                       Click="ViewProfile_OnClick" />
+                                            <MenuItem Header="View Player on RWFC"
+                                                      Click="ViewPlayerOnRwfc_OnClick" />
                                         </ContextMenu>
                                     </patterns:LeaderboardPodiumCard.ContextMenu>
                                 </patterns:LeaderboardPodiumCard>
@@ -234,6 +624,7 @@
                                 <patterns:LeaderboardPodiumCard Grid.Column="2"
                                                                   Grid.Row="0"
                                                                   Margin="4,16,4,0"
+                                                                  x:Name="DefaultPodiumThirdCard"
                                                                   IsVisible="{Binding HasPodiumThird}"
                                                                   Classes="Bronze EntryThird FloatC"
                                                                   Rank="{Binding PodiumThird.Rank}"
@@ -250,11 +641,15 @@
                                                       Click="CopyFriendCode_OnClick" />
                                             <MenuItem Header="{loc:T action.view_mii}"
                                                       Click="OpenCarousel_OnClick" />
+                                            <MenuItem Header="Copy Mii to My Miis"
+                                                      Click="CopyMii_OnClick" />
                                             <MenuItem Header="Add Friend"
                                                       Click="AddFriend_OnClick" />
                                             <Separator />
                                             <MenuItem Header="View Profile"
                                                       Click="ViewProfile_OnClick" />
+                                            <MenuItem Header="View Player on RWFC"
+                                                      Click="ViewPlayerOnRwfc_OnClick" />
                                         </ContextMenu>
                                     </patterns:LeaderboardPodiumCard.ContextMenu>
                                 </patterns:LeaderboardPodiumCard>
@@ -262,37 +657,100 @@
                         </Grid>
                     </Border>
 
-                    <ItemsControl ItemsSource="{Binding RemainingPlayers}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="pages:LeaderboardPlayerItem">
-                                <patterns:PlayerListItem UserName="{Binding Name}"
-                                                           FriendCode="{Binding FriendCode}"
-                                                           Vr="{Binding VrDisplay}"
-                                                           Mii="{Binding FirstMii}"
-                                                           IsOnline="{Binding IsOnline}"
-                                                           ShowJoinRoomButton="True"
-                                                           JoinRoomAction="JoinRoom_OnClick"
-                                                           IsOpenHost="{Binding IsOpenHost}"
-                                                           HasBadges="{Binding HasBadges}" BadgeVariants="{Binding BadgeVariants}"
-                                                           IsTopPlayer="True"
-                                                           TopLabel="{Binding TopLabel}">
-                                    <patterns:PlayerListItem.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="{loc:T action.copy_friend_code}"
-                                                      Click="CopyFriendCode_OnClick" />
-                                            <MenuItem Header="{loc:T action.view_mii}"
-                                                      Click="OpenCarousel_OnClick" />
-                                            <MenuItem Header="Add Friend"
-                                                      Click="AddFriend_OnClick" />
-                                            <Separator />
-                                            <MenuItem Header="View Profile"
-                                                      Click="ViewProfile_OnClick" />
-                                        </ContextMenu>
-                                    </patterns:PlayerListItem.ContextMenu>
-                                </patterns:PlayerListItem>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <Border Classes="LeaderboardSectionCard" Padding="14,12">
+                        <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                            <Grid RowDefinitions="Auto,Auto"
+                                  RowSpacing="10">
+                                <StackPanel Spacing="2"
+                                            HorizontalAlignment="Center">
+                                    <TextBlock Text="Ranked players"
+                                               Classes="LeaderboardSectionTitle" />
+                                    <TextBlock Text="Current placements"
+                                               Classes="LeaderboardSectionCaption" />
+                                </StackPanel>
+                                <Grid Grid.Row="1"
+                                      Margin="0,2,0,0"
+                                      VerticalAlignment="Center">
+                                    <StackPanel
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                HorizontalAlignment="Center">
+                                        <components:Button Text=""
+                                                            Width="30"
+                                                            Height="30"
+                                                            Padding="0"
+                                                            ButtonSize="Compact"
+                                                            IconData="{StaticResource ArrowLeft}"
+                                                            Click="PreviousLeaderboardPage_OnClick"
+                                                            IsEnabled="{Binding CanGoToPreviousPage}"
+                                                            ToolTip.Tip="Previous leaderboard page" />
+                                        <Border Background="{DynamicResource Neutral900}"
+                                                CornerRadius="999"
+                                                Padding="10,5"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding LeaderboardPageText}"
+                                                       Classes="TinyText"
+                                                       Foreground="{DynamicResource Neutral100}" />
+                                        </Border>
+                                        <components:Button Text=""
+                                                            Width="30"
+                                                            Height="30"
+                                                            Padding="0"
+                                                            ButtonSize="Compact"
+                                                            IconData="{StaticResource ArrowRight}"
+                                                            Click="NextLeaderboardPage_OnClick"
+                                                            IsEnabled="{Binding CanGoToNextPage}"
+                                                            ToolTip.Tip="Next leaderboard page" />
+                                        <Border Background="{DynamicResource Neutral900}"
+                                                CornerRadius="999"
+                                                Padding="10,5"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding RemainingCountText}"
+                                                       Classes="TinyText"
+                                                       Foreground="{DynamicResource Neutral100}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding RemainingPlayers}"
+                                          Margin="0,2,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="pages:LeaderboardPlayerItem">
+                                        <patterns:PlayerListItem UserName="{Binding Name}"
+                                                                   FriendCode="{Binding FriendCode}"
+                                                                   Vr="{Binding VrDisplay}"
+                                                                   Mii="{Binding FirstMii}"
+                                                                   IsOnline="{Binding IsOnline}"
+                                                                   ShowJoinRoomButton="True"
+                                                                   JoinRoomAction="JoinRoom_OnClick"
+                                                                   IsOpenHost="{Binding IsOpenHost}"
+                                                                   HasBadges="{Binding HasBadges}"
+                                                                   IsTopPlayer="True"
+                                                                   TopLabel="{Binding TopLabel}">
+                                            <patterns:PlayerListItem.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="{loc:T action.copy_friend_code}"
+                                                              Click="CopyFriendCode_OnClick" />
+                                                    <MenuItem Header="{loc:T action.view_mii}"
+                                                              Click="OpenCarousel_OnClick" />
+                                                    <MenuItem Header="Copy Mii to My Miis"
+                                                              Click="CopyMii_OnClick" />
+                                                    <MenuItem Header="Add Friend"
+                                                              Click="AddFriend_OnClick" />
+                                                    <Separator />
+                                                    <MenuItem Header="View Profile"
+                                                              Click="ViewProfile_OnClick" />
+                                                    <MenuItem Header="View Player on RWFC"
+                                                              Click="ViewPlayerOnRwfc_OnClick" />
+                                                </ContextMenu>
+                                            </patterns:PlayerListItem.ContextMenu>
+                                        </patterns:PlayerListItem>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

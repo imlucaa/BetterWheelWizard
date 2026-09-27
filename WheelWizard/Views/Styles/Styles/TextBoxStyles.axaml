@@ -9,14 +9,14 @@
                 <TextBox Watermark="Enter text here..." Margin="0,2" IsEnabled="False" />
                 <TextBox Classes="dark" Watermark="Enter text here..." Margin="0,2" IsEnabled="False" />
 
-                <Border Height="1" Background="{StaticResource Neutral900}" />
+                <Border Height="1" Background="{DynamicResource Neutral900}" />
 
                 <TextBox Classes="error" Watermark="Enter text here..." Margin="0,2" />
                 <TextBox Classes="dark error" Watermark="Enter text here..." Margin="0,2" />
                 <TextBox Classes="error" Watermark="Enter text here..." Margin="0,2" IsEnabled="False" />
                 <TextBox Classes="dark error" Watermark="Enter text here..." Margin="0,2" IsEnabled="False" />
 
-                <Border Height="1" Background="{StaticResource Neutral900}" />
+                <Border Height="1" Background="{DynamicResource Neutral900}" />
 
                 <TextBox Classes="warning" Watermark="Enter text here..." Margin="0,2" />
                 <TextBox Classes="dark warning" Watermark="Enter text here..." Margin="0,2" />
@@ -27,10 +27,10 @@
     </Design.PreviewWith>
 
     <Style Selector="TextBox">
-        <Setter Property="SelectionBrush" Value="{StaticResource Primary500}" />
-        <Setter Property="Background" Value="{StaticResource Neutral800}" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral800}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Primary500}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}" />
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="BorderThickness" Value="2" />
@@ -40,39 +40,39 @@
         <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}" />
 
         <Style Selector="^ /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
         </Style>
     </Style>
 
     <Style Selector="TextBox.dark">
-        <Setter Property="Background" Value="{StaticResource Neutral950}" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral950}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral950}" />
 
         <Style Selector="^ /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         </Style>
     </Style>
 
     <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral700}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral600}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral600}" />
         <Setter Property="Cursor" Value="IBeam" />
     </Style>
 
     <Style Selector="TextBox.dark:pointerover /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral950}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral950}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral950}" />
     </Style>
 
     <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral700}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Primary500}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary500}" />
     </Style>
 
     <Style Selector="TextBox.dark:focus /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral950}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Primary500}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Primary500}" />
     </Style>
 
     <Style Selector="TextBox.error /template/ Border#PART_BorderElement">
@@ -102,24 +102,24 @@
     </Style>
 
     <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral900}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral900}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
     </Style>
     <Style Selector="TextBox.dark:disabled /template/ Border#PART_BorderElement">
-        <Setter Property="Background" Value="{StaticResource Neutral800}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral800}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}" />
     </Style>
 
     <Style Selector="TextBox:disabled">
-        <Setter Property="Foreground" Value="{StaticResource Neutral600}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral600}" />
         <Style Selector="^ /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{StaticResource Neutral950}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral950}" />
         </Style>
     </Style>
     <Style Selector="TextBox.dark:disabled">
-        <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         <Style Selector="^ /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         </Style>
     </Style>
 

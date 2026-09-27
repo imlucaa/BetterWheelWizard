@@ -12,19 +12,19 @@
                                   IconData="{StaticResource Folder}"
                                   IconSize="18"
                                   FontSize="15"
-                                  Foreground="{StaticResource Neutral300}" />
+                                  Foreground="{DynamicResource Neutral300}" />
             <components:IconLabel Text="Text with right icon"
                                   IconData="{StaticResource ArrowRight}"
                                   IsIconLeft="False"
                                   IconSize="16"
                                   FontSize="15"
-                                  Foreground="{StaticResource Neutral300}" />
+                                  Foreground="{DynamicResource Neutral300}" />
             <components:IconLabel Text="Underlined icon label"
                                   IconData="{StaticResource ExternalLink}"
                                   IsUnderlined="True"
                                   IconSize="16"
                                   FontSize="15"
-                                  Foreground="{StaticResource Neutral300}" />
+                                  Foreground="{DynamicResource Neutral300}" />
         </StackPanel>
 
         <StackPanel Spacing="8">
@@ -34,22 +34,22 @@
                                             IconData="{StaticResource ExternalLink}"
                                             IconSize="16"
                                             FontSize="15"
-                                            Foreground="{StaticResource Neutral300}"
-                                            HoverForeground="{StaticResource Neutral200}" />
+                                            Foreground="{DynamicResource Neutral300}"
+                                            HoverForeground="{DynamicResource Neutral200}" />
                 <components:IconLabelButton Text="Underlined action"
                                             IconData="{StaticResource ArrowRight}"
                                             IsUnderlined="True"
                                             IconSize="16"
                                             FontSize="15"
-                                            Foreground="{StaticResource Neutral300}"
-                                            HoverForeground="{StaticResource Primary300}" />
+                                            Foreground="{DynamicResource Neutral300}"
+                                            HoverForeground="{DynamicResource Primary300}" />
                 <components:IconLabelButton Text="Icon on right"
                                             IconData="{StaticResource ExternalLink}"
                                             IsIconLeft="False"
                                             IconSize="16"
                                             FontSize="15"
-                                            Foreground="{StaticResource Neutral300}"
-                                            HoverForeground="{StaticResource Neutral200}" />
+                                            Foreground="{DynamicResource Neutral300}"
+                                            HoverForeground="{DynamicResource Neutral200}" />
             </StackPanel>
         </StackPanel>
     </StackPanel>

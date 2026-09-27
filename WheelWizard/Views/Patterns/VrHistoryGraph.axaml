@@ -12,9 +12,12 @@
              x:DataType="behaviorComp:VrHistoryGraph">
     <UserControl.Styles>
         <Style Selector="Border.profileStatCard">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="10" />
+        </Style>
+        <Style Selector="Border.profileStatCard components|FormFieldLabel">
+            <Setter Property="Margin" Value="0,0,0,-2" />
         </Style>
     </UserControl.Styles>
     <Border Padding="0"
@@ -27,32 +30,30 @@
                   ColumnDefinitions="*,*,*"
                   Margin="0,0,0,8">
                 <Border Grid.Column="0" Classes="profileStatCard" Margin="0,0,4,0">
-                    <StackPanel Spacing="1">
-                        <components:FormFieldLabel Text="{loc:T attribute.start_vr}" />
-                        <SelectableTextBlock Classes="BodyText" Text="{Binding StartingVr, StringFormat='{}{0:N0}'}" />
+                    <StackPanel Spacing="0">
+                        <components:FormFieldLabel x:Name="StartingVrLabel" Text="{loc:T attribute.start_vr}" />
+                        <SelectableTextBlock x:Name="StartingVrValue" Classes="BodyText" Text="{Binding StartingVr, StringFormat='{}{0:N0}'}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Classes="profileStatCard" Margin="4,0,4,0">
-                    <StackPanel Spacing="1">
+                    <StackPanel Spacing="0">
                         <components:FormFieldLabel Text="{loc:T attribute.end_vr}" />
                         <SelectableTextBlock Classes="BodyText" Text="{Binding EndingVr, StringFormat='{}{0:N0}'}" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="2" Classes="profileStatCard" Margin="4,0,0,0">
-                    <StackPanel Spacing="1">
-                        <components:FormFieldLabel Text="{loc:T attribute.net_change}" />
-                        <SelectableTextBlock Classes="BodyText" 
-                                             Foreground="{StaticResource Primary400}"
-                                             IsVisible="{Binding IsTotalChangeGain}" 
+                    <StackPanel Spacing="0">
+                        <components:FormFieldLabel x:Name="TotalChangeLabel" Text="{loc:T attribute.net_change}" />
+                        <SelectableTextBlock x:Name="TotalChangeGainText" Classes="BodyText"
+                                             IsVisible="{Binding IsTotalChangeGain}"
                                              Text="{Binding TotalChangeText}" />
-                        <SelectableTextBlock Classes="BodyText" 
-                                             Foreground="{StaticResource Danger400}"
-                                             IsVisible="{Binding IsTotalChangeLoss}" 
+                        <SelectableTextBlock Classes="BodyText"
+                                             IsVisible="{Binding IsTotalChangeLoss}"
                                              Text="{Binding TotalChangeText}" />
-                        <SelectableTextBlock Classes="BodyText" 
-                                             IsVisible="{Binding IsTotalChangeNeutral}" 
+                        <SelectableTextBlock Classes="BodyText"
+                                             IsVisible="{Binding IsTotalChangeNeutral}"
                                              Text="{Binding TotalChangeText}" />
                     </StackPanel>
                 </Border>
@@ -67,9 +68,9 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                    <components:LoadingIcon Margin="3,3,6,3" VerticalAlignment="Center" IsVisible="{Binding IsLoading}" Width="18" Height="18" Foreground="{StaticResource Neutral500}" />
-                    
-                    <CheckBox Classes="Switch" 
+                    <components:LoadingIcon Margin="3,3,6,3" VerticalAlignment="Center" IsVisible="{Binding IsLoading}" Width="18" Height="18" Foreground="{DynamicResource Neutral500}" />
+
+                    <CheckBox Classes="Switch"
                               Content="{loc:T attribute.enable_matches}"
                               IsChecked="{Binding UseMatchesAsXAxis}"
                               FontSize="12"
@@ -86,8 +87,8 @@
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch">
                 <Border IsVisible="{Binding HasData}"
-                        Background="{StaticResource Neutral900}"
-                        BorderBrush="{StaticResource Neutral900}"
+                        Background="{DynamicResource Neutral900}"
+                        BorderBrush="{DynamicResource Neutral900}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="8"
@@ -102,27 +103,27 @@
 
                         <Border Grid.Row="0"
                                 Grid.Column="1"
-                                Background="{StaticResource Neutral950}"
-                                BorderBrush="{StaticResource Neutral900}"
+                                Background="{DynamicResource Neutral950}"
+                                BorderBrush="{DynamicResource Neutral900}"
                                 BorderThickness="1"
                                 CornerRadius="6"
                                 Padding="8">
                             <Grid>
-                                <Border Background="{StaticResource Neutral800}" Height="1" VerticalAlignment="Top" />
-                                <Border Background="{StaticResource Neutral800}" Height="1" VerticalAlignment="Center" />
-                                <Border Background="{StaticResource Neutral800}" Height="1" VerticalAlignment="Bottom" />
-                                <Border Background="{StaticResource Neutral800}" Width="1" HorizontalAlignment="Left" />
-                                <Border Background="{StaticResource Neutral800}" Width="1" HorizontalAlignment="Center" />
-                                <Border Background="{StaticResource Neutral800}" Width="1" HorizontalAlignment="Right" />
+                                <Border Background="{DynamicResource Neutral800}" Height="1" VerticalAlignment="Top" />
+                                <Border Background="{DynamicResource Neutral800}" Height="1" VerticalAlignment="Center" />
+                                <Border Background="{DynamicResource Neutral800}" Height="1" VerticalAlignment="Bottom" />
+                                <Border Background="{DynamicResource Neutral800}" Width="1" HorizontalAlignment="Left" />
+                                <Border Background="{DynamicResource Neutral800}" Width="1" HorizontalAlignment="Center" />
+                                <Border Background="{DynamicResource Neutral800}" Width="1" HorizontalAlignment="Right" />
                                 <Path Data="{Binding GraphAreaPath}" Opacity="0.30" Stretch="Fill">
                                     <Path.Fill>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="{StaticResource Primary300}" Offset="0" />
-                                            <GradientStop Color="{StaticResource Primary700}" Offset="1" />
+                                            <GradientStop Color="{DynamicResource Primary300}" Offset="0" />
+                                            <GradientStop Color="{DynamicResource Primary700}" Offset="1" />
                                         </LinearGradientBrush>
                                     </Path.Fill>
                                 </Path>
-                                <Path Data="{Binding GraphPath}" Stroke="{StaticResource Primary400}" StrokeThickness="2"
+                                <Path Data="{Binding GraphPath}" Stroke="{DynamicResource Primary400}" StrokeThickness="2"
                                       StrokeLineCap="Round" Stretch="Fill" />
                             </Grid>
                         </Border>
@@ -134,14 +135,14 @@
                         </Grid>
                     </Grid>
                 </Border>
-                
+
                 <components:EmptyPageInfo IsVisible="{Binding HasError}"
                                           Title="{loc:T empty_content.no_vr_history_title}"
                                           IconData="{StaticResource Chart}"
                                           BodyText="{Binding ErrorMessage}"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center" />
-                
+
                 <components:EmptyPageInfo IsVisible="{Binding ShowNoDataState}"
                                           Title="{loc:T empty_content.no_vr_history_title}"
                                           IconData="{StaticResource Chart}"

@@ -40,8 +40,8 @@
                                                     />
                         </StackPanel>
                     </Border>
-                    <TextBlock Text="{TemplateBinding IconName}" 
-                               HorizontalAlignment="Center" 
+                    <TextBlock Text="{TemplateBinding IconName}"
+                               HorizontalAlignment="Center"
                                Foreground="#EDEDF1"/>
                 </StackPanel>
             </ControlTemplate>

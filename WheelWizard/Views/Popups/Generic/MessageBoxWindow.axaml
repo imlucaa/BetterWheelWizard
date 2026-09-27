@@ -16,13 +16,13 @@
                         IsVisible="False" x:Name="MessageTagBlock">
                     <SelectableTextBlock x:Name="MessageTag" Classes="TitleText" FontSize="12"
                                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                                         Foreground="{StaticResource Primary50}" />
+                                         Foreground="{DynamicResource Primary50}" />
                 </Border>
 
                 <SelectableTextBlock x:Name="MessageTitleBlock"
                                      Classes="TitleText" FontSize="18"
                                      HorizontalAlignment="Left" VerticalAlignment="Center"
-                                     Foreground="{StaticResource Primary50}" />
+                                     Foreground="{DynamicResource Primary50}" />
             </StackPanel>
         </Border>
 
@@ -48,9 +48,9 @@
                 <Setter Property="Background" Value="Transparent" />
             </Style>
             <Style Selector="Border#TitleBorder.Message">
-                <Setter Property="Background" Value="{StaticResource Primary500}" />
+                <Setter Property="Background" Value="{DynamicResource Primary500}" />
                 <Style Selector="^ Border#MessageTagBlock">
-                    <Setter Property="Background" Value="{StaticResource Primary800}" />
+                    <Setter Property="Background" Value="{DynamicResource Primary800}" />
                 </Style>
             </Style>
             <Style Selector="Border#TitleBorder.Warning">

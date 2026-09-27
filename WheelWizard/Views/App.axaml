@@ -7,7 +7,8 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <FontFamily x:Key="DefaultFont">avares://WheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://WheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
+            <FontFamily x:Key="DefaultFont">avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
+            <FontFamily x:Key="MiiFont">avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF, avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto</FontFamily>
 
             <!-- CONSTANTS -->
             <ResourceDictionary.MergedDictionaries>
@@ -35,6 +36,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
         <!-- !!Only used for the designer!! -->
         <StyleInclude Source="Styles/Util/MultiColorExampleComponent.axaml" />
         <!-- !!Only used for the designer!! -->

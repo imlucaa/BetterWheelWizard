@@ -113,6 +113,11 @@ public class LiveRoomsService : ObservablePollingService
             Type = room.Type,
             Suspend = room.Suspend,
             Rk = room.Rk,
+            TrackName = room.Race?.TrackName ?? string.Empty,
+            RoomType = room.RoomType,
+            RaceNumber = room.Race?.Num,
+            CourseId = room.Race?.Course,
+            RaceObservedAt = room.Race == null ? null : DateTime.UtcNow,
             Players = room
                 .Players.Select(p => MapPlayer(p, whWzService, leaderboardByPid, leaderboardByFriendCode, friendProfileIds))
                 .ToList(),

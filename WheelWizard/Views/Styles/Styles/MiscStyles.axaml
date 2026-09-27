@@ -7,12 +7,12 @@
     </Design.PreviewWith>
 
     <Style Selector="Border.SettingsBlockStyle">
-        <Setter Property="Background" Value="{StaticResource Neutral900}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral900}" />
         <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
         <Setter Property="Margin" Value="0,0,0,7" />
         <Setter Property="Padding" Value="10" />
         <!-- When there is an error or something, you can change the color here to something, then the edge also changes -->
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral900}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
@@ -37,25 +37,25 @@
         <Setter Property="Height" Value="32" />
         <Setter Property="IsHitTestVisible" Value="False" />
     </Style>
-    
+
     <Style Selector="Border.AboutBlockStyle">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
         <Setter Property="Margin" Value="0,0,0,7" />
         <Setter Property="Padding" Value="10" />
         <!-- When there is an error or something, you can change the color here to something, then the edge also changes -->
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral800}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
-    
+
     <Style Selector="Border.AboutBlockLineStyle">
-        <Setter Property="Background" Value="{StaticResource Neutral800}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral800}" />
         <Setter Property="Margin" Value="10,-10" />
         <Setter Property="Width" Value="1" />
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         <Setter Property="BorderThickness" Value="0" />
     </Style>
-    
+
 
     <Style Selector="ListBoxItem">
         <Setter Property="Padding" Value="0"/>
@@ -66,24 +66,24 @@
     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter, ListBoxItem:selected /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>
     </Style>
-    
+
     <Style Selector="ListBoxItem Border.BoxItemBackground">
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Margin" Value="0,3"/>
         <Setter Property="Padding" Value="7,0"/>
-        <Setter Property="Background" Value="{StaticResource Neutral900}"/>
+        <Setter Property="Background" Value="{DynamicResource Neutral900}"/>
     </Style>
     <Style Selector="ListBoxItem Border.BoxItemBackground:pointerover">
-        <Setter Property="Background" Value="{StaticResource Neutral700}"/>
+        <Setter Property="Background" Value="{DynamicResource Neutral700}"/>
     </Style>
-    
+
     <Style Selector="Control">
         <Setter Property="ToolTip.Placement" Value="Top"/>
     </Style>
 
     <Style Selector="ToolTip">
         <Setter Property="Background" Value="{StaticResource BlackIsh}"/>
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="MaxWidth" Value="520"/>
         <Setter Property="Padding" Value="10,6"/>
@@ -154,25 +154,25 @@
         </Style.Animations>
     </Style>
     <Style Selector="ToolTip TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="TextTrimming" Value="None"/>
     </Style>
 
     <Style Selector="ContextMenu">
         <Setter Property="Background" Value="{StaticResource BlackIsh}"/>
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    
+
     <Style Selector="MenuItem">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}"/>
     </Style>
     <Style Selector="MenuItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Foreground" Value="{StaticResource Neutral50}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral50}"/>
     </Style>
-    
+
     <Style Selector="ContextMenu Separator">
-        <Setter Property="Background" Value="{StaticResource Neutral900}"/>
+        <Setter Property="Background" Value="{DynamicResource Neutral900}"/>
     </Style>
 </Styles>

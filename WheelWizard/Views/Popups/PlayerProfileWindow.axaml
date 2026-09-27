@@ -15,7 +15,7 @@
     <Grid Width="540" MinHeight="400" MaxHeight="760">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20"
                     IsVisible="{Binding IsLoading}">
-            <components:LoadingIcon Width="72" Height="72" Foreground="{StaticResource Neutral700}" />
+            <components:LoadingIcon Width="72" Height="72" Foreground="{DynamicResource Neutral700}" />
             <TextBlock Text="Loading profile..." Classes="BodyText" FontSize="14" HorizontalAlignment="Center" />
         </StackPanel>
 
@@ -32,11 +32,11 @@
             <StackPanel Spacing="12" Margin="0,8,0,4">
                 <Grid ColumnDefinitions="Auto,*">
                     <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
-                            Background="{StaticResource Neutral950}" Width="84" Height="84" Margin="0,0,14,0">
+                            Background="{DynamicResource Neutral950}" Width="84" Height="84" Margin="0,0,14,0">
                         <behavior:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                 LoadingColor="{StaticResource Neutral600}"
+                                                 LoadingColor="{DynamicResource Neutral600}"
                                                  Mii="{Binding DisplayMii}"
-                                                 FallBackColor="{StaticResource Neutral600}"
+                                                 FallBackColor="{DynamicResource Neutral600}"
                                                  ImageVariant="{x:Static miiVars:MiiImageVariants.OnlinePlayerSmall}" />
                     </Border>
 
@@ -44,7 +44,7 @@
                         <TextBlock Text="{Binding Profile.Name}" Classes="TitleText" FontSize="20"
                                    Foreground="{StaticResource FormFieldLabelColor}" />
                         <TextBlock Text="{Binding Profile.FriendCode}" Classes="BodyText" FontSize="12"
-                                   Foreground="{StaticResource Neutral400}" />
+                                   Foreground="{DynamicResource Neutral400}" />
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <components:StateBox Text="{Binding Profile.Rank, StringFormat='Rank #{0}'}"
                                                  Variant="Success" IconSize="0" HorizontalAlignment="Left"

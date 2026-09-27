@@ -105,7 +105,7 @@ public partial class Layout : BaseWindow, IPollingListener
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             TopBarButtons.IsVisible = false;
-            TitleLabel.Margin -= new Thickness(0, 0, 0, 18);
+            TitleBrandRow.Margin -= new Thickness(0, 0, 0, 18);
 
             ExtendClientAreaTitleBarHeightHint = 0;
             WindowDecorations = WindowDecorations.Full;

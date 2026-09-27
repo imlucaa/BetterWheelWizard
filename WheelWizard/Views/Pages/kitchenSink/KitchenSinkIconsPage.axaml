@@ -10,7 +10,7 @@
         <Grid ColumnDefinitions="*,*,*">
             <StackPanel Grid.Column="0" Margin="0,0,6,0" HorizontalAlignment="Center" Spacing="6">
                 <PathIcon Data="{StaticResource WheelIcon}"
-                          Foreground="{StaticResource Neutral300}"
+                          Foreground="{DynamicResource Neutral300}"
                           Width="34"
                           Height="34" />
                 <TextBlock Classes="TinyText" Text="WheelIcon" HorizontalAlignment="Center" />
@@ -18,7 +18,7 @@
 
             <StackPanel Grid.Column="1" Margin="6,0,6,0" HorizontalAlignment="Center" Spacing="6">
                 <PathIcon Data="{StaticResource Download}"
-                          Foreground="{StaticResource Neutral300}"
+                          Foreground="{DynamicResource Neutral300}"
                           Width="34"
                           Height="34" />
                 <TextBlock Classes="TinyText" Text="Download" HorizontalAlignment="Center" />
@@ -26,7 +26,7 @@
 
             <StackPanel Grid.Column="2" Margin="6,0,0,0" HorizontalAlignment="Center" Spacing="6">
                 <PathIcon Data="{StaticResource WarningTip}"
-                          Foreground="{StaticResource Neutral300}"
+                          Foreground="{DynamicResource Neutral300}"
                           Width="34"
                           Height="34" />
                 <TextBlock Classes="TinyText" Text="WarningTip" HorizontalAlignment="Center" />
@@ -39,9 +39,9 @@
                 <components:MultiColoredIcon Width="42"
                                              Height="42"
                                              IconData="{DynamicResource Multi-Example}"
-                                             Color1="{StaticResource Primary400}"
+                                             Color1="{DynamicResource Primary400}"
                                              Color2="{StaticResource Warning400}"
-                                             Color3="{StaticResource Neutral100}" />
+                                             Color3="{DynamicResource Neutral100}" />
                 <TextBlock Classes="TinyText" Text="Multi-Example" HorizontalAlignment="Center" />
             </StackPanel>
 
@@ -50,7 +50,7 @@
                                              Height="42"
                                              IconData="{DynamicResource Multi-PaintBrush}"
                                              Color1="{StaticResource Danger300}"
-                                             Color2="{StaticResource Primary300}" />
+                                             Color2="{DynamicResource Primary300}" />
                 <TextBlock Classes="TinyText" Text="Multi-PaintBrush" HorizontalAlignment="Center" />
             </StackPanel>
 
@@ -60,7 +60,7 @@
                                              IconData="{DynamicResource MiiMouth13}"
                                              Color1="{StaticResource Danger400}"
                                              Color2="{StaticResource Danger200}"
-                                             Color3="{StaticResource Neutral900}" />
+                                             Color3="{DynamicResource Neutral900}" />
                 <TextBlock Classes="TinyText" Text="MiiMouth13" HorizontalAlignment="Center" />
             </StackPanel>
         </Grid>

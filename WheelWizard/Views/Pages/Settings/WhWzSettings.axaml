@@ -21,7 +21,7 @@
                                   Width="16" Height="16" />
                     </Border>
                 </StackPanel>
-    
+
                 <StackPanel Spacing="4" Margin="0,0,0,7">
                     <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop"
                             x:Name="DolphinExecutableField"
@@ -30,7 +30,7 @@
                             <PathIcon Grid.Column="0"
                                       x:Name="DolphinExecutableCompleteIcon"
                                       Data="{StaticResource SuccessTip}"
-                                      Foreground="{StaticResource Primary300}"
+                                      Foreground="{DynamicResource Primary300}"
                                       Width="18" Height="18"
                                       Margin="0,0,10,0"
                                       VerticalAlignment="Center"
@@ -79,7 +79,7 @@
                             <PathIcon Grid.Column="0"
                                       x:Name="GameLocationCompleteIcon"
                                       Data="{StaticResource SuccessTip}"
-                                      Foreground="{StaticResource Primary300}"
+                                      Foreground="{DynamicResource Primary300}"
                                       Width="18" Height="18"
                                       Margin="0,0,10,0"
                                       VerticalAlignment="Center"
@@ -128,7 +128,7 @@
                             <PathIcon Grid.Column="0"
                                       x:Name="DolphinUserFolderCompleteIcon"
                                       Data="{StaticResource SuccessTip}"
-                                      Foreground="{StaticResource Primary300}"
+                                      Foreground="{DynamicResource Primary300}"
                                       Width="18" Height="18"
                                       Margin="0,0,10,0"
                                       VerticalAlignment="Center"
@@ -219,7 +219,7 @@
                     </Grid>
                 </Border>
             </StackPanel>
-    
+
             <components1:FormFieldLabel Text="{loc:T section.wh_wz_appearance}" Margin="0,10,0,4" />
             <StackPanel x:Name="WhWzAppearance"
                         Spacing="4"

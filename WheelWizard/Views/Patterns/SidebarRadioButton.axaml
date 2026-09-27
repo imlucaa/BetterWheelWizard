@@ -5,28 +5,28 @@
         xmlns:components="clr-namespace:WheelWizard.Views.Components"
         xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns">
   <Design.PreviewWith>
-    <Border Padding="2" Width="300" Background="{StaticResource Neutral600}">
+    <Border Padding="2" Width="300" Background="{DynamicResource Neutral600}">
       <StackPanel>
-        <patterns:SidebarRadioButton IconData="{StaticResource Home}" 
+        <patterns:SidebarRadioButton IconData="{StaticResource Home}"
                                      Text="{loc:T page_title.home}"
                                      PageType="{x:Type pages:HomePage}"/>
-        
+
         <patterns:SidebarRadioButton  IsChecked="True"
-                                   IconData="{StaticResource Settings}" 
+                                   IconData="{StaticResource Settings}"
                                    Text="{loc:T page_title.settings}"
                                    PageType="{x:Type pages:HomePage}"/>
-        
-        <patterns:SidebarRadioButton IconData="{StaticResource Friends}" 
+
+        <patterns:SidebarRadioButton IconData="{StaticResource Friends}"
                                   Text="{loc:T page_title.friends}"
                                   PageType="{x:Type pages:HomePage}"
-                                  BoxText="0/0"/>  
-        <patterns:SidebarRadioButton IconData="{StaticResource CubesStacked}" 
+                                  BoxText="0/0"/>
+        <patterns:SidebarRadioButton IconData="{StaticResource CubesStacked}"
                                   Text="{loc:T page_title.mods}"
                                   PageType="{x:Type pages:HomePage}"/>
-        <patterns:SidebarRadioButton IconData="{StaticResource RoomUsers}" 
+        <patterns:SidebarRadioButton IconData="{StaticResource RoomUsers}"
                                   Text="{loc:T page_title.rooms}"
                                   PageType="{x:Type pages:RoomsPage}"/>
-                                  
+
       </StackPanel>
     </Border>
   </Design.PreviewWith>
@@ -48,11 +48,11 @@
                     Background="Transparent"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Stretch" />
-            
+
             <Border CornerRadius="99999" IsVisible="False" Opacity="0.3" Name="PART_HoverEffect"
                     HorizontalAlignment="Left" VerticalAlignment="Top"
-                    Background="{StaticResource Primary200}" Height="46" Width="46" Effect="blur(150)">
-              
+                    Background="{DynamicResource Primary200}" Height="46" Width="46" Effect="blur(150)">
+
               <Border.Styles>
                 <Style Selector="Border">
                   <Style.Animations>
@@ -68,7 +68,7 @@
                 </Style>
               </Border.Styles>
             </Border>
-            
+
             <components:IconLabel x:Name="RadioIcon" IconSize="25" FontSize="19"
                              IconData="{TemplateBinding IconData}"
                              Text="{TemplateBinding Text}"
@@ -102,24 +102,24 @@
       </ControlTemplate>
     </Setter>
   </Style>
-  
+
   <Style Selector="patterns|SidebarRadioButton:pointerover">
     <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="Background" Value="{StaticResource Neutral800}" />
-    <Setter Property="Foreground" Value="{StaticResource Primary200}" />
+    <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+    <Setter Property="Foreground" Value="{DynamicResource Primary200}" />
     <Style Selector="^ /template/ Border#PART_HoverEffect">
       <Setter Property="IsVisible" Value="True"/>
     </Style>
   </Style>
 
   <Style Selector="patterns|SidebarRadioButton:checked">
-    <Setter Property="Background" Value="{StaticResource Neutral950}" />
-    <Setter Property="Foreground" Value="{StaticResource Primary300}" />
+    <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+    <Setter Property="Foreground" Value="{DynamicResource Primary300}" />
     <Style Selector="^ /template/ Border#PART_HoverEffect">
       <Setter Property="IsVisible" Value="False"/>
     </Style>
     <Style Selector="^ /template/ Border#PART_SelectionIndicator">
-      <Setter Property="Background" Value="{StaticResource Primary400}"/>
+      <Setter Property="Background" Value="{DynamicResource Primary400}"/>
     </Style>
   </Style>
 </Styles>

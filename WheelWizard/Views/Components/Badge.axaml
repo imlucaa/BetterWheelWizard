@@ -1,42 +1,42 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="using:WheelWizard.Views.Components">
     <Design.PreviewWith>
-        <Border Padding="2" Background="{StaticResource Neutral950}">
+        <Border Padding="2" Background="{DynamicResource Neutral950}">
             <UniformGrid Columns="4">
                 <!-- Just so you know, the border is not necessary, its just here to also show the bounding box-->
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="WhWzDev" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="RrDev" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="Translator" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="TranslatorLead" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="Heart" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="Firestarter_GoldWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="Firestarter_SilverWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="Firestarter_BronzeWinner" />
                 </Border>
 
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="SummitShowdown_GoldWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="SummitShowdown_SilverWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <controls:Badge Variant="SummitShowdown_BronzeWinner" />
                 </Border>
             </UniformGrid>
@@ -44,8 +44,8 @@
     </Design.PreviewWith>
 
 
-    <!-- 
-    IMPORTANT: 
+    <!--
+    IMPORTANT:
         No actual pixel values are allowed to be used. So any positioning should be done through:
         - Grids, and then specifically a grid with ratio based layouts
         - Scale transforms
@@ -75,13 +75,13 @@
                 <Grid RowDefinitions="1*,1*,10*,1*,1*" ColumnDefinitions="1*,1*,10*,1*,1*">
                     <Border Grid.Row="0" Grid.Column="0"
                             Grid.ColumnSpan="999" Grid.RowSpan="999" CornerRadius="999"
-                            Background="{StaticResource Primary100}" />
+                            Background="{DynamicResource Primary100}" />
 
                     <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Grid.RowSpan="3" CornerRadius="999"
-                            Background="{StaticResource Primary400}" />
+                            Background="{DynamicResource Primary400}" />
 
                     <Path Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                          Fill="{StaticResource Primary900}" Data="{StaticResource Code}"
+                          Fill="{DynamicResource Primary900}" Data="{StaticResource Code}"
                           Stretch="Uniform" />
                 </Grid>
             </ControlTemplate>
@@ -204,10 +204,10 @@
             <ControlTemplate>
                 <Grid RowDefinitions="1*, 2*, 2*" ColumnDefinitions="1*, 2*, 1*">
                     <Border Grid.Row="1" Grid.Column="1"
-                            CornerRadius="999" Background="{StaticResource Neutral50}" />
+                            CornerRadius="999" Background="{DynamicResource Neutral50}" />
 
                     <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                          Fill="{StaticResource Neutral400}" Data="{StaticResource Award}"
+                          Fill="{DynamicResource Neutral400}" Data="{StaticResource Award}"
                           Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Path.RenderTransform>
                             <TransformGroup>
@@ -239,7 +239,7 @@
             </ControlTemplate>
         </Setter>
     </Style>
-   
+
     <!-- SUMMIT SHOWDOWN BADGES -->
     <Style Selector="controls|Badge.SummitShowdown_GoldWinner">
         <Setter Property="Template">
@@ -267,10 +267,10 @@
             <ControlTemplate>
                 <Grid RowDefinitions="1*, 2*, 2*" ColumnDefinitions="1*, 2*, 1*">
                     <Border Grid.Row="1" Grid.Column="1"
-                            CornerRadius="999" Background="{StaticResource Neutral50}" />
+                            CornerRadius="999" Background="{DynamicResource Neutral50}" />
 
                     <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                          Fill="{StaticResource Neutral400}" Data="{StaticResource Award}"
+                          Fill="{DynamicResource Neutral400}" Data="{StaticResource Award}"
                           Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Path.RenderTransform>
                             <TransformGroup>
@@ -309,7 +309,7 @@
                 <Grid RowDefinitions="1*, 2*, 2*" ColumnDefinitions="1*, 2*, 1*">
                     <Border Grid.Row="1" Grid.Column="1"
                             CornerRadius="999" Background="{StaticResource Warning100}" />
-                    
+
                     <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
                           Fill="{StaticResource Warning600}" Data="{StaticResource Award}"
                           Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -323,16 +323,16 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    
+
     <Style Selector="controls|Badge.Leafstruck_SilverWinner">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="1*, 2*, 2*" ColumnDefinitions="1*, 2*, 1*">
                     <Border Grid.Row="1" Grid.Column="1"
-                            CornerRadius="999" Background="{StaticResource Neutral50}" />
-                    
+                            CornerRadius="999" Background="{DynamicResource Neutral50}" />
+
                     <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                          Fill="{StaticResource Neutral400}" Data="{StaticResource Award}"
+                          Fill="{DynamicResource Neutral400}" Data="{StaticResource Award}"
                           Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Path.RenderTransform>
                             <TransformGroup>
@@ -344,13 +344,13 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    
+
     <Style Selector="controls|Badge.Leafstruck_BronzeWinner">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="1*, 2*, 2*" ColumnDefinitions="1*, 2*, 1*">
                     <Border Grid.Row="1" Grid.Column="1" CornerRadius="999" Background="#FFD19D" />
-                    
+
                     <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
                           Fill="#EC5616" Data="{StaticResource Award}"
                           Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -366,5 +366,5 @@
     </Style>
 </Styles>
 
-    
-    
+
+

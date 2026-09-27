@@ -1,0 +1,60 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="360"
+                   x:Class="WheelWizard.Views.Popups.Generic.RoomSortWindow">
+    <Grid Width="360" RowDefinitions="Auto,Auto" Margin="0,4,0,0">
+        <StackPanel>
+            <TextBlock Classes="TitleText"
+                       Text="Choose how to sort the room list"
+                       FontSize="18"
+                       Foreground="{StaticResource FormFieldLabelColor}"
+                       Margin="0,0,0,8" />
+
+            <StackPanel Spacing="6">
+                <components:Button x:Name="AllRoomsButton"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Left"
+                                   Text="All rooms"
+                                   IconData="{StaticResource TableBars}"
+                                   Variant="Default"
+                                   Click="AllRoomsButton_OnClick" />
+                <components:Button x:Name="LowestToHighestButton"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Left"
+                                   Text="Lowest → highest"
+                                   IconData="{StaticResource ArrowUp}"
+                                   Variant="Default"
+                                   Click="LowestToHighestButton_OnClick" />
+                <components:Button x:Name="HighestToLowestButton"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Left"
+                                   Text="Highest → lowest"
+                                   IconData="{StaticResource ArrowDown}"
+                                   Variant="Default"
+                                   Click="HighestToLowestButton_OnClick" />
+                <components:Button x:Name="LowestRoomOnlyButton"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Left"
+                                   Text="Lowest room only"
+                                   IconData="{StaticResource ChevronDown}"
+                                   Variant="Default"
+                                   Click="LowestRoomOnlyButton_OnClick" />
+                <components:Button x:Name="HighestRoomOnlyButton"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Left"
+                                   Text="Highest room only"
+                                   IconData="{StaticResource ChevronUp}"
+                                   Variant="Default"
+                                   Click="HighestRoomOnlyButton_OnClick" />
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}"
+                Height="1" HorizontalAlignment="Stretch"
+                VerticalAlignment="Bottom" Margin="0,10,0,0" />
+    </Grid>
+</base:PopupContent>
