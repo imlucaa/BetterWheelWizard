@@ -18,17 +18,11 @@ public class LinuxUpdatePlatform(
 
     public GithubAsset? GetAssetForCurrentPlatform(GithubRelease release)
     {
-        string identifier;
-        if (application.Architecture == Architecture.Arm || application.Architecture == Architecture.Arm64)
-        {
-            identifier = "WheelWizard_arm64_Linux";
-        }
-        else
-        {
-            identifier = "WheelWizard_Linux";
-        }
+        var identifier = application.Architecture is Architecture.Arm or Architecture.Arm64
+            ? "BetterWheelWizard_ARM64_Linux"
+            : "BetterWheelWizard_Linux";
 
-        return release.Assets.FirstOrDefault(asset => asset.BrowserDownloadUrl.Contains(identifier, StringComparison.OrdinalIgnoreCase));
+        return release.Assets.FirstOrDefault(asset => asset.Name.Equals(identifier, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<OperationResult> ExecuteUpdateAsync(

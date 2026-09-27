@@ -136,8 +136,8 @@ public class UpdatePlatformTests
     }
 
     [Theory]
-    [InlineData(Architecture.X64, "WheelWizard_Linux")]
-    [InlineData(Architecture.Arm64, "WheelWizard_arm64_Linux")]
+    [InlineData(Architecture.X64, "BetterWheelWizard_Linux")]
+    [InlineData(Architecture.Arm64, "BetterWheelWizard_ARM64_Linux")]
     public void LinuxAssetSelection_UsesInjectedProcessArchitecture(Architecture architecture, string name)
     {
         var fixture = new Fixture(false);
@@ -147,8 +147,8 @@ public class UpdatePlatformTests
             TagName = "v1.0.0",
             Assets =
             [
-                new() { Name = "WheelWizard_Linux", BrowserDownloadUrl = "https://example.test/WheelWizard_Linux" },
-                new() { Name = "WheelWizard_arm64_Linux", BrowserDownloadUrl = "https://example.test/WheelWizard_arm64_Linux" },
+                new() { Name = "BetterWheelWizard_Linux", BrowserDownloadUrl = "https://example.test/BetterWheelWizard_Linux" },
+                new() { Name = "BetterWheelWizard_ARM64_Linux", BrowserDownloadUrl = "https://example.test/BetterWheelWizard_ARM64_Linux" },
             ],
         };
         Assert.Equal(name, fixture.Platform.GetAssetForCurrentPlatform(release)!.Name);
