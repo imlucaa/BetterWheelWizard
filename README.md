@@ -10,7 +10,6 @@ A community version of [WheelWizard](https://github.com/TeamWheelWizard/WheelWiz
 | Linux x64 | [BetterWheelWizard_Linux](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard_Linux) |
 | Linux ARM64 | [BetterWheelWizard_ARM64_Linux](https://github.com/imlucaa/BetterWheelWizard/releases/latest/download/BetterWheelWizard_ARM64_Linux) |
 
-All builds are standalone single files. No installer or separate .NET installation is required.
 
 ## Features
 
