@@ -18,6 +18,7 @@ All builds are standalone single files. No installer or separate .NET installati
 - Browse rooms with quick search, VR filters, and sorting
 - Find, import, edit, and manage Miis
 - Create, save, share, and import custom launcher themes
+- Use custom launcher backgrounds and fonts
 - Back up Mario Kart Wii saves and Retro Rewind ratings
 - Launch Retro Rewind with Dolphin or WiiCompiled
 
@@ -28,6 +29,10 @@ All builds are standalone single files. No installer or separate .NET installati
 | [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) |
 | Rooms | Mii Downloader |
 | [![Rooms](docs/screenshots/better-rooms.png)](docs/screenshots/better-rooms.png) | [![Mii Downloader](docs/screenshots/mii-downloader.png)](docs/screenshots/mii-downloader.png) |
+
+### Custom background
+
+[![Custom launcher background](docs/screenshots/custom-img.png)](docs/screenshots/custom-img.png)
 
 ## Setup
 
