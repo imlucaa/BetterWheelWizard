@@ -109,7 +109,7 @@
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{loc:T page_title.home}" HorizontalAlignment="Left"
+        <TextBlock Grid.Row="0" x:Name="HomePageTitle" Text="{loc:T page_title.home}" HorizontalAlignment="Left"
                    VerticalAlignment="Bottom"
                    Classes="PageTitleText" />
 

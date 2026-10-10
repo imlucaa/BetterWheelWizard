@@ -93,6 +93,7 @@ public partial class HomePage : UserControlBase
         _trails = [HomeTrail1, HomeTrail2, HomeTrail3, HomeTrail4, HomeTrail5];
         RandomSystem.Random.Shared.Shuffle(_trails);
         HomeArtwork.IsVisible = !SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
+        HomePageTitle.IsVisible = !SettingsService.Get<bool>(SettingsService.LAUNCHER_HIDE_HOME_TITLE);
 
         _launcherTypes.Add(LauncherProvider.GetActiveLauncher());
         if (SettingsService.IsRecompModeActive())

@@ -262,6 +262,12 @@
                                   ToolTip.Tip="Remove the large wheel and trails from Home and show the background through the launcher" />
                         <TextBlock Text="Removes the large wheel and trails from Home and shows your background through the launcher."
                                    Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
+                        <CheckBox x:Name="HideHomeTitleCheckBox"
+                                  Content="Hide Home title"
+                                  IsCheckedChanged="HideHomeTitle_OnChanged"
+                                  ToolTip.Tip="Hide the large Home label at the top of the Home page" />
+                        <TextBlock Text="Hides the Home label at the top so it does not cover your background."
+                                   Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
                         <CheckBox x:Name="CleanSidebarCheckBox"
                                   Content="Remove sidebar boxes"
                                   IsCheckedChanged="CleanSidebar_OnChanged"

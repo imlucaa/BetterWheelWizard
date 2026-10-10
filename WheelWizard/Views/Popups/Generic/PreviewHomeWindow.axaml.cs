@@ -10,23 +10,34 @@ namespace WheelWizard.Views.Popups.Generic;
 public partial class PreviewHomeWindow : PopupContent
 {
     public bool IsOpen { get; private set; } = true;
+    private bool _hideHomeTitle;
 
-    public PreviewHomeWindow(LauncherThemeFile theme, LauncherBackgroundState background, double surfaceOpacity, bool transparentLayout)
+    public PreviewHomeWindow(
+        LauncherThemeFile theme,
+        LauncherBackgroundState background,
+        double surfaceOpacity,
+        bool transparentLayout,
+        bool hideHomeTitle
+    )
         : base(true, false, true, "Launcher preview")
     {
         InitializeComponent();
-        UpdatePreview(theme, background, surfaceOpacity, transparentLayout);
+        UpdatePreview(theme, background, surfaceOpacity, transparentLayout, hideHomeTitle);
     }
 
     public async void UpdatePreview(
         LauncherThemeFile theme,
         LauncherBackgroundState background,
         double surfaceOpacity,
-        bool transparentLayout
+        bool transparentLayout,
+        bool hideHomeTitle
     )
     {
         if (!IsOpen)
             return;
+
+        _hideHomeTitle = hideHomeTitle;
+        PreviewPageTitle.IsVisible = PreviewPageTitle.Text != "Home" || !_hideHomeTitle;
 
         var accent = ParseColor(theme.Accent, Colors.DodgerBlue);
         var brand = ParseColor(theme.Branding, accent);
@@ -63,6 +74,7 @@ public partial class PreviewHomeWindow : PopupContent
             return;
 
         PreviewPageTitle.Text = page;
+        PreviewPageTitle.IsVisible = page != "Home" || !_hideHomeTitle;
         PreviewPageSubtitle.Text = page switch
         {
             "Home" => "Launcher preview",

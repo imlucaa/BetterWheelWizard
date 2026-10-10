@@ -1,0 +1,6 @@
+BetterWheelWizard 2.5.16
+
+- Added a Hide Home title toggle in Themes.
+- It hides only the large Home label at the top of the Home page.
+- The sidebar Home button and all other page titles stay visible.
+- The setting is saved and shown in the live launcher preview.

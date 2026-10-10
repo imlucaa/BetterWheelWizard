@@ -223,6 +223,7 @@ public class SettingsManager : ISettingsManager
             value => value is double opacity && opacity is >= 0.35 and <= 1.0
         );
         LAUNCHER_MINIMAL_HOME_ARTWORK = RegisterWhWz("LauncherMinimalHomeArtwork", false);
+        LAUNCHER_HIDE_HOME_TITLE = RegisterWhWz("LauncherHideHomeTitle", false);
         LAUNCHER_CLEAN_SIDEBAR = RegisterWhWz("LauncherCleanSidebar", false);
         LAUNCHER_FONT = RegisterWhWz(
             "LauncherFont",
@@ -343,6 +344,7 @@ public class SettingsManager : ISettingsManager
     public Setting LAUNCHER_BACKGROUND_OPACITY { get; }
     public Setting LAUNCHER_SURFACE_OPACITY { get; }
     public Setting LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    public Setting LAUNCHER_HIDE_HOME_TITLE { get; }
     public Setting LAUNCHER_CLEAN_SIDEBAR { get; }
     public Setting LAUNCHER_FONT { get; }
 

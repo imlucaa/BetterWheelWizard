@@ -113,6 +113,7 @@ public partial class ThemesPage : UserControlBase
             BackgroundOpacitySlider.Value = state.Opacity;
             SurfaceOpacitySlider.Value = SettingsService.Get<double>(SettingsService.LAUNCHER_SURFACE_OPACITY);
             MinimalHomeArtworkCheckBox.IsChecked = SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
+            HideHomeTitleCheckBox.IsChecked = SettingsService.Get<bool>(SettingsService.LAUNCHER_HIDE_HOME_TITLE);
             CleanSidebarCheckBox.IsChecked = SettingsService.Get<bool>(SettingsService.LAUNCHER_CLEAN_SIDEBAR);
             var value = SettingsService.Get<string>(SettingsService.LAUNCHER_BACKGROUND_STRETCH);
             BackgroundStretchComboBox.SelectedItem =
@@ -185,7 +186,8 @@ public partial class ThemesPage : UserControlBase
             theme,
             BackgroundService.Current,
             SurfaceOpacitySlider.Value,
-            MinimalHomeArtworkCheckBox.IsChecked == true
+            MinimalHomeArtworkCheckBox.IsChecked == true,
+            HideHomeTitleCheckBox.IsChecked == true
         );
         _homePreview.Show();
     }
@@ -211,7 +213,8 @@ public partial class ThemesPage : UserControlBase
             theme,
             BackgroundService.Current,
             SurfaceOpacitySlider.Value,
-            MinimalHomeArtworkCheckBox.IsChecked == true
+            MinimalHomeArtworkCheckBox.IsChecked == true,
+            HideHomeTitleCheckBox.IsChecked == true
         );
     }
 
@@ -254,6 +257,15 @@ public partial class ThemesPage : UserControlBase
     {
         if (!_isLoadingBackground)
             SettingsService.Set(SettingsService.LAUNCHER_CLEAN_SIDEBAR, CleanSidebarCheckBox.IsChecked == true);
+    }
+
+    private void HideHomeTitle_OnChanged(object? sender, RoutedEventArgs e)
+    {
+        if (!_isLoadingBackground)
+        {
+            SettingsService.Set(SettingsService.LAUNCHER_HIDE_HOME_TITLE, HideHomeTitleCheckBox.IsChecked == true);
+            UpdateActiveHomePreview();
+        }
     }
 
     private void ReloadThemeChoices(string? selectName = null)

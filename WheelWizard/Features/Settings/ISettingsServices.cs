@@ -59,6 +59,7 @@ public interface ISettingsProperties
     Setting LAUNCHER_BACKGROUND_OPACITY { get; }
     Setting LAUNCHER_SURFACE_OPACITY { get; }
     Setting LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    Setting LAUNCHER_HIDE_HOME_TITLE { get; }
     Setting LAUNCHER_CLEAN_SIDEBAR { get; }
     Setting LAUNCHER_FONT { get; }
     Setting NAND_ROOT_PATH { get; }
