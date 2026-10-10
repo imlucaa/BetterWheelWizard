@@ -8,7 +8,8 @@ public sealed class SettingsStartupInitializer(
     ISettingsSignalBus settingsSignalBus,
     ISettingsLocalizationService localizationService,
     ILauncherThemeService launcherThemeService,
-    ILogger<SettingsStartupInitializer> logger
+    ILogger<SettingsStartupInitializer> logger,
+    ILauncherBackgroundService? launcherBackgroundService = null
 ) : ISettingsStartupInitializer
 {
     public void Initialize()
@@ -18,6 +19,7 @@ public sealed class SettingsStartupInitializer(
         settingsManager.LoadSettings();
         localizationService.Initialize();
         launcherThemeService.Initialize();
+        launcherBackgroundService?.Initialize();
 
         var reportResult = settingsManager.ValidateCorePathSettings();
         if (reportResult.IsFailure)

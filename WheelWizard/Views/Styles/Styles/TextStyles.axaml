@@ -46,8 +46,8 @@
         <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
     </Style>
     
-    <Style Selector="TextBlock, SelectableTextBlock, UserControl">
-        <Setter Property="TextElement.FontFamily" Value="{StaticResource DefaultFont}" />
+    <Style Selector="TextBlock, SelectableTextBlock, UserControl, Window, ContextMenu, MenuItem, Button, RadioButton, CheckBox, ComboBox, TextBox">
+        <Setter Property="TextElement.FontFamily" Value="{DynamicResource DefaultFont}" />
     </Style>
     
     <Style Selector="SelectableTextBlock">

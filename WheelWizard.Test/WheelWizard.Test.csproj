@@ -34,4 +34,8 @@
         <ProjectReference Include="..\WheelWizard\WheelWizard.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="Fixtures\animated.gif" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

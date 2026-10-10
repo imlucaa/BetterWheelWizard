@@ -5,6 +5,26 @@ namespace WheelWizard.Test.Features;
 
 public class LeaderboardPageTests
 {
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("\u200B\u200D")]
+    [InlineData("\uE000")]
+    public void GetDisplayPlayerName_ReplacesInvisibleNames(string? value)
+    {
+        Assert.Equal("Unknown Player", LeaderboardPage.GetDisplayPlayerName(value));
+    }
+
+    [Theory]
+    [InlineData("any 1else?")]
+    [InlineData("プレイヤー")]
+    [InlineData("étoile")]
+    public void GetDisplayPlayerName_PreservesVisibleUnicodeNames(string value)
+    {
+        Assert.Equal(value, LeaderboardPage.GetDisplayPlayerName(value));
+    }
+
     [Fact]
     public void ResolveRank_AcceptsPositiveRanksAboveLegacyLimit()
     {

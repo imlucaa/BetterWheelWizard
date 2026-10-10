@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Fonts;
+using WheelWizard.Services;
 using WheelWizard.Settings;
 
 namespace WheelWizard.Themes;
@@ -11,6 +13,19 @@ public interface ILauncherThemeService
 
 public sealed class LauncherThemeService(ISettingsManager settingsManager, ISettingsSignalBus settingsSignalBus) : ILauncherThemeService
 {
+    private sealed class FileFontCollection : FontCollectionBase
+    {
+        public FileFontCollection(Uri key, string path)
+        {
+            Key = key;
+            using var stream = File.OpenRead(path);
+            if (!TryAddGlyphTypeface(stream, out _))
+                throw new InvalidDataException("The custom font could not be loaded by the launcher.");
+        }
+
+        public override Uri Key { get; }
+    }
+
     private static readonly string[] AccentResourceKeys =
     [
         "Primary50",
@@ -29,6 +44,7 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
     private static readonly string[] SurfaceResourceKeys = ["Neutral600", "Neutral700", "Neutral800", "Neutral900", "Neutral950"];
     private static readonly string[] TextResourceKeys = ["Neutral50", "Neutral100", "Neutral200", "Neutral300", "Neutral400", "Neutral500"];
     private IDisposable? _subscription;
+    private static readonly Dictionary<string, Uri> RegisteredFontCollections = new(StringComparer.OrdinalIgnoreCase);
 
     public static bool IsValidHexColor(object? value) =>
         value is string text && text.Length == 7 && text[0] == '#' && text.AsSpan(1).IndexOfAnyExcept("0123456789abcdefABCDEF") < 0;
@@ -53,7 +69,9 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         for (var i = 0; i < AccentResourceKeys.Length; i++)
             resources[AccentResourceKeys[i]] = accentScale[i];
 
-        var surfaceScale = CreateSurfaceScale(backgroundColor);
+        var hasBackground = !string.IsNullOrWhiteSpace(settingsManager.Get<string>(settingsManager.LAUNCHER_BACKGROUND_FILE));
+        var surfaceOpacity = hasBackground ? settingsManager.Get<double>(settingsManager.LAUNCHER_SURFACE_OPACITY) : 1.0;
+        var surfaceScale = CreateSurfaceScale(backgroundColor).Select(color => WithOpacity(color, surfaceOpacity)).ToArray();
         for (var i = 0; i < SurfaceResourceKeys.Length; i++)
             resources[SurfaceResourceKeys[i]] = surfaceScale[i];
 
@@ -68,6 +86,29 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         resources["TitleTextHoverColor"] = new SolidColorBrush(textScale[0]);
         resources["FormFieldLabelColor"] = new SolidColorBrush(textScale[0]);
         resources["LauncherBrandColor"] = new SolidColorBrush(brandColor);
+        // Always keep an opaque color beneath the custom image. Theme surfaces may be
+        // translucent, but they must reveal the image/base rather than the user's desktop.
+        resources["LauncherBaseBackground"] = new SolidColorBrush(backgroundColor);
+        resources["LauncherSurfaceBackground"] = new SolidColorBrush(surfaceScale[3]);
+        // Without an image there is nothing to reveal through translucent launcher
+        // chrome, so preserve the user's exact background color (including pure black).
+        // With an image, the normal layout uses card opacity over that image.
+        resources["LauncherLayoutBackground"] = new SolidColorBrush(hasBackground ? surfaceScale[3] : backgroundColor);
+        // Keep the selected image visible behind non-Home pages while providing a
+        // consistent readability layer that is stronger than individual cards.
+        resources["LauncherPageBackground"] = new SolidColorBrush(WithOpacity(backgroundColor, hasBackground ? 0.86 : 1.0));
+        // Dialogs must remain readable over detailed/bright custom backgrounds. Unlike
+        // launcher cards, popup chrome deliberately ignores the user-selected surface opacity.
+        resources["PopupBackgroundColor"] = new SolidColorBrush(backgroundColor);
+        resources["PopupFrameColor"] = new SolidColorBrush(WithOpacity(surfaceScale[3], 1.0));
+
+        var trailOpacity = hasBackground ? surfaceOpacity : 1.0;
+        resources["LauncherTrail400"] = new SolidColorBrush(WithOpacity(accentScale[3], trailOpacity));
+        resources["LauncherTrail600"] = new SolidColorBrush(WithOpacity(accentScale[5], trailOpacity));
+        resources["LauncherTrail200"] = new SolidColorBrush(WithOpacity(accentScale[2], trailOpacity));
+        resources["LauncherTrail700"] = new SolidColorBrush(WithOpacity(accentScale[6], trailOpacity));
+        resources["LauncherTrail800"] = new SolidColorBrush(WithOpacity(accentScale[7], trailOpacity));
+        resources["DefaultFont"] = ResolveFont(settingsManager.Get<string>(settingsManager.LAUNCHER_FONT));
     }
 
     private void OnSettingChanged(SettingChangedSignal signal)
@@ -77,6 +118,9 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
             || signal.Setting == settingsManager.LAUNCHER_TEXT_COLOR
             || signal.Setting == settingsManager.LAUNCHER_BODY_TEXT_COLOR
             || signal.Setting == settingsManager.LAUNCHER_BACKGROUND_COLOR
+            || signal.Setting == settingsManager.LAUNCHER_BACKGROUND_FILE
+            || signal.Setting == settingsManager.LAUNCHER_SURFACE_OPACITY
+            || signal.Setting == settingsManager.LAUNCHER_FONT
         )
             ApplyTheme();
     }
@@ -163,6 +207,50 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         static byte Channel(byte start, byte end, double amount) => (byte)Math.Round(start + ((end - start) * amount));
         return Color.FromRgb(Channel(start.R, end.R, amount), Channel(start.G, end.G, amount), Channel(start.B, end.B, amount));
     }
+
+    private static Color WithOpacity(Color color, double opacity) =>
+        Color.FromArgb((byte)Math.Round(byte.MaxValue * Math.Clamp(opacity, 0, 1)), color.R, color.G, color.B);
+
+    internal static FontFamily ResolveFont(string value)
+    {
+        try
+        {
+            if (value.Equals("Inter", StringComparison.OrdinalIgnoreCase))
+                return new FontFamily("Inter");
+            if (value.Equals("CTMKF", StringComparison.OrdinalIgnoreCase))
+                return FontFamily.Parse(
+                    "avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF, avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto"
+                );
+            if (Path.GetExtension(value).ToLowerInvariant() is ".ttf" or ".otf")
+            {
+                var path = Path.Combine(PathManager.WheelWizardAppdataPath, "Appearance", "Fonts", value);
+                if (File.Exists(path))
+                {
+                    using var typeface = SkiaSharp.SKTypeface.FromFile(path);
+                    var familyName = typeface?.FamilyName;
+                    if (!string.IsNullOrWhiteSpace(familyName))
+                    {
+                        if (!RegisteredFontCollections.TryGetValue(path, out var collectionKey))
+                        {
+                            collectionKey = new Uri($"fonts:custom/{Guid.NewGuid():N}");
+                            FontManager.Current.AddFontCollection(new FileFontCollection(collectionKey, path));
+                            RegisteredFontCollections[path] = collectionKey;
+                        }
+                        return FontFamily.Parse(
+                            $"{collectionKey}#{familyName}, "
+                                + "avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, "
+                                + "avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF"
+                        );
+                    }
+                }
+            }
+        }
+        catch (ArgumentException) { }
+        catch (IOException) { }
+        return FontFamily.Parse(
+            "avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF"
+        );
+    }
 }
 
 public static class LauncherThemeExtensions
@@ -170,6 +258,7 @@ public static class LauncherThemeExtensions
     public static IServiceCollection AddLauncherThemes(this IServiceCollection services)
     {
         services.AddSingleton<ILauncherThemeService, LauncherThemeService>();
+        services.AddSingleton<ILauncherBackgroundService, LauncherBackgroundService>();
         return services;
     }
 }

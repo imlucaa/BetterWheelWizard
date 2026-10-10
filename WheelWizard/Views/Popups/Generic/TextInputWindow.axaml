@@ -32,7 +32,8 @@
                                     IsIconLeft="False"
                                     IsEnabled="True" Text="{loc:T action.view_custom_chars}" IsVisible="False"
                                     Click="CustomCharsButton_Click" Margin="0,0,0,5" />
-        <UniformGrid Columns="10" Grid.Row="1" x:Name="CustomChars" IsVisible="False" Margin="0,0,0,5">
+        <UniformGrid Columns="10" Grid.Row="1" x:Name="CustomChars" IsVisible="False" Margin="0,0,0,5"
+                     TextElement.FontFamily="{DynamicResource MiiSymbolFont}">
             <!--This will be filled with buttons of all the special chars -->
         </UniformGrid>
 

@@ -12,6 +12,7 @@ using WheelWizard.Settings;
 using WheelWizard.Settings.Types;
 using WheelWizard.Shared.DependencyInjection;
 using WheelWizard.Shared.MessageTranslations;
+using WheelWizard.Themes;
 using WheelWizard.Utilities.RepeatedTasks;
 using WheelWizard.Views.Pages;
 using WheelWizard.Views.Pages.Settings;
@@ -54,6 +55,9 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
     private ISettingsSignalBus SettingsSignalBus { get; set; } = null!;
 
     [Inject]
+    private ILauncherBackgroundService BackgroundService { get; set; } = null!;
+
+    [Inject]
     private IModManager ModManagerService { get; set; } = null!;
 
     public Layout()
@@ -65,6 +69,9 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
         ClampSavedWindowScaleToCurrentScreen();
         OnSettingChanged(SettingsService.SAVED_WINDOW_SCALE);
         _settingsSignalSubscription = SettingsSignalBus.Subscribe(OnSettingSignal);
+        BackgroundService.Changed += OnBackgroundChanged;
+        _ = ApplyBackgroundAsync(BackgroundService.Current);
+        UpdateMinimalHomeAppearance();
         UpdateTestingButtonVisibility();
 
         UpdateMadeByText();
@@ -101,9 +108,26 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
     {
         _settingsSignalSubscription?.Dispose();
         _settingsSignalSubscription = null;
+        BackgroundService.Changed -= OnBackgroundChanged;
+        LauncherBackground.Dispose();
         LocalizationProvider.LanguageChanged -= OnLanguageChanged;
         ModManagerService.PropertyChanged -= ModManager_PropertyChanged;
         base.OnClosed(e);
+    }
+
+    private void OnBackgroundChanged(LauncherBackgroundState state) => _ = ApplyBackgroundAsync(state);
+
+    private async Task ApplyBackgroundAsync(LauncherBackgroundState state)
+    {
+        try
+        {
+            await LauncherBackground.LoadAsync(state);
+            UpdateMinimalHomeAppearance();
+        }
+        catch
+        {
+            LauncherBackground.IsVisible = false;
+        }
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -154,6 +178,25 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
 
         if (setting == SettingsService.TESTING_MODE_ENABLED)
             UpdateTestingButtonVisibility();
+
+        if (setting == SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK)
+        {
+            UpdateMinimalHomeAppearance();
+            UpdateMainContentSurface(ContentArea.Content as UserControl);
+        }
+
+        if (setting == SettingsService.LAUNCHER_CLEAN_SIDEBAR)
+            UpdateMinimalHomeAppearance();
+
+        if (
+            setting == SettingsService.LAUNCHER_SURFACE_OPACITY
+            || setting == SettingsService.LAUNCHER_BACKGROUND_FILE
+            || setting == SettingsService.LAUNCHER_BACKGROUND_COLOR
+        )
+        {
+            UpdateMinimalHomeAppearance();
+            UpdateMainContentSurface(ContentArea.Content as UserControl);
+        }
     }
 
     private void ClampSavedWindowScaleToCurrentScreen()
@@ -182,7 +225,30 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
     public void NavigateToPage(UserControl page)
     {
         ContentArea.Content = page;
+        UpdateMinimalHomeAppearance();
+        UpdateMainContentSurface(page);
         UpdateSidebarSelection(page);
+    }
+
+    private void UpdateMinimalHomeAppearance()
+    {
+        var transparentLayout = SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
+        var cleanSidebar = SettingsService.Get<bool>(SettingsService.LAUNCHER_CLEAN_SIDEBAR);
+        var normalBackground = (IBrush)Application.Current!.FindResource("LauncherLayoutBackground")!;
+
+        CompleteGrid.Classes.Set("MinimalHome", transparentLayout);
+        CompleteGrid.Classes.Set("CleanSidebar", cleanSidebar);
+        LauncherBackground.IsVisible = BackgroundService.Current.Path != null;
+        TopChromeSurface.Background = transparentLayout ? Brushes.Transparent : normalBackground;
+        SidebarPageSurface.Background = transparentLayout ? Brushes.Transparent : normalBackground;
+        SidebarProfileBlock.Background = cleanSidebar ? Brushes.Transparent : GetResourceBrush("Neutral900");
+    }
+
+    private void UpdateMainContentSurface(UserControl? page)
+    {
+        var transparentLayout = SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
+        var normalBackground = (IBrush)Application.Current!.FindResource("LauncherLayoutBackground")!;
+        MainContentSurface.Background = transparentLayout ? Brushes.Transparent : normalBackground;
     }
 
     private void UpdateSidebarSelection(UserControl page)

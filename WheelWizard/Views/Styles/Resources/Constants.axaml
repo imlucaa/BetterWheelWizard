@@ -243,6 +243,10 @@
         <!-- This is to ensure that if we ever want to change a color, we only have to change it in one place -->
         <SolidColorBrush x:Key="BackgroundColor" Color="{DynamicResource Neutral950}" />
         <SolidColorBrush x:Key="FrameColor" Color="{DynamicResource Neutral900}" />
+        <!-- Popups stay opaque even when launcher cards are made translucent. -->
+        <SolidColorBrush x:Key="PopupBackgroundColor" Color="{DynamicResource Neutral950}" />
+        <SolidColorBrush x:Key="PopupFrameColor" Color="{DynamicResource Neutral900}" />
+        <SolidColorBrush x:Key="LauncherBaseBackground" Color="#101216" />
         <SolidColorBrush x:Key="BackgroundLineColor" Color="{DynamicResource Neutral700}" />
     
         <!-- Text Brushes -->

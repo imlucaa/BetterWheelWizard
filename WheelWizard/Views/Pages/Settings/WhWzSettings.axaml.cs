@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Serilog;
@@ -26,6 +27,12 @@ public partial class WhWzSettings : UserControlBase
     private bool _editingScale;
     private bool _isMovingAppData;
     private bool _updatingLanguageDropdown;
+    private bool _updatingFontDropdown;
+
+    private sealed record FontDropdownItem(string Value, string DisplayName)
+    {
+        public override string ToString() => DisplayName;
+    }
 
     [Inject]
     private ISettingsManager SettingsService { get; set; } = null!;
@@ -84,6 +91,147 @@ public partial class WhWzSettings : UserControlBase
         WindowScaleDropdown.SelectedItem = selectedItemText;
 
         EnableAnimations.IsChecked = (bool)SettingsService.ENABLE_ANIMATIONS.Get();
+        RefreshFontDropdown();
+    }
+
+    private static string FontsFolderPath => Path.Combine(PathManager.WheelWizardAppdataPath, "Appearance", "Fonts");
+
+    private void RefreshFontDropdown()
+    {
+        var current = SettingsService.Get<string>(SettingsService.LAUNCHER_FONT);
+        _updatingFontDropdown = true;
+        try
+        {
+            if (LauncherFontDropdown.Items.Count == 0)
+            {
+                LauncherFontDropdown.Items.Add(new FontDropdownItem("Roboto", "Roboto (default)"));
+                LauncherFontDropdown.Items.Add(new FontDropdownItem("Inter", "Inter"));
+                LauncherFontDropdown.Items.Add(new FontDropdownItem("CTMKF", "Mario Kart"));
+                AddImportedFontsToDropdown();
+            }
+            if (IsCustomFont(current) && !LauncherFontDropdown.Items.OfType<FontDropdownItem>().Any(item => item.Value == current))
+                LauncherFontDropdown.Items.Add(new FontDropdownItem(current, Path.GetFileNameWithoutExtension(current)));
+            LauncherFontDropdown.SelectedItem =
+                LauncherFontDropdown.Items.OfType<FontDropdownItem>().FirstOrDefault(item => item.Value == current)
+                ?? LauncherFontDropdown.Items[0];
+            UpdateFontStatus(current);
+        }
+        finally
+        {
+            _updatingFontDropdown = false;
+        }
+    }
+
+    private static bool IsCustomFont(string value) => Path.GetExtension(value).ToLowerInvariant() is ".ttf" or ".otf";
+
+    private void AddImportedFontsToDropdown()
+    {
+        if (!Directory.Exists(FontsFolderPath))
+            return;
+
+        foreach (var path in Directory.EnumerateFiles(FontsFolderPath).Where(path => IsCustomFont(Path.GetFileName(path))))
+        {
+            try
+            {
+                using var typeface = SkiaSharp.SKTypeface.FromFile(path);
+                if (typeface == null || string.IsNullOrWhiteSpace(typeface.FamilyName))
+                    continue;
+                var fileName = Path.GetFileName(path);
+                if (!LauncherFontDropdown.Items.OfType<FontDropdownItem>().Any(item => item.Value == fileName))
+                    LauncherFontDropdown.Items.Add(new FontDropdownItem(fileName, typeface.FamilyName));
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                Log.Warning(exception, "Could not load imported launcher font {FontPath}", path);
+            }
+        }
+    }
+
+    private void UpdateFontStatus(string value)
+    {
+        RemoveLauncherFontButton.IsVisible = IsCustomFont(value);
+        LauncherFontStatus.Text = IsCustomFont(value) ? $"Using {Path.GetFileName(value)}" : "Import a .ttf or .otf font.";
+    }
+
+    private void LauncherFontDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_updatingFontDropdown || LauncherFontDropdown.SelectedItem is not FontDropdownItem item)
+            return;
+        SettingsService.Set(SettingsService.LAUNCHER_FONT, item.Value);
+        UpdateFontStatus(item.Value);
+    }
+
+    private async void ImportLauncherFont_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var type = new FilePickerFileType("Font files") { Patterns = ["*.ttf", "*.otf"] };
+        var source = await FilePickerHelper.OpenSingleFileAsync("Choose a launcher font", [type]);
+        if (string.IsNullOrWhiteSpace(source))
+            return;
+
+        try
+        {
+            var info = new FileInfo(source);
+            if (info.Length > 20 * 1024 * 1024)
+                throw new InvalidDataException("Font files must be 20 MB or smaller.");
+            using var typeface = SkiaSharp.SKTypeface.FromFile(source);
+            if (typeface == null || string.IsNullOrWhiteSpace(typeface.FamilyName))
+                throw new InvalidDataException("The selected file is not a valid font.");
+
+            Directory.CreateDirectory(FontsFolderPath);
+            var extension = Path.GetExtension(source).ToLowerInvariant();
+            var fileName = $"font-{Guid.NewGuid():N}{extension}";
+            File.Copy(source, Path.Combine(FontsFolderPath, fileName), true);
+            SettingsService.Set(SettingsService.LAUNCHER_FONT, fileName);
+            _updatingFontDropdown = true;
+            try
+            {
+                var item = new FontDropdownItem(fileName, typeface.FamilyName);
+                LauncherFontDropdown.Items.Add(item);
+                LauncherFontDropdown.SelectedItem = item;
+            }
+            finally
+            {
+                _updatingFontDropdown = false;
+            }
+            UpdateFontStatus(fileName);
+            LauncherFontStatus.Text = $"Applied {typeface.FamilyName}.";
+        }
+        catch (Exception exception)
+        {
+            LauncherFontStatus.Text = exception.Message;
+        }
+    }
+
+    private void RemoveLauncherFont_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var current = SettingsService.Get<string>(SettingsService.LAUNCHER_FONT);
+        if (!IsCustomFont(current))
+            return;
+
+        var customItem = LauncherFontDropdown.Items.OfType<FontDropdownItem>().FirstOrDefault(item => item.Value == current);
+        SettingsService.Set(SettingsService.LAUNCHER_FONT, "Roboto");
+        _updatingFontDropdown = true;
+        try
+        {
+            LauncherFontDropdown.SelectedItem = LauncherFontDropdown.Items.OfType<FontDropdownItem>().First(item => item.Value == "Roboto");
+        }
+        finally
+        {
+            _updatingFontDropdown = false;
+        }
+        try
+        {
+            var path = Path.Combine(FontsFolderPath, current);
+            if (File.Exists(path))
+                File.Delete(path);
+            if (customItem != null)
+                LauncherFontDropdown.Items.Remove(customItem);
+            UpdateFontStatus("Roboto");
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            LauncherFontStatus.Text = $"Could not delete font: {exception.Message}";
+        }
     }
 
     private void RefreshLanguageDropdown()

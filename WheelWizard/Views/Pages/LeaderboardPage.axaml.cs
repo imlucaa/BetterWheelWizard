@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
@@ -280,7 +282,7 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
                     [
                         new LeaderboardSearchMatch(
                             rank,
-                            string.IsNullOrWhiteSpace(profileResult.Value.Name) ? "Unknown Player" : profileResult.Value.Name,
+                            GetDisplayPlayerName(profileResult.Value.Name),
                             normalizedFriendCode,
                             profileResult.Value.Vr.ToString("N0"),
                             DeserializeMii(profileResult.Value.MiiData),
@@ -304,7 +306,7 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
                 .Where(item => !string.IsNullOrWhiteSpace(item.Entry.FriendCode))
                 .Select(item => new LeaderboardSearchMatch(
                     item.Rank,
-                    string.IsNullOrWhiteSpace(item.Entry.Name) ? "Unknown Player" : item.Entry.Name,
+                    GetDisplayPlayerName(item.Entry.Name),
                     item.Entry.FriendCode,
                     item.Entry.Vr?.ToString("N0") ?? "--",
                     DeserializeMii(item.Entry.MiiData),
@@ -577,7 +579,7 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         {
             Rank = rank,
             PlacementLabel = GetPlacementLabel(rank),
-            Name = string.IsNullOrWhiteSpace(entry.Name) ? "Unknown Player" : entry.Name,
+            Name = GetDisplayPlayerName(entry.Name),
             FriendCode = friendCode,
             VrText = entry.Vr?.ToString("N0") ?? "--",
             Mii = DeserializeMii(entry.MiiData),
@@ -599,6 +601,32 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
             return entry.ActiveRank.Value;
 
         return index + 1;
+    }
+
+    internal static string GetDisplayPlayerName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "Unknown Player";
+
+        var normalized = name.Normalize(NormalizationForm.FormC).Trim();
+        var hasVisibleCharacter = normalized
+            .EnumerateRunes()
+            .Any(rune =>
+            {
+                var category = Rune.GetUnicodeCategory(rune);
+                return category
+                    is not UnicodeCategory.Control
+                        and not UnicodeCategory.Format
+                        and not UnicodeCategory.Surrogate
+                        and not UnicodeCategory.PrivateUse
+                        and not UnicodeCategory.SpaceSeparator
+                        and not UnicodeCategory.LineSeparator
+                        and not UnicodeCategory.ParagraphSeparator
+                        and not UnicodeCategory.NonSpacingMark
+                        and not UnicodeCategory.SpacingCombiningMark
+                        and not UnicodeCategory.EnclosingMark;
+            });
+        return hasVisibleCharacter ? normalized : "Unknown Player";
     }
 
     private string GetPlacementLabel(int rank)

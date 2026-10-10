@@ -6,6 +6,23 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.15] - 2026-10-11
+
+### Added
+
+- Added custom launcher backgrounds with image fitting, opacity controls, animated GIF support, and live previews.
+- Added launcher-wide font presets and custom `.ttf`/`.otf` font imports.
+
+### Changed
+
+- Added separate options to remove the Home wheel artwork and sidebar boxes.
+- Made theme editor buttons use a consistent neutral style.
+
+### Fixed
+
+- Fixed font fallback, invisible player names, popup readability, and font-selector stability.
+- Fixed custom appearance settings not persisting or applying consistently across launcher pages.
+
 ## [2.5.14] - 2026-09-27
 
 ### Added
@@ -100,7 +117,8 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.14...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.15...HEAD
+[2.5.15]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.14...v2.5.15
 [2.5.14]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.13...v2.5.14
 [2.5.13]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.12...v2.5.13
 [2.5.12]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.11...v2.5.12

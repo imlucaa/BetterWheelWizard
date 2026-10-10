@@ -92,6 +92,7 @@ public partial class HomePage : UserControlBase
         // Ready draws the button and starts the entrance animation inside this constructor.
         _trails = [HomeTrail1, HomeTrail2, HomeTrail3, HomeTrail4, HomeTrail5];
         RandomSystem.Random.Shared.Shuffle(_trails);
+        HomeArtwork.IsVisible = !SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
 
         _launcherTypes.Add(LauncherProvider.GetActiveLauncher());
         if (SettingsService.IsRecompModeActive())
@@ -270,10 +271,14 @@ public partial class HomePage : UserControlBase
     private async void PlayEntranceAnimation()
     {
         // If the animations are disabled, it will never play the entrance animation
-        // The entrance animation is also the only one that makes the wheels visible, meaning hat if this one does not play
-        // all the other animations are all also impossible to play
+        // The entrance animation used to be the only thing that made the wheels visible.
+        // Keep the static wheel trails visible when animations are disabled; disabling motion
+        // should not remove the Home page decoration.
         if (!SettingsService.Get<bool>(SettingsService.ENABLE_ANIMATIONS))
+        {
+            ShowStaticWheelTrails();
             return;
+        }
 
         var allowedToRun = WaitForWheelTrailState(
             WheelTrailState.Playing_Entrance,
@@ -298,6 +303,22 @@ public partial class HomePage : UserControlBase
         lock (_trails)
         {
             _currentTrailState = WheelTrailState.Static_Visible;
+        }
+    }
+
+    private void ShowStaticWheelTrails()
+    {
+        lock (_trails)
+        {
+            _currentTrailState = WheelTrailState.Static_Visible;
+        }
+
+        foreach (var trail in _trails)
+        {
+            trail.Classes.Clear();
+            trail.ExtendedHeight = 0;
+            trail.WheelRotation = 0;
+            trail.IsVisible = true;
         }
     }
 

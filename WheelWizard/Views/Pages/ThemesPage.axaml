@@ -6,6 +6,22 @@
              mc:Ignorable="d" d:DesignWidth="456" d:DesignHeight="776"
              x:Class="WheelWizard.Views.Pages.ThemesPage">
     <Grid>
+        <Grid.Styles>
+            <!-- Keep editor actions neutral so draft accents do not make every button
+                 look destructive or overpower the color preview. -->
+            <Style Selector="components|Button.Primary, components|Button.Default">
+                <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+                <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+            </Style>
+            <Style Selector="components|Button.Primary:pointerover, components|Button.Default:pointerover">
+                <Setter Property="Background" Value="{DynamicResource Neutral600}" />
+                <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+            </Style>
+            <Style Selector="components|Button.Primary:pressed, components|Button.Default:pressed">
+                <Setter Property="Background" Value="{DynamicResource Neutral500}" />
+                <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
+            </Style>
+        </Grid.Styles>
         <Grid.RowDefinitions>
             <RowDefinition Height="{StaticResource TopRowSize}" />
             <RowDefinition Height="*" />
@@ -51,7 +67,7 @@
                                                    IconData="{StaticResource ThemePalette}" Click="ChooseTheme_OnClick" />
                             </Grid>
                         </Border>
-                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="6">
+                        <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="6">
                             <components:Button Grid.Column="0" Text="Save" ButtonSize="Compact" Variant="Default"
                                                IconData="{StaticResource PlusMark}" Click="SaveTheme_OnClick" />
                             <components:Button Grid.Column="1" Text="Copy" ButtonSize="Compact" Variant="Default"
@@ -63,6 +79,9 @@
                             <components:Button Grid.Column="3" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
                                                IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
                                                IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
+                            <components:Button Grid.Column="4" Text="Preview" ButtonSize="Compact" Variant="Primary"
+                                               IconData="{StaticResource Eye}" Click="PreviewHome_OnClick"
+                                               ToolTip.Tip="Preview Home with the current colors before applying" />
                         </Grid>
                         <components:Button x:Name="RestorePresetsButton" Text="Restore presets" ButtonSize="Compact"
                                            Variant="Default" Click="RestorePresets_OnClick"
@@ -190,6 +209,67 @@
                                 <Border x:Name="ColorPreview" Background="#249AF3" />
                             </StackPanel>
                         </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
+                    <StackPanel Spacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="Custom background" FontSize="18" />
+                            <TextBlock Text="Use a local image or an HTTP/HTTPS image URL. PNG, JPG, WebP, BMP, ICO, and animated GIF files are supported."
+                                       Classes="TinyText" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <TextBox x:Name="BackgroundUrlTextBox" PlaceholderText="https://example.com/background.gif"
+                                     VerticalContentAlignment="Center" />
+                            <components:Button Grid.Column="1" Text="Use URL" ButtonSize="Compact" Variant="Default"
+                                               Click="ImportBackgroundUrl_OnClick" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
+                            <components:Button Text="Import image" ButtonSize="Compact" Variant="Primary"
+                                               IconData="{StaticResource FileImport}" Click="ImportBackgroundFile_OnClick" />
+                            <components:Button Grid.Column="1" Text="Remove" ButtonSize="Compact" Variant="Default"
+                                               Click="RemoveBackground_OnClick" />
+                            <TextBlock Grid.Column="2" x:Name="BackgroundFileText" Classes="TinyText"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="120" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
+                            <TextBlock Text="Image fit" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" x:Name="BackgroundStretchComboBox"
+                                      SelectionChanged="BackgroundStretch_OnSelectionChanged">
+                                <ComboBoxItem Content="Cover" Tag="UniformToFill" />
+                                <ComboBoxItem Content="Contain" Tag="Uniform" />
+                                <ComboBoxItem Content="Stretch" Tag="Fill" />
+                                <ComboBoxItem Content="Original size" Tag="None" />
+                            </ComboBox>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
+                            <TextBlock Text="Image opacity" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" x:Name="BackgroundOpacitySlider" Minimum="0.1" Maximum="1"
+                                    TickFrequency="0.05" ValueChanged="BackgroundOpacity_OnValueChanged" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
+                            <TextBlock Text="Panel opacity" VerticalAlignment="Center" />
+                            <Slider Grid.Column="1" x:Name="SurfaceOpacitySlider" Minimum="0.35" Maximum="1"
+                                     TickFrequency="0.05" ValueChanged="SurfaceOpacity_OnValueChanged" />
+                        </Grid>
+                        <TextBlock Text="Controls how solid cards and panels look over your background."
+                                   Classes="TinyText" TextWrapping="Wrap" Margin="0,-8,0,0" />
+                        <CheckBox x:Name="MinimalHomeArtworkCheckBox"
+                                  Content="Remove Home wheel artwork"
+                                  IsCheckedChanged="MinimalHomeArtwork_OnChanged"
+                                  ToolTip.Tip="Remove the large wheel and trails from Home and show the background through the launcher" />
+                        <TextBlock Text="Removes the large wheel and trails from Home and shows your background through the launcher."
+                                   Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
+                        <CheckBox x:Name="CleanSidebarCheckBox"
+                                  Content="Remove sidebar boxes"
+                                  IsCheckedChanged="CleanSidebar_OnChanged"
+                                  ToolTip.Tip="Remove gray boxes behind sidebar buttons and the profile area" />
+                        <TextBlock Text="Removes the gray boxes behind sidebar buttons and your profile."
+                                   Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
+                        <TextBlock x:Name="BackgroundStatusText" Classes="TinyText" Foreground="{DynamicResource Primary300}"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
             </StackPanel>

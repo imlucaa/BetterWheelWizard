@@ -6,6 +6,30 @@ namespace WheelWizard.Test.Features;
 public class LauncherThemeTests
 {
     [Theory]
+    [InlineData("Roboto")]
+    [InlineData("Inter")]
+    [InlineData("CTMKF")]
+    [InlineData("missing-font.ttf")]
+    public void ResolveFont_KnownAndMissingValues_DoNotThrow(string value)
+    {
+        var font = LauncherThemeService.ResolveFont(value);
+
+        Assert.NotNull(font);
+    }
+
+    [Fact]
+    public void CustomFontFamily_UsesItsRegisteredCollectionKey()
+    {
+        var key = new Uri("fonts:custom/test");
+
+        var font = FontFamily.Parse($"{key}#Example Font");
+
+        Assert.NotNull(font.Key);
+        Assert.Equal(key, font.Key!.Source);
+        Assert.Equal("Example Font", font.Name);
+    }
+
+    [Theory]
     [InlineData("#000000")]
     [InlineData("#FFFFFF")]
     public void AccentScale_PreservesSelectedBlackOrWhite(string hex)

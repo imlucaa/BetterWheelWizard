@@ -122,4 +122,15 @@
       <Setter Property="Background" Value="{DynamicResource Primary400}"/>
     </Style>
   </Style>
+
+  <!-- Sidebar boxes are controlled independently from page/background transparency. -->
+  <Style Selector="Grid.CleanSidebar patterns|SidebarRadioButton">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="Grid.CleanSidebar patterns|SidebarRadioButton:pointerover">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="Grid.CleanSidebar patterns|SidebarRadioButton:checked">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
 </Styles>

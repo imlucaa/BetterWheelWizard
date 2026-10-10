@@ -8,17 +8,28 @@
         xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
         xmlns:components="clr-namespace:WheelWizard.Views.Components"
         xmlns:patterns="clr-namespace:WheelWizard.Views.Patterns"
+        xmlns:themes="clr-namespace:WheelWizard.Themes"
         xmlns:miiVars="using:WheelWizard.MiiImages.Domain"
         Height="876" Width="656" WindowStartupLocation="CenterScreen"
         WindowDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
-        CanResize='False' Background="Transparent">
+        CanResize='False' Background="{DynamicResource LauncherBaseBackground}">
     <Grid ColumnDefinitions="222,*" RowDefinitions="27,17,18,96,*,80" x:Name="CompleteGrid"
-          Background="{StaticResource FrameColor}">
+          Background="Transparent">
+
+        <themes:LauncherBackgroundImage x:Name="LauncherBackground" Grid.RowSpan="999" Grid.ColumnSpan="999"
+                                        IsHitTestVisible="False" />
+
+        <Border x:Name="TopChromeSurface" Grid.Row="0" Grid.ColumnSpan="2"
+                Background="{DynamicResource LauncherLayoutBackground}" />
+
+        <!-- This surface becomes transparent in transparent-layout mode. -->
+        <Border x:Name="SidebarPageSurface" Grid.Column="0" Grid.Row="1" Grid.RowSpan="5"
+                Background="{DynamicResource LauncherLayoutBackground}" />
 
         <Border Grid.ColumnSpan="2"
                 CornerRadius="0"
-                Background="{DynamicResource FrameColor}"
+                Background="Transparent"
                 PointerPressed="TopBar_PointerPressed">
         </Border>
 
@@ -52,9 +63,9 @@
             </Grid>
         </Border>
 
-        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="5"
-                CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
-                Background="{StaticResource BackgroundColor}" />
+        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" x:Name="MainContentSurface"
+                 CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
+                 Background="{DynamicResource LauncherLayoutBackground}" />
         <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" ClipToBounds="True">
             <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                             ClipToBounds="False"

@@ -8,6 +8,9 @@
     <Application.Resources>
         <ResourceDictionary>
             <FontFamily x:Key="DefaultFont">avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF</FontFamily>
+            <FontFamily x:Key="MiiSymbolFont">avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF, avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto</FontFamily>
+            <SolidColorBrush x:Key="LauncherPageBackground" Color="#FF101216" />
+            <SolidColorBrush x:Key="LauncherLayoutBackground" Color="#FF101216" />
 
             <!-- CONSTANTS -->
             <ResourceDictionary.MergedDictionaries>

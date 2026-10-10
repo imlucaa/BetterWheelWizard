@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Media;
 using WheelWizard.CustomCharacters;
 using WheelWizard.Shared.DependencyInjection;
 using WheelWizard.Views.Popups.Base;
@@ -109,6 +111,7 @@ public partial class TextInputWindow : PopupContent
                 FontSize = 24,
                 Padding = new(0),
                 Margin = new(1),
+                FontFamily = (FontFamily)Application.Current!.FindResource("MiiSymbolFont")!,
             };
 
             button.Click += (_, _) => InputField.Text = string.Concat(InputField.Text ?? string.Empty, c);

@@ -13,7 +13,7 @@
         x:DataType="base:PopupWindow"
         Title="{Binding WindowTitle}">
     <Grid x:Name="CompleteGrid">
-        <Border Background="{StaticResource  BackgroundColor}" CornerRadius="4"
+        <Border Background="{StaticResource PopupBackgroundColor}" CornerRadius="4"
                 x:Name="CompleteBorder"
                 BorderThickness="1" BorderBrush="{StaticResource BackgroundLineColor}">
             <Grid RowDefinitions="30,*">
@@ -21,7 +21,7 @@
                         x:Name="DisabledDarkenEffect" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                         Background="Black" Opacity="0.3" />
 
-                <Border Grid.Row="0" Background="{StaticResource FrameColor}"
+                <Border Grid.Row="0" Background="{StaticResource PopupFrameColor}"
                         CornerRadius="3,3,0,0" PointerPressed="TopBar_PointerPressed">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left"

@@ -54,6 +54,13 @@ public interface ISettingsProperties
     Setting LAUNCHER_TEXT_COLOR { get; }
     Setting LAUNCHER_BODY_TEXT_COLOR { get; }
     Setting LAUNCHER_BACKGROUND_COLOR { get; }
+    Setting LAUNCHER_BACKGROUND_FILE { get; }
+    Setting LAUNCHER_BACKGROUND_STRETCH { get; }
+    Setting LAUNCHER_BACKGROUND_OPACITY { get; }
+    Setting LAUNCHER_SURFACE_OPACITY { get; }
+    Setting LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    Setting LAUNCHER_CLEAN_SIDEBAR { get; }
+    Setting LAUNCHER_FONT { get; }
     Setting NAND_ROOT_PATH { get; }
     Setting LOAD_PATH { get; }
     Setting VSYNC { get; }

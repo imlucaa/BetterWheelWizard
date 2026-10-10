@@ -1,8 +1,10 @@
 using System.Text.Json;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using WheelWizard.Services;
 using WheelWizard.Settings;
@@ -83,9 +85,14 @@ public partial class ThemesPage : UserControlBase
     private ThemeChoice? _selectedTheme;
     private string _editorThemeName = string.Empty;
     private bool _isLoadingTheme;
+    private bool _isLoadingBackground;
+    private PreviewHomeWindow? _homePreview;
 
     [Inject]
     private ISettingsManager SettingsService { get; set; } = null!;
+
+    [Inject]
+    private ILauncherBackgroundService BackgroundService { get; set; } = null!;
 
     public ThemesPage()
     {
@@ -93,6 +100,160 @@ public partial class ThemesPage : UserControlBase
         LoadCurrentTheme();
         ReloadThemeChoices();
         UpdatePreview();
+        LoadBackgroundSettings();
+    }
+
+    private void LoadBackgroundSettings()
+    {
+        _isLoadingBackground = true;
+        try
+        {
+            var state = BackgroundService.Current;
+            BackgroundFileText.Text = state.Path == null ? "No image" : Path.GetFileName(state.Path);
+            BackgroundOpacitySlider.Value = state.Opacity;
+            SurfaceOpacitySlider.Value = SettingsService.Get<double>(SettingsService.LAUNCHER_SURFACE_OPACITY);
+            MinimalHomeArtworkCheckBox.IsChecked = SettingsService.Get<bool>(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK);
+            CleanSidebarCheckBox.IsChecked = SettingsService.Get<bool>(SettingsService.LAUNCHER_CLEAN_SIDEBAR);
+            var value = SettingsService.Get<string>(SettingsService.LAUNCHER_BACKGROUND_STRETCH);
+            BackgroundStretchComboBox.SelectedItem =
+                BackgroundStretchComboBox
+                    .Items.OfType<ComboBoxItem>()
+                    .FirstOrDefault(item => string.Equals(item.Tag?.ToString(), value, StringComparison.OrdinalIgnoreCase))
+                ?? BackgroundStretchComboBox.Items[0];
+        }
+        finally
+        {
+            _isLoadingBackground = false;
+        }
+    }
+
+    private async void ImportBackgroundFile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var fileType = new FilePickerFileType("Images") { Patterns = ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp", "*.ico"] };
+        var path = await FilePickerHelper.OpenSingleFileAsync("Choose a launcher background", [fileType]);
+        if (path != null)
+            await ImportBackground(async () => await BackgroundService.ImportFileAsync(path));
+    }
+
+    private async void ImportBackgroundUrl_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var url = BackgroundUrlTextBox.Text?.Trim();
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            BackgroundStatusText.Text = "Enter an image URL first.";
+            return;
+        }
+        await ImportBackground(async () => await BackgroundService.ImportUrlAsync(url));
+    }
+
+    private async Task ImportBackground(Func<Task<string>> import)
+    {
+        BackgroundStatusText.Text = "Importing background…";
+        try
+        {
+            var file = await import();
+            BackgroundFileText.Text = file;
+            BackgroundStatusText.Text = "Background imported and applied.";
+        }
+        catch (Exception exception)
+        {
+            BackgroundStatusText.Text = exception.Message;
+        }
+    }
+
+    private void RemoveBackground_OnClick(object? sender, RoutedEventArgs e)
+    {
+        BackgroundService.Remove();
+        LoadBackgroundSettings();
+        BackgroundStatusText.Text = "Custom background removed.";
+    }
+
+    private void PreviewHome_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var theme = ReadPreviewTheme();
+        if (theme == null)
+            return;
+
+        if (_homePreview?.IsOpen == true)
+        {
+            UpdateActiveHomePreview();
+            _homePreview.Focus();
+            return;
+        }
+
+        _homePreview = new PreviewHomeWindow(
+            theme,
+            BackgroundService.Current,
+            SurfaceOpacitySlider.Value,
+            MinimalHomeArtworkCheckBox.IsChecked == true
+        );
+        _homePreview.Show();
+    }
+
+    private LauncherThemeFile? ReadPreviewTheme()
+    {
+        var theme = new LauncherThemeFile(
+            _editorThemeName.Trim(),
+            NormalizeHex(ColorTextBox.Text),
+            NormalizeHex(BrandColorTextBox.Text),
+            NormalizeHex(TextColorTextBox.Text),
+            NormalizeHex(BackgroundColorTextBox.Text)
+        );
+        return IsValidTheme(theme) ? theme : null;
+    }
+
+    private void UpdateActiveHomePreview()
+    {
+        var theme = ReadPreviewTheme();
+        if (theme == null || _homePreview?.IsOpen != true)
+            return;
+        _homePreview.UpdatePreview(
+            theme,
+            BackgroundService.Current,
+            SurfaceOpacitySlider.Value,
+            MinimalHomeArtworkCheckBox.IsChecked == true
+        );
+    }
+
+    private void BackgroundStretch_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_isLoadingBackground || BackgroundStretchComboBox.SelectedItem is not ComboBoxItem item)
+            return;
+        SettingsService.Set(SettingsService.LAUNCHER_BACKGROUND_STRETCH, item.Tag?.ToString() ?? "UniformToFill");
+        UpdateActiveHomePreview();
+    }
+
+    private void BackgroundOpacity_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (!_isLoadingBackground)
+        {
+            SettingsService.Set(SettingsService.LAUNCHER_BACKGROUND_OPACITY, e.NewValue);
+            UpdateActiveHomePreview();
+        }
+    }
+
+    private void SurfaceOpacity_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (!_isLoadingBackground)
+        {
+            SettingsService.Set(SettingsService.LAUNCHER_SURFACE_OPACITY, e.NewValue);
+            UpdateActiveHomePreview();
+        }
+    }
+
+    private void MinimalHomeArtwork_OnChanged(object? sender, RoutedEventArgs e)
+    {
+        if (!_isLoadingBackground)
+        {
+            SettingsService.Set(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK, MinimalHomeArtworkCheckBox.IsChecked == true);
+            UpdateActiveHomePreview();
+        }
+    }
+
+    private void CleanSidebar_OnChanged(object? sender, RoutedEventArgs e)
+    {
+        if (!_isLoadingBackground)
+            SettingsService.Set(SettingsService.LAUNCHER_CLEAN_SIDEBAR, CleanSidebarCheckBox.IsChecked == true);
     }
 
     private void ReloadThemeChoices(string? selectName = null)
@@ -216,6 +377,7 @@ public partial class ThemesPage : UserControlBase
             _isLoadingTheme = false;
         }
         UpdatePreview();
+        UpdateActiveHomePreview();
     }
 
     private void ApplyTheme_OnClick(object? sender, RoutedEventArgs e)
@@ -398,6 +560,7 @@ public partial class ThemesPage : UserControlBase
 
         ColorError.IsVisible = false;
         UpdatePreview();
+        UpdateActiveHomePreview();
     }
 
     private void UpdatePreview()

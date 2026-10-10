@@ -202,6 +202,35 @@ public class SettingsManager : ISettingsManager
         LAUNCHER_TEXT_COLOR = RegisterWhWz("LauncherTextColor", "#F1F3F5", LauncherThemeService.IsValidHexColor);
         LAUNCHER_BODY_TEXT_COLOR = RegisterWhWz("LauncherBodyTextColor", "#D7D9E0", LauncherThemeService.IsValidHexColor);
         LAUNCHER_BACKGROUND_COLOR = RegisterWhWz("LauncherBackgroundColor", "#101216", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BACKGROUND_FILE = RegisterWhWz(
+            "LauncherBackgroundFile",
+            "",
+            value => value is string file && (string.IsNullOrEmpty(file) || file == Path.GetFileName(file))
+        );
+        LAUNCHER_BACKGROUND_STRETCH = RegisterWhWz(
+            "LauncherBackgroundStretch",
+            "UniformToFill",
+            value => value as string is "UniformToFill" or "Uniform" or "Fill" or "None"
+        );
+        LAUNCHER_BACKGROUND_OPACITY = RegisterWhWz(
+            "LauncherBackgroundOpacity",
+            1.0,
+            value => value is double opacity && opacity is >= 0.1 and <= 1.0
+        );
+        LAUNCHER_SURFACE_OPACITY = RegisterWhWz(
+            "LauncherSurfaceOpacity",
+            0.88,
+            value => value is double opacity && opacity is >= 0.35 and <= 1.0
+        );
+        LAUNCHER_MINIMAL_HOME_ARTWORK = RegisterWhWz("LauncherMinimalHomeArtwork", false);
+        LAUNCHER_CLEAN_SIDEBAR = RegisterWhWz("LauncherCleanSidebar", false);
+        LAUNCHER_FONT = RegisterWhWz(
+            "LauncherFont",
+            "Roboto",
+            value =>
+                value is string font
+                && (font is "Roboto" or "Inter" or "CTMKF" || (string.IsNullOrEmpty(font) || font == Path.GetFileName(font)))
+        );
         #endregion
 
         #region Dolphin settings
@@ -309,6 +338,13 @@ public class SettingsManager : ISettingsManager
     public Setting LAUNCHER_TEXT_COLOR { get; }
     public Setting LAUNCHER_BODY_TEXT_COLOR { get; }
     public Setting LAUNCHER_BACKGROUND_COLOR { get; }
+    public Setting LAUNCHER_BACKGROUND_FILE { get; }
+    public Setting LAUNCHER_BACKGROUND_STRETCH { get; }
+    public Setting LAUNCHER_BACKGROUND_OPACITY { get; }
+    public Setting LAUNCHER_SURFACE_OPACITY { get; }
+    public Setting LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    public Setting LAUNCHER_CLEAN_SIDEBAR { get; }
+    public Setting LAUNCHER_FONT { get; }
 
     public Setting NAND_ROOT_PATH { get; }
     public Setting LOAD_PATH { get; }

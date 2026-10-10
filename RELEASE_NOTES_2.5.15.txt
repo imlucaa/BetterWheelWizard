@@ -1,0 +1,9 @@
+BetterWheelWizard 2.5.15
+
+- Custom launcher backgrounds, including animated GIFs and URLs.
+- Background fit, image opacity, and panel opacity controls.
+- Custom launcher fonts with TTF and OTF import support.
+- Live launcher theme preview.
+- Separate Home wheel artwork and sidebar box options.
+- Cleaner, consistent theme editor buttons.
+- Fixes for font fallback, player names, popups, and saved appearance settings.
