@@ -1,0 +1,5 @@
+BetterWheelWizard 2.5.18
+
+- Resized the theme action buttons so every label and icon fits.
+- Fixed sidebar counter readability on bright and dark backgrounds.
+- Fixed Theme Library and popup colors not updating correctly after a theme change.

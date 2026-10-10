@@ -75,16 +75,16 @@
 
     <!-- DEFAULT -->
     <Style Selector="components1|Button.Default">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Setter Property="Background" Value="{DynamicResource Neutral700}" />
     </Style>
     <Style Selector="components1|Button.Default:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Setter Property="Background" Value="{DynamicResource Neutral600}" />
     </Style>
     <Style Selector="components1|Button.Default:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral500}" />
     </Style>
     
     <!-- DANGER -->
@@ -131,16 +131,16 @@
 
     <!-- CONFIRM: popup-only affirmative action matching the neutral cancel button -->
     <Style Selector="components1|Button.Confirm">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Setter Property="Background" Value="{DynamicResource Neutral700}" />
     </Style>
     <Style Selector="components1|Button.Confirm:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Setter Property="Background" Value="{DynamicResource Neutral600}" />
     </Style>
     <Style Selector="components1|Button.Confirm:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral500}" />
     </Style>
 
     <!-- PLAY: use the selected theme's accent palette -->
@@ -159,22 +159,22 @@
     
     <!-- UGLY LIGHT -->
     <Style Selector="components1|Button.UglyLight">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral500}" />
     </Style>
     <Style Selector="components1|Button.UglyLight:pointerover">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral400}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral400}" />
     </Style>
     <Style Selector="components1|Button.UglyLight:pressed">
-        <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
-        <Setter Property="Background" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral300}" />
     </Style>
         
     <Style Selector="components1|Button:disabled /template/ Border">
         <Setter Property="Background" Value="{DynamicResource Neutral700}" />
     </Style>
     <Style Selector="components1|Button:disabled /template/ components1|IconLabel">
-        <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
     </Style>
 </Styles>

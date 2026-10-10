@@ -102,6 +102,13 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         resources["PopupBackgroundColor"] = new SolidColorBrush(backgroundColor);
         resources["PopupFrameColor"] = new SolidColorBrush(WithOpacity(surfaceScale[3], 1.0));
 
+        // Sidebar counters sit directly over arbitrary background images in clean-sidebar
+        // mode. Keep their badge opaque and calculate text against the badge itself so an
+        // almost-white or almost-black image cannot wash the numbers out.
+        var (counterBackground, counterForeground) = CreateCounterPalette(backgroundColor, textColor);
+        resources["SidebarCounterBackground"] = new SolidColorBrush(counterBackground);
+        resources["SidebarCounterForeground"] = new SolidColorBrush(counterForeground);
+
         var trailOpacity = hasBackground ? surfaceOpacity : 1.0;
         resources["LauncherTrail400"] = new SolidColorBrush(WithOpacity(accentScale[3], trailOpacity));
         resources["LauncherTrail600"] = new SolidColorBrush(WithOpacity(accentScale[5], trailOpacity));
@@ -174,6 +181,13 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
     }
 
     internal static bool HasReadableContrast(Color color, Color background) => ContrastRatio(color, background) >= 4.5;
+
+    internal static (Color Background, Color Foreground) CreateCounterPalette(Color background, Color preferredText)
+    {
+        var target = RelativeLuminance(background) > 0.45 ? Colors.Black : Colors.White;
+        var counterBackground = Mix(background, target, 0.72);
+        return (counterBackground, CreateReadableText(preferredText, counterBackground));
+    }
 
     private static IReadOnlyList<Color> CreateTextScale(Color color, Color background) =>
         [

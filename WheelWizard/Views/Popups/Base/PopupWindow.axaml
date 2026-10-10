@@ -13,7 +13,7 @@
         x:DataType="base:PopupWindow"
         Title="{Binding WindowTitle}">
     <Grid x:Name="CompleteGrid">
-        <Border Background="{StaticResource PopupBackgroundColor}" CornerRadius="4"
+        <Border Background="{DynamicResource PopupBackgroundColor}" CornerRadius="4"
                 x:Name="CompleteBorder"
                 BorderThickness="1" BorderBrush="{StaticResource BackgroundLineColor}">
             <Grid RowDefinitions="30,*">
@@ -21,7 +21,7 @@
                         x:Name="DisabledDarkenEffect" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                         Background="Black" Opacity="0.3" />
 
-                <Border Grid.Row="0" Background="{StaticResource PopupFrameColor}"
+                <Border Grid.Row="0" Background="{DynamicResource PopupFrameColor}"
                         CornerRadius="3,3,0,0" PointerPressed="TopBar_PointerPressed">
                     <Grid>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -29,7 +29,7 @@
                             <components:StateBox Text="Beta" Variant="Warning" IconSize="0" Margin="0,-1,0,0"
                                                  IsVisible="{Binding BetaFlag}"/>
                             <TextBlock FontSize="16" Text="{Binding WindowTitle}"
-                                       Foreground="{StaticResource Neutral300}" />
+                                        Foreground="{DynamicResource Neutral300}" />
                         </StackPanel>
                        
 

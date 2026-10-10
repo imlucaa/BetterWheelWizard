@@ -71,4 +71,17 @@ public class LauncherThemeTests
         Assert.True(LauncherThemeService.HasReadableContrast(text, background));
         Assert.True(text.R > 96 && text.G > 96 && text.B > 96);
     }
+
+    [Theory]
+    [InlineData("#FFFFFF", "#FFFFFF")]
+    [InlineData("#08090C", "#000000")]
+    [InlineData("#FFFFFF", "#FFABC7")]
+    [InlineData("#08090C", "#A57887")]
+    public void SidebarCounterPalette_RemainsReadableAtThemeExtremes(string backgroundHex, string textHex)
+    {
+        var (background, foreground) = LauncherThemeService.CreateCounterPalette(Color.Parse(backgroundHex), Color.Parse(textHex));
+
+        Assert.Equal(byte.MaxValue, background.A);
+        Assert.True(LauncherThemeService.HasReadableContrast(foreground, background));
+    }
 }

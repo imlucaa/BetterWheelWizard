@@ -67,21 +67,25 @@
                                                    IconData="{StaticResource ThemePalette}" Click="ChooseTheme_OnClick" />
                             </Grid>
                         </Border>
-                        <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="6">
-                            <components:Button Grid.Column="0" Text="Save" ButtonSize="Compact" Variant="Default"
-                                               IconData="{StaticResource PlusMark}" Click="SaveTheme_OnClick" />
-                            <components:Button Grid.Column="1" Text="Copy" ButtonSize="Compact" Variant="Default"
-                                               IconData="{StaticResource Copy}" Click="CopyThemeCode_OnClick"
-                                               ToolTip.Tip="Copy these four colors as a sharing code" />
-                            <components:Button Grid.Column="2" Text="Paste" ButtonSize="Compact" Variant="Default"
-                                               IconData="{StaticResource FileImport}" Click="PasteThemeCode_OnClick"
-                                               ToolTip.Tip="Load four colors from a sharing code" />
-                            <components:Button Grid.Column="3" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
-                                               IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
-                                               IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
-                            <components:Button Grid.Column="4" Text="Preview" ButtonSize="Compact" Variant="Primary"
-                                               IconData="{StaticResource Eye}" Click="PreviewHome_OnClick"
-                                               ToolTip.Tip="Preview Home with the current colors before applying" />
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                                <components:Button Grid.Column="0" Text="Save" ButtonSize="Compact" Variant="Default"
+                                                   IconData="{StaticResource PlusMark}" Click="SaveTheme_OnClick" />
+                                <components:Button Grid.Column="1" Text="Copy" ButtonSize="Compact" Variant="Default"
+                                                   IconData="{StaticResource Copy}" Click="CopyThemeCode_OnClick"
+                                                   ToolTip.Tip="Copy these four colors as a sharing code" />
+                                <components:Button Grid.Column="2" Text="Paste" ButtonSize="Compact" Variant="Default"
+                                                   IconData="{StaticResource FileImport}" Click="PasteThemeCode_OnClick"
+                                                   ToolTip.Tip="Load four colors from a sharing code" />
+                            </Grid>
+                            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
+                                <components:Button Grid.Column="0" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
+                                                   IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
+                                                   IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
+                                <components:Button Grid.Column="1" Text="Preview" ButtonSize="Compact" Variant="Primary"
+                                                   IconData="{StaticResource Eye}" Click="PreviewHome_OnClick"
+                                                   ToolTip.Tip="Preview Home with the current colors before applying" />
+                            </Grid>
                         </Grid>
                         <components:Button x:Name="RestorePresetsButton" Text="Restore presets" ButtonSize="Compact"
                                            Variant="Default" Click="RestorePresets_OnClick"

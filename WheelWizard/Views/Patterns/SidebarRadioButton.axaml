@@ -77,7 +77,7 @@
                              Margin="16,0,10,0" />
 
             <components:StateBox IsVisible="{TemplateBinding BoxText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                            x:Name="StateBox" Classes="Dark"
+                            x:Name="StateBox" Classes="Dark SidebarCounter"
                             Margin="0,0,10,0"
                             VerticalAlignment="Center" HorizontalAlignment="Right"
                             Text="{TemplateBinding BoxText}"
@@ -132,5 +132,14 @@
   </Style>
   <Style Selector="Grid.CleanSidebar patterns|SidebarRadioButton:checked">
     <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="patterns|SidebarRadioButton /template/ components|StateBox.SidebarCounter /template/ Border#PART_StateBox_Root">
+    <Setter Property="Background" Value="{DynamicResource SidebarCounterBackground}" />
+  </Style>
+  <Style Selector="patterns|SidebarRadioButton /template/ components|StateBox.SidebarCounter /template/ TextBlock#PART_StateBox_Text">
+    <Setter Property="Foreground" Value="{DynamicResource SidebarCounterForeground}" />
+  </Style>
+  <Style Selector="patterns|SidebarRadioButton /template/ components|StateBox.SidebarCounter /template/ Path#PART_StateBox_IconPath">
+    <Setter Property="Fill" Value="{DynamicResource SidebarCounterForeground}" />
   </Style>
 </Styles>

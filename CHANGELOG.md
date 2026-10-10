@@ -6,6 +6,16 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.18] - 2026-10-11
+
+### Changed
+
+- Resized the theme action buttons into two rows so their icons and labels remain fully visible.
+
+### Fixed
+
+- Fixed unreadable sidebar counters, popup text, and Theme Library buttons on very light or dark custom themes.
+
 ## [2.5.17] - 2026-10-11
 
 ### Fixed
@@ -129,7 +139,8 @@ version sequence.
 - Applied theme colors across launcher navigation, actions, profiles, rooms, and status indicators.
 - Refined page headers, cards, tabs, buttons, spacing, and narrow layouts.
 
-[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.17...HEAD
+[Unreleased]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.18...HEAD
+[2.5.18]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.17...v2.5.18
 [2.5.17]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.16...v2.5.17
 [2.5.16]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.15...v2.5.16
 [2.5.15]: https://github.com/imlucaa/BetterWheelWizard/compare/v2.5.14...v2.5.15

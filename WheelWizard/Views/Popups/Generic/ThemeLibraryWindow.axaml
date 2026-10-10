@@ -8,7 +8,7 @@
     <Grid Width="360" MaxHeight="560" RowDefinitions="Auto,*" Margin="0,4,0,0">
         <StackPanel Spacing="3" Margin="0,0,0,10">
             <TextBlock Text="Choose a theme" Classes="TitleText" FontSize="18"
-                       Foreground="{StaticResource FormFieldLabelColor}" />
+                        Foreground="{DynamicResource FormFieldLabelColor}" />
             <TextBlock Text="Select a built-in preset or one of your saved themes."
                        Classes="TinyText" TextWrapping="Wrap" />
         </StackPanel>
