@@ -85,12 +85,10 @@ public class AutoUpdaterSingletonService(
         if (releasesResult.Value.Count == 0)
             return null;
 
-        // Get the current version
+        // GitHub returns releases newest-first. Respect that publication order instead of
+        // selecting the numerically highest historical tag: this fork can publish a newer
+        // 2.5.x release after an older experimental 2.6.x release.
         var currentVersion = SemVersion.Parse(CurrentVersion, SemVersionStyles.Any);
-
-        // Iterate over the latest 3 releases and find the newest one that has an asset for this platform
-        GithubRelease? bestMatch = null;
-        SemVersion? bestVersion = null;
 
         foreach (var release in releasesResult.Value)
         {
@@ -101,20 +99,16 @@ public class AutoUpdaterSingletonService(
                 continue;
 
             var releaseVersion = SemVersion.Parse(release.TagName.TrimStart('v'), SemVersionStyles.Any);
-            if (releaseVersion.ComparePrecedenceTo(currentVersion) <= 0)
-                continue;
-
             var asset = updatePlatform.GetAssetForCurrentPlatform(release);
             if (asset is null)
                 continue;
 
-            if (bestVersion is null || releaseVersion.ComparePrecedenceTo(bestVersion) > 0)
-            {
-                bestMatch = release;
-                bestVersion = releaseVersion;
-            }
+            // This is the newest published release with a usable asset. Do not continue
+            // into older releases if it is already installed; historical tags may have
+            // higher experimental version numbers.
+            return releaseVersion.ComparePrecedenceTo(currentVersion) > 0 ? release : null;
         }
 
-        return bestMatch;
+        return null;
     }
 }

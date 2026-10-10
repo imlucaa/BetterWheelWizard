@@ -1,0 +1,4 @@
+BetterWheelWizard 2.5.17
+
+- Fixed the incorrect update prompt shown on the latest fork release.
+- The updater now follows the fork's newest published release instead of selecting an older release with a higher version number.
