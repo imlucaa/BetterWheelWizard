@@ -7,6 +7,7 @@ using Avalonia.Media;
 using WheelWizard.Branding;
 using WheelWizard.Localization;
 using WheelWizard.Mods;
+using WheelWizard.Services;
 using WheelWizard.Services.LiveData;
 using WheelWizard.Settings;
 using WheelWizard.Settings.Types;
@@ -95,8 +96,7 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
-        Title = t("app.display_name");
-        TitleLabel.Text = t("app.display_name");
+        ApplyLauncherBranding();
         VersionTagText.Text = $"v{BrandingService.Branding.Version}";
         UpdateModsButtonText();
         // UpdateModsActionIndicator();
@@ -135,6 +135,7 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
         UpdateModsButtonText();
         UpdateMadeByText();
         UpdateLiveAlert();
+        ApplyLauncherBranding();
     }
 
     private void UpdateMadeByText()
@@ -161,6 +162,11 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
 
     private void OnSettingChanged(Setting setting)
     {
+        if (setting == SettingsService.LAUNCHER_DISPLAY_NAME)
+        {
+            ApplyLauncherBranding();
+            return;
+        }
         // Note that this method will also be called whenever the setting changes
         if (setting == SettingsService.WINDOW_SCALE || setting == SettingsService.SAVED_WINDOW_SCALE)
         {
@@ -197,6 +203,17 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
             UpdateMinimalHomeAppearance();
             UpdateMainContentSurface(ContentArea.Content as UserControl);
         }
+    }
+
+    // Settings pages can update branding immediately even when their signal
+    // subscription was created before the main window finished loading.
+    public void RefreshLauncherBranding() => ApplyLauncherBranding();
+
+    private void ApplyLauncherBranding()
+    {
+        var launcherName = SettingsService.Get<string>(SettingsService.LAUNCHER_DISPLAY_NAME).Trim();
+        Title = string.IsNullOrWhiteSpace(launcherName) ? t("app.display_name") : launcherName;
+        TitleLabel.Text = Title;
     }
 
     private void ClampSavedWindowScaleToCurrentScreen()

@@ -55,8 +55,8 @@
             <Grid Width="210" Margin="6,10,6,18"
                   PointerPressed="TitleLabel_OnPointerPressed">
                 <PathIcon Data="{StaticResource WheelIcon}" Width="25" Height="25"
-                          Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                          Foreground="{DynamicResource LauncherBrandColor}" />
+                           Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Foreground="{DynamicResource LauncherBrandColor}" />
                 <TextBlock x:Name="TitleLabel" FontSize="15" FontWeight="SemiBold"
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             Foreground="{DynamicResource BodyTextColor}" />

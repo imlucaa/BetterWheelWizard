@@ -62,6 +62,7 @@ public interface ISettingsProperties
     Setting LAUNCHER_HIDE_HOME_TITLE { get; }
     Setting LAUNCHER_CLEAN_SIDEBAR { get; }
     Setting LAUNCHER_FONT { get; }
+    Setting LAUNCHER_DISPLAY_NAME { get; }
     Setting NAND_ROOT_PATH { get; }
     Setting LOAD_PATH { get; }
     Setting VSYNC { get; }

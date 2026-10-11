@@ -17,9 +17,25 @@ public class GameDataBackupServiceTests : IDisposable
         var result = GameDataBackupService.BackupRksysFiles(destination, saveFolder);
 
         Assert.Equal(2, result.CopiedFiles.Count);
-        Assert.Equal([1, 2], File.ReadAllBytes(Path.Combine(destination, "RMCE", "rksys.dat")));
-        Assert.Equal([3, 4], File.ReadAllBytes(Path.Combine(destination, "RMCP", "rksys.dat")));
+        Assert.Equal([1, 2], File.ReadAllBytes(Path.Combine(destination, "America (RMCE)", "rksys.dat")));
+        Assert.Equal([3, 4], File.ReadAllBytes(Path.Combine(destination, "Europe (RMCP)", "rksys.dat")));
         Assert.Empty(Directory.GetFiles(destination, "*.zip", SearchOption.AllDirectories));
+    }
+
+    [Fact]
+    public void BackupRksysFile_CopiesOnlySelectedRegionIntoNamedFolder()
+    {
+        var saveFolder = Path.Combine(_root, "Save");
+        WriteFile(Path.Combine(saveFolder, "RMCE", "rksys.dat"), [1]);
+        WriteFile(Path.Combine(saveFolder, "RMCJ", "rksys.dat"), [2]);
+        var destination = Path.Combine(_root, "Backup");
+        var japan = GameDataBackupService.FindRksysFiles(saveFolder).Single(source => source.GameId == "RMCJ");
+
+        var result = GameDataBackupService.BackupRksysFile(destination, japan);
+
+        Assert.Single(result.CopiedFiles);
+        Assert.Equal([2], File.ReadAllBytes(Path.Combine(destination, "Japan (RMCJ)", "rksys.dat")));
+        Assert.False(Directory.Exists(Path.Combine(destination, "America (RMCE)")));
     }
 
     [Fact]

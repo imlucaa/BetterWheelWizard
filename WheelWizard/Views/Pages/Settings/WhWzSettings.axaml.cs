@@ -93,9 +93,35 @@ public partial class WhWzSettings : UserControlBase
 
         EnableAnimations.IsChecked = (bool)SettingsService.ENABLE_ANIMATIONS.Get();
         RefreshFontDropdown();
+        RefreshLauncherBrandingUi();
     }
 
     private static string FontsFolderPath => Path.Combine(PathManager.WheelWizardAppdataPath, "Appearance", "Fonts");
+
+    private void RefreshLauncherBrandingUi()
+    {
+        var name = SettingsService.Get<string>(SettingsService.LAUNCHER_DISPLAY_NAME);
+        LauncherNameStatus.Text = string.IsNullOrWhiteSpace(name) ? "BetterWheelWizard (default)" : name;
+    }
+
+    private async void ChangeLauncherName_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var result = await new TextInputWindow()
+            .SetMainText("Launcher name")
+            .SetExtraText(
+                "This changes the name shown in the top-left launcher header and the native window title. The executable name stays BetterWheelWizard."
+            )
+            .SetPlaceholderText("BetterWheelWizard")
+            .SetInitialText(SettingsService.Get<string>(SettingsService.LAUNCHER_DISPLAY_NAME))
+            .SetButtonText(t("action.cancel"), t("action.save"))
+            .ShowDialog();
+        if (result != null)
+        {
+            SettingsService.Set(SettingsService.LAUNCHER_DISPLAY_NAME, result.Trim());
+            Layout.Instance?.RefreshLauncherBranding();
+            RefreshLauncherBrandingUi();
+        }
+    }
 
     private void RefreshFontDropdown()
     {

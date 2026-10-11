@@ -59,25 +59,35 @@ public partial class ThemesPage : UserControlBase
     private static readonly LauncherThemeFile[] BuiltInThemes =
     [
         new("BetterWheelWizard", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#000000"),
-        new("Red", "#F04444", "#F04444", "#F8DADA", "#260909"),
-        new("Orange", "#FF8A3D", "#FF8A3D", "#FFE0CC", "#281006"),
-        new("Yellow", "#FFD80D", "#FFD80D", "#FFF4B8", "#211B02"),
-        new("Green", "#25C982", "#25C982", "#D0F5E3", "#062418"),
-        new("Cyan", "#20D4E8", "#20D4E8", "#D0F8FC", "#05252A"),
-        new("Blue", "#249AF3", "#249AF3", "#DDF2FF", "#071A2D"),
-        new("Purple", "#9B6DFF", "#9B6DFF", "#E4D9FF", "#160A2C"),
-        new("Pink", "#FF4FA3", "#FF4FA3", "#FFD8EA", "#290817"),
-        new("Coral", "#FF6B6B", "#FF6B6B", "#FFE1E1", "#271011"),
-        new("Peach", "#FF9F68", "#FF9F68", "#FFE8D8", "#28160C"),
-        new("Mint", "#52D6A8", "#52D6A8", "#D9F8ED", "#09251D"),
-        new("Emerald", "#10B981", "#10B981", "#D1FAE5", "#05251A"),
-        new("Teal", "#14B8A6", "#14B8A6", "#CCFBF1", "#052522"),
-        new("Sky", "#38BDF8", "#38BDF8", "#DDF5FF", "#082330"),
-        new("Indigo", "#6366F1", "#6366F1", "#E0E1FF", "#11132E"),
-        new("Lavender", "#A78BFA", "#A78BFA", "#EDE7FF", "#1B1230"),
-        new("Violet", "#8B5CF6", "#8B5CF6", "#E8DEFF", "#170C2D"),
-        new("Rose", "#F43F5E", "#F43F5E", "#FFE0E6", "#2A0810"),
+        new("Red", "#F04444", "#F04444", "#F8DADA", DarkPresetBackground("#F04444")),
+        new("Orange", "#FF8A3D", "#FF8A3D", "#FFE0CC", DarkPresetBackground("#FF8A3D")),
+        new("Yellow", "#FFD80D", "#FFD80D", "#FFF4B8", DarkPresetBackground("#FFD80D")),
+        new("Green", "#25C982", "#25C982", "#D0F5E3", DarkPresetBackground("#25C982")),
+        new("Cyan", "#20D4E8", "#20D4E8", "#D0F8FC", DarkPresetBackground("#20D4E8")),
+        new("Blue", "#249AF3", "#249AF3", "#DDF2FF", DarkPresetBackground("#249AF3")),
+        new("Purple", "#9B6DFF", "#9B6DFF", "#E4D9FF", DarkPresetBackground("#9B6DFF")),
+        new("Pink", "#FF4FA3", "#FF4FA3", "#FFD8EA", DarkPresetBackground("#FF4FA3")),
+        new("Coral", "#FF6B6B", "#FF6B6B", "#FFE1E1", DarkPresetBackground("#FF6B6B")),
+        new("Peach", "#FF9F68", "#FF9F68", "#FFE8D8", DarkPresetBackground("#FF9F68")),
+        new("Mint", "#52D6A8", "#52D6A8", "#D9F8ED", DarkPresetBackground("#52D6A8")),
+        new("Emerald", "#10B981", "#10B981", "#D1FAE5", DarkPresetBackground("#10B981")),
+        new("Teal", "#14B8A6", "#14B8A6", "#CCFBF1", DarkPresetBackground("#14B8A6")),
+        new("Sky", "#38BDF8", "#38BDF8", "#DDF5FF", DarkPresetBackground("#38BDF8")),
+        new("Indigo", "#6366F1", "#6366F1", "#E0E1FF", DarkPresetBackground("#6366F1")),
+        new("Lavender", "#A78BFA", "#A78BFA", "#EDE7FF", DarkPresetBackground("#A78BFA")),
+        new("Violet", "#8B5CF6", "#8B5CF6", "#E8DEFF", DarkPresetBackground("#8B5CF6")),
+        new("Rose", "#F43F5E", "#F43F5E", "#FFE0E6", DarkPresetBackground("#F43F5E")),
     ];
+
+    // Keep preset layouts dark while retaining the accent's hue. A single rule
+    // makes the cards feel like a darker version of the selected color instead
+    // of a collection of unrelated near-black backgrounds.
+    private static string DarkPresetBackground(string accent)
+    {
+        var color = Color.Parse(accent);
+        var dark = new Color(255, (byte)Math.Round(color.R * 0.18), (byte)Math.Round(color.G * 0.18), (byte)Math.Round(color.B * 0.18));
+        return $"#{dark.R:X2}{dark.G:X2}{dark.B:X2}";
+    }
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
     private static string ThemesFolderPath => Path.Combine(PathManager.WheelWizardAppdataPath, "Themes");

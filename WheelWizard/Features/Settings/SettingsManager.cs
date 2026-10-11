@@ -232,6 +232,11 @@ public class SettingsManager : ISettingsManager
                 value is string font
                 && (font is "Roboto" or "Inter" or "CTMKF" || (string.IsNullOrEmpty(font) || font == Path.GetFileName(font)))
         );
+        LAUNCHER_DISPLAY_NAME = RegisterWhWz(
+            "LauncherDisplayName",
+            "",
+            value => value is string name && name.Length <= 80 && !name.Any(char.IsControl)
+        );
         #endregion
 
         #region Dolphin settings
@@ -347,6 +352,7 @@ public class SettingsManager : ISettingsManager
     public Setting LAUNCHER_HIDE_HOME_TITLE { get; }
     public Setting LAUNCHER_CLEAN_SIDEBAR { get; }
     public Setting LAUNCHER_FONT { get; }
+    public Setting LAUNCHER_DISPLAY_NAME { get; }
 
     public Setting NAND_ROOT_PATH { get; }
     public Setting LOAD_PATH { get; }

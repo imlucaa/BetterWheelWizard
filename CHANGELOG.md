@@ -6,6 +6,17 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.20] - 2026-10-12
+
+### Added
+
+- Added a persistent setting for changing the launcher name.
+- Added detected-region selection when backing up `rksys.dat`.
+
+### Changed
+
+- Made built-in theme backgrounds use a consistent darker tint of their accent color.
+
 ## [2.5.19] - 2026-10-11
 
 ### Added

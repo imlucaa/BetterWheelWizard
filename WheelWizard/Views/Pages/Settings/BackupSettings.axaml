@@ -11,7 +11,7 @@
                        FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
             <StackPanel Spacing="4">
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
-                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" MinHeight="64">
                         <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource Neutral800}" Margin="0,0,12,0">
                             <PathIcon Data="{StaticResource FileExport}" Width="18" Height="18" Foreground="{DynamicResource Primary300}" />
                         </Border>
@@ -20,7 +20,10 @@
                             <TextBlock x:Name="RksysStatusText" Classes="TinyText" TextWrapping="Wrap"
                                        Text="Checking for rksys.dat…" />
                         </StackPanel>
-                        <components:Button Grid.Column="2" x:Name="BackupRksysButton"
+                        <ComboBox Grid.Column="2" x:Name="RksysRegionDropdown" MinWidth="142"
+                                  Margin="0,0,8,0" VerticalAlignment="Center"
+                                  SelectionChanged="RksysRegionDropdown_OnSelectionChanged" />
+                        <components:Button Grid.Column="3" x:Name="BackupRksysButton"
                                            Text="" IconData="{StaticResource FileExport}" Padding="10"
                                            ToolTip.Tip="Back up rksys.dat" ToolTip.ShowDelay="0"
                                            VerticalAlignment="Center" Click="BackupRksys_OnClick" />
