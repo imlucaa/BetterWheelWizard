@@ -195,6 +195,14 @@ public class SettingsSignalBusTests
 public class SettingsLocalizationServiceTests
 {
     [Fact]
+    public void LauncherLanguageOptions_AreEnglishThenJapanese()
+    {
+        Assert.Equal(["en", "ja"], SettingValues.LauncherLanguageOptions);
+        Assert.Contains("en", SettingValues.WhWzLanguages.Keys);
+        Assert.Contains("ja", SettingValues.WhWzLanguages.Keys);
+    }
+
+    [Fact]
     public void LanguageDisplayNames_UseAppliedYamlLanguage()
     {
         var originalLanguage = LocalizationProvider.Current.CurrentLanguage;

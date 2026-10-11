@@ -131,9 +131,9 @@ public partial class MiiListPage : UserControlBase
     private async void SearchSavedMiiButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var input = await new TextInputWindow()
-            .SetMainText("Filter My Miis")
-            .SetExtraText("Search your saved Miis by name.")
-            .SetPlaceholderText("Mii name")
+            .SetMainText(t("popup.filter_my_miis"))
+            .SetExtraText(t("popup.filter_my_miis_help"))
+            .SetPlaceholderText(t("placeholder.mii_name"))
             .SetInitialText(_savedMiiSearchText)
             .SetButtonText("Clear", "Search")
             .ShowDialog();
@@ -167,9 +167,9 @@ public partial class MiiListPage : UserControlBase
     private async void SearchFriendCode_OnClick(object? sender, RoutedEventArgs e)
     {
         var input = await new TextInputWindow()
-            .SetMainText("Search RWFC Miis")
-            .SetExtraText("Search by player name or 12-digit friend code.")
-            .SetPlaceholderText("Player or 0000-0000-0000")
+            .SetMainText(t("popup.search_rwfc_miis"))
+            .SetExtraText(t("popup.search_player_help"))
+            .SetPlaceholderText(t("placeholder.player_or_friend_code"))
             .SetButtonText("Cancel", "Search")
             .ShowDialog();
 

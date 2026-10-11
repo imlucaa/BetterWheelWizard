@@ -6,6 +6,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Serilog;
 using WheelWizard.Helpers;
+using WheelWizard.Localization;
 using WheelWizard.Services;
 using WheelWizard.Settings;
 using WheelWizard.Settings.Types;
@@ -150,7 +151,7 @@ public partial class WhWzSettings : UserControlBase
     private void UpdateFontStatus(string value)
     {
         RemoveLauncherFontButton.IsVisible = IsCustomFont(value);
-        LauncherFontStatus.Text = IsCustomFont(value) ? $"Using {Path.GetFileName(value)}" : "Import a .ttf or .otf font.";
+        LauncherFontStatus.Text = IsCustomFont(value) ? t("text.using_font", Path.GetFileName(value)) : t("helper_text.import_font");
     }
 
     private void LauncherFontDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -194,7 +195,7 @@ public partial class WhWzSettings : UserControlBase
                 _updatingFontDropdown = false;
             }
             UpdateFontStatus(fileName);
-            LauncherFontStatus.Text = $"Applied {typeface.FamilyName}.";
+            LauncherFontStatus.Text = t("text.applied_font", typeface.FamilyName);
         }
         catch (Exception exception)
         {
@@ -230,7 +231,7 @@ public partial class WhWzSettings : UserControlBase
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            LauncherFontStatus.Text = $"Could not delete font: {exception.Message}";
+            LauncherFontStatus.Text = t("text.could_not_delete_font", exception.Message);
         }
     }
 
@@ -241,10 +242,18 @@ public partial class WhWzSettings : UserControlBase
         try
         {
             WhWzLanguageDropdown.Items.Clear();
-            foreach (var (key, displayNameFactory) in SettingValues.WhWzLanguages)
+            foreach (var key in SettingValues.LauncherLanguageOptions)
             {
-                WhWzLanguageDropdown.Items.Add(new LanguageDropdownItem(key, displayNameFactory()));
+                WhWzLanguageDropdown.Items.Add(new LanguageDropdownItem(key, GetLauncherLanguageDisplayName(key)));
             }
+
+            // Preserve access to an older saved language long enough for the user to
+            // migrate instead of silently showing no selection.
+            if (
+                !SettingValues.LauncherLanguageOptions.Contains(currentWhWzLanguage, StringComparer.OrdinalIgnoreCase)
+                && SettingValues.WhWzLanguages.TryGetValue(currentWhWzLanguage, out var legacyDisplayName)
+            )
+                WhWzLanguageDropdown.Items.Add(new LanguageDropdownItem(currentWhWzLanguage, legacyDisplayName()));
 
             WhWzLanguageDropdown.SelectedItem = WhWzLanguageDropdown
                 .Items.OfType<LanguageDropdownItem>()
@@ -255,6 +264,14 @@ public partial class WhWzSettings : UserControlBase
             _updatingLanguageDropdown = false;
         }
     }
+
+    private static string GetLauncherLanguageDisplayName(string languageCode) =>
+        languageCode switch
+        {
+            "en" => "English (default)",
+            "ja" => "日本語 (Japanese)",
+            _ => LocalizationProvider.GetLanguageDisplayName(languageCode),
+        };
 
     private void RefreshLocalizedCodeText()
     {

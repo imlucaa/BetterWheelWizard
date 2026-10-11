@@ -3,18 +3,19 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   xmlns:loc="clr-namespace:WheelWizard.Localization"
                    xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
                    mc:Ignorable="d"
                    x:Class="WheelWizard.Views.Popups.Generic.MiiRenderingSetupPopup">
     <Grid Width="480" MinHeight="300" MaxHeight="420" RowDefinitions="Auto,Auto,Auto,*,Auto">
         <TextBlock Classes="TitleText"
-                   Text="Mii Rendering Setup" />
+                    Text="{loc:T popup.mii_rendering_setup}" />
 
         <TextBlock Grid.Row="1"
                    Margin="0,14,0,0"
                    TextWrapping="Wrap"
                    Classes="BodyText"
-                   Text="Wheel Wizard can use one external file to render Miis offline in 3D. Download it once and it will be stored in your Wheel Wizard data folder, or skip and continue without 3D Mii rendering." />
+                    Text="{loc:T popup.mii_rendering_description}" />
 
         <Border Grid.Row="2"
                 Margin="0,18,0,0"
@@ -26,7 +27,7 @@
             <StackPanel Spacing="8">
                 <TextBlock Classes="BodyText"
                            FontWeight="SemiBold"
-                           Text="Install location" />
+                            Text="{loc:T attribute.install_location}" />
                 <TextBlock x:Name="PathTextBlock"
                            Classes="BodyText"
                            TextWrapping="Wrap" />
@@ -49,7 +50,7 @@
             <TextBlock Classes="BodyText"
                        TextWrapping="Wrap"
                        Opacity="0.75"
-                       Text="Skip opens Wheel Wizard without offline 3D Mii rendering." />
+                        Text="{loc:T popup.mii_rendering_skip_help}" />
             <TextBlock x:Name="ErrorTextBlock"
                        Classes="BodyText"
                        Foreground="{StaticResource Danger400}"
@@ -63,12 +64,12 @@
             <components:Button x:Name="SkipButton"
                                Margin="0,0,6,0"
                                Variant="Default"
-                               Text="Skip"
+                                Text="{loc:T action.skip}"
                                Click="SkipButton_OnClick" />
             <components:Button x:Name="DownloadButton"
                                Margin="0,0,0,0"
                                 Variant="Confirm"
-                               Text="Download"
+                                Text="{loc:T action.download}"
                                Click="DownloadButton_OnClick" />
         </UniformGrid>
     </Grid>

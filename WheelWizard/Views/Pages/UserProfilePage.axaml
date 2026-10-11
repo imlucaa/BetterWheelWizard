@@ -16,7 +16,7 @@
             <Setter Property="Width" Value="10" />
             <Setter Property="Height" Value="10" />
             <Setter Property="CornerRadius" Value="9999" />
-            <Setter Property="Background" Value="{StaticResource Neutral500}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral500}" />
             <Setter Property="Opacity" Value="0.75" />
             <Setter Property="Transitions">
                 <Transitions>
@@ -38,7 +38,7 @@
         <Style Selector="RadioButton.ProfileSelector">
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -121,10 +121,10 @@
         </StackPanel>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
-            <Border Grid.Row="0" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"
-                    Background="{DynamicResource Neutral900}" BorderThickness="1"
-                    CornerRadius="{StaticResource GlobalCornerRadius}"
-                    BorderBrush="{DynamicResource Neutral900}" x:Name="CurrentUserProfile" ClipToBounds="true">
+                <Border Grid.Row="0" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                     Background="Transparent" BorderThickness="0"
+                     CornerRadius="{StaticResource GlobalCornerRadius}"
+                     BorderBrush="Transparent" x:Name="CurrentUserProfile" ClipToBounds="true">
                 <Grid Margin="10" RowDefinitions="Auto,216,Auto" ClipToBounds="False">
                     <Border Grid.Row="0"
                             Margin="0,0,5,8"
@@ -193,8 +193,8 @@
                                                                 IconData="{StaticResource Pen}"
                                                                 Click="RenameMii_OnClick"
                                                                 Margin="7,0,0,0" IconSize="20"
-                                                                Foreground="{StaticResource Neutral500}"
-                                                                HoverForeground="{StaticResource Neutral400}" />
+                                                                Foreground="{DynamicResource Neutral500}"
+                                                                HoverForeground="{DynamicResource Neutral400}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <SelectableTextBlock Classes="BodyText" x:Name="ProfileAttribFriendCode" />
@@ -202,8 +202,8 @@
                                                                 Click="CopyFriendCode_OnClick"
                                                                 IconData="{StaticResource Copy}"
                                                                 Margin="7,0,0,0" IconSize="20"
-                                                                Foreground="{StaticResource Neutral500}"
-                                                                HoverForeground="{StaticResource Neutral400}" />
+                                                                 Foreground="{DynamicResource Neutral500}"
+                                                                 HoverForeground="{DynamicResource Neutral400}" />
                                 </StackPanel>
                             </StackPanel>
 

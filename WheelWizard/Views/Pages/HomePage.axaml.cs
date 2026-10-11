@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Testably.Abstractions;
+using WheelWizard.Localization;
 using WheelWizard.Models.Enums;
 using WheelWizard.Services.Launcher;
 using WheelWizard.Services.Launcher.Helpers;
@@ -128,7 +129,10 @@ public partial class HomePage : UserControlBase
 
     private void UpdatePage()
     {
-        GameTitle.Text = CurrentLauncher.GameTitle == "Retro Rewind" && IsAprilFirst ? "Retro Beefbai" : CurrentLauncher.GameTitle;
+        GameTitle.Text =
+            CurrentLauncher.GameTitle == "Retro Rewind" && IsAprilFirst ? "Retro Beefbai"
+            : CurrentLauncher.GameTitle == "Retro Rewind" ? t("game.retro_rewind")
+            : CurrentLauncher.GameTitle;
         UpdateActionButton();
     }
 
@@ -218,7 +222,7 @@ public partial class HomePage : UserControlBase
             if (launcherType.GameTitle == "Retro Rewind" && IsAprilFirst)
                 GameModeDropdown.Items.Add("Retro Beefbai");
             else
-                GameModeDropdown.Items.Add(launcherType.GameTitle);
+                GameModeDropdown.Items.Add(launcherType.GameTitle == "Retro Rewind" ? t("game.retro_rewind") : launcherType.GameTitle);
         }
 
         GameModeDropdown.SelectedIndex = _launcherIndex;

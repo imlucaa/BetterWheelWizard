@@ -165,8 +165,8 @@ public partial class FriendsPage : UserControlBase, INotifyPropertyChanged, IRep
         }
 
         var inputFriendCode = await new TextInputWindow()
-            .SetMainText("Add Friend")
-            .SetExtraText("Enter a 12-digit friend code.")
+            .SetMainText(t("action.add_friend"))
+            .SetExtraText(t("popup.enter_friend_code"))
             .SetPlaceholderText("0000-0000-0000")
             .SetButtonText(t("action.cancel"), t("action.submit"))
             .SetValidation((_, newText) => ValidateFriendCodeInput(newText))

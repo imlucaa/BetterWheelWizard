@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             xmlns:loc="clr-namespace:WheelWizard.Localization"
              mc:Ignorable="d" d:DesignWidth="456" d:DesignHeight="776"
              x:Class="WheelWizard.Views.Pages.ThemesPage">
     <Grid>
@@ -38,9 +39,9 @@
                           Foreground="{DynamicResource Primary300}" />
             </Border>
             <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                <TextBlock Text="Themes" FontSize="24" FontWeight="Bold"
+                 <TextBlock Text="{loc:T page_title.themes}" FontSize="24" FontWeight="Bold"
                            Foreground="{DynamicResource Neutral50}" />
-                <TextBlock Text="Choose, create, and share launcher colors"
+                 <TextBlock Text="{loc:T text.themes.subtitle}"
                            Classes="TinyText" />
             </StackPanel>
         </Grid>
@@ -51,43 +52,43 @@
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="3">
-                            <TextBlock Text="Theme library" FontSize="18" />
-                            <TextBlock Text="Built-in presets and themes you save appear here."
+                             <TextBlock Text="{loc:T text.themes.library}" FontSize="18" />
+                             <TextBlock Text="{loc:T text.themes.library_help}"
                                        Classes="TinyText" TextWrapping="Wrap" />
                         </StackPanel>
                         <Border Background="{DynamicResource Neutral950}" CornerRadius="8"
                                 BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="10,8">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                 <StackPanel Spacing="2" VerticalAlignment="Center">
-                                    <TextBlock x:Name="SelectedThemeText" Text="Current colors" FontWeight="SemiBold"
+                                     <TextBlock x:Name="SelectedThemeText" Text="{loc:T text.themes.current_colors}" FontWeight="SemiBold"
                                                TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="Choose a preset or manage these colors" Classes="TinyText" />
+                                     <TextBlock Text="{loc:T text.themes.current_colors_help}" Classes="TinyText" />
                                 </StackPanel>
-                                <components:Button Grid.Column="1" Text="Choose" ButtonSize="Compact" Variant="Primary"
+                                 <components:Button Grid.Column="1" Text="{loc:T action.choose}" ButtonSize="Compact" Variant="Primary"
                                                    IconData="{StaticResource ThemePalette}" Click="ChooseTheme_OnClick" />
                             </Grid>
                         </Border>
                         <Grid RowDefinitions="Auto,Auto" RowSpacing="6">
                             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
-                                <components:Button Grid.Column="0" Text="Save" ButtonSize="Compact" Variant="Default"
+                                 <components:Button Grid.Column="0" Text="{loc:T action.save}" ButtonSize="Compact" Variant="Default"
                                                    IconData="{StaticResource PlusMark}" Click="SaveTheme_OnClick" />
-                                <components:Button Grid.Column="1" Text="Copy" ButtonSize="Compact" Variant="Default"
+                                 <components:Button Grid.Column="1" Text="{loc:T action.copy}" ButtonSize="Compact" Variant="Default"
                                                    IconData="{StaticResource Copy}" Click="CopyThemeCode_OnClick"
                                                    ToolTip.Tip="Copy these four colors as a sharing code" />
-                                <components:Button Grid.Column="2" Text="Paste" ButtonSize="Compact" Variant="Default"
+                                 <components:Button Grid.Column="2" Text="{loc:T action.paste}" ButtonSize="Compact" Variant="Default"
                                                    IconData="{StaticResource FileImport}" Click="PasteThemeCode_OnClick"
                                                    ToolTip.Tip="Load four colors from a sharing code" />
                             </Grid>
                             <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
-                                <components:Button Grid.Column="0" x:Name="DeleteThemeButton" Text="Delete" ButtonSize="Compact" Variant="Default"
+                                 <components:Button Grid.Column="0" x:Name="DeleteThemeButton" Text="{loc:T action.delete}" ButtonSize="Compact" Variant="Default"
                                                    IconData="{StaticResource Trash}" Click="DeleteTheme_OnClick"
                                                    IsEnabled="False" ToolTip.Tip="Delete the selected theme" />
-                                <components:Button Grid.Column="1" Text="Preview" ButtonSize="Compact" Variant="Primary"
+                                 <components:Button Grid.Column="1" Text="{loc:T action.preview}" ButtonSize="Compact" Variant="Primary"
                                                    IconData="{StaticResource Eye}" Click="PreviewHome_OnClick"
                                                    ToolTip.Tip="Preview Home with the current colors before applying" />
                             </Grid>
                         </Grid>
-                        <components:Button x:Name="RestorePresetsButton" Text="Restore presets" ButtonSize="Compact"
+                         <components:Button x:Name="RestorePresetsButton" Text="{loc:T action.restore_presets}" ButtonSize="Compact"
                                            Variant="Default" Click="RestorePresets_OnClick"
                                            HorizontalAlignment="Center"
                                            ToolTip.Tip="Restore deleted built-in themes" />
@@ -101,8 +102,8 @@
                     <StackPanel Spacing="12">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Spacing="3">
-                                <TextBlock Text="Choose your colors" FontSize="18" />
-                                <TextBlock Text="Enter a HEX value or click a swatch to use the color picker."
+                                 <TextBlock Text="{loc:T text.themes.choose_colors}" FontSize="18" />
+                                 <TextBlock Text="{loc:T text.themes.choose_colors_help}"
                                            Foreground="{StaticResource BodyTextColor}" FontSize="13" TextWrapping="Wrap" />
                             </StackPanel>
                             <Border Grid.Column="1" Width="34" Height="34" CornerRadius="17"
@@ -121,9 +122,9 @@
                                                 BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
                                     </Button>
                                     <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="Main color" FontWeight="SemiBold"
+                                         <TextBlock Text="{loc:T text.themes.main_color}" FontWeight="SemiBold"
                                                    Foreground="{StaticResource BodyTextColor}" />
-                                        <TextBlock Text="Buttons, selections, highlights, and graphs"
+                                         <TextBlock Text="{loc:T text.themes.main_color_help}"
                                                    Classes="TinyText" TextWrapping="Wrap" />
                                     </StackPanel>
                                     <TextBox Grid.Column="2" x:Name="ColorTextBox" TextChanged="Color_OnTextChanged"
@@ -142,9 +143,9 @@
                                                 BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
                                     </Button>
                                     <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="Wheel and title" FontWeight="SemiBold"
+                                         <TextBlock Text="{loc:T text.themes.brand_color}" FontWeight="SemiBold"
                                                    Foreground="{StaticResource BodyTextColor}" />
-                                        <TextBlock Text="The wheel, page titles, and game title"
+                                         <TextBlock Text="{loc:T text.themes.brand_color_help}"
                                                    Classes="TinyText" TextWrapping="Wrap" />
                                     </StackPanel>
                                     <TextBox Grid.Column="2" x:Name="BrandColorTextBox" TextChanged="Color_OnTextChanged"
@@ -163,9 +164,9 @@
                                                 BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
                                     </Button>
                                     <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="Text color" FontWeight="SemiBold"
+                                         <TextBlock Text="{loc:T text.themes.text_color}" FontWeight="SemiBold"
                                                    Foreground="{StaticResource BodyTextColor}" />
-                                        <TextBlock Text="Text, numbers, icons, and the app name"
+                                         <TextBlock Text="{loc:T text.themes.text_color_help}"
                                                    Classes="TinyText" TextWrapping="Wrap" />
                                     </StackPanel>
                                     <TextBox Grid.Column="2" x:Name="TextColorTextBox" TextChanged="Color_OnTextChanged"
@@ -196,9 +197,9 @@
                                                 BorderBrush="{DynamicResource Neutral600}" BorderThickness="2" />
                                     </Button>
                                     <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="Background" FontWeight="SemiBold"
+                                         <TextBlock Text="{loc:T text.themes.background_color}" FontWeight="SemiBold"
                                                    Foreground="{StaticResource BodyTextColor}" />
-                                        <TextBlock Text="Window, pages, cards, menus, and popups"
+                                         <TextBlock Text="{loc:T text.themes.background_color_help}"
                                                    Classes="TinyText" TextWrapping="Wrap" />
                                     </StackPanel>
                                     <TextBox Grid.Column="2" x:Name="BackgroundColorTextBox" TextChanged="Color_OnTextChanged"
@@ -220,26 +221,26 @@
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="14">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="3">
-                            <TextBlock Text="Custom background" FontSize="18" />
-                            <TextBlock Text="Use a local image or an HTTP/HTTPS image URL. PNG, JPG, WebP, BMP, ICO, and animated GIF files are supported."
+                             <TextBlock Text="{loc:T text.themes.custom_background}" FontSize="18" />
+                             <TextBlock Text="{loc:T text.themes.custom_background_help}"
                                        Classes="TinyText" TextWrapping="Wrap" />
                         </StackPanel>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                             <TextBox x:Name="BackgroundUrlTextBox" PlaceholderText="https://example.com/background.gif"
                                      VerticalContentAlignment="Center" />
-                            <components:Button Grid.Column="1" Text="Use URL" ButtonSize="Compact" Variant="Default"
+                             <components:Button Grid.Column="1" Text="{loc:T action.use_url}" ButtonSize="Compact" Variant="Default"
                                                Click="ImportBackgroundUrl_OnClick" />
                         </Grid>
                         <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
-                            <components:Button Text="Import image" ButtonSize="Compact" Variant="Primary"
+                             <components:Button Text="{loc:T action.import_image}" ButtonSize="Compact" Variant="Primary"
                                                IconData="{StaticResource FileImport}" Click="ImportBackgroundFile_OnClick" />
-                            <components:Button Grid.Column="1" Text="Remove" ButtonSize="Compact" Variant="Default"
+                             <components:Button Grid.Column="1" Text="{loc:T action.remove}" ButtonSize="Compact" Variant="Default"
                                                Click="RemoveBackground_OnClick" />
                             <TextBlock Grid.Column="2" x:Name="BackgroundFileText" Classes="TinyText"
                                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="120" />
                         </Grid>
                         <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
-                            <TextBlock Text="Image fit" VerticalAlignment="Center" />
+                             <TextBlock Text="{loc:T text.themes.image_fit}" VerticalAlignment="Center" />
                             <ComboBox Grid.Column="1" x:Name="BackgroundStretchComboBox"
                                       SelectionChanged="BackgroundStretch_OnSelectionChanged">
                                 <ComboBoxItem Content="Cover" Tag="UniformToFill" />
@@ -249,34 +250,34 @@
                             </ComboBox>
                         </Grid>
                         <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
-                            <TextBlock Text="Image opacity" VerticalAlignment="Center" />
+                             <TextBlock Text="{loc:T text.themes.image_opacity}" VerticalAlignment="Center" />
                             <Slider Grid.Column="1" x:Name="BackgroundOpacitySlider" Minimum="0.1" Maximum="1"
                                     TickFrequency="0.05" ValueChanged="BackgroundOpacity_OnValueChanged" />
                         </Grid>
                         <Grid ColumnDefinitions="*,140" ColumnSpacing="10">
-                            <TextBlock Text="Panel opacity" VerticalAlignment="Center" />
+                             <TextBlock Text="{loc:T text.themes.panel_opacity}" VerticalAlignment="Center" />
                             <Slider Grid.Column="1" x:Name="SurfaceOpacitySlider" Minimum="0.35" Maximum="1"
                                      TickFrequency="0.05" ValueChanged="SurfaceOpacity_OnValueChanged" />
                         </Grid>
-                        <TextBlock Text="Controls how solid cards and panels look over your background."
+                         <TextBlock Text="{loc:T text.themes.panel_opacity_help}"
                                    Classes="TinyText" TextWrapping="Wrap" Margin="0,-8,0,0" />
                         <CheckBox x:Name="MinimalHomeArtworkCheckBox"
-                                  Content="Remove Home wheel artwork"
+                                   Content="{loc:T text.themes.remove_home_artwork}"
                                   IsCheckedChanged="MinimalHomeArtwork_OnChanged"
                                   ToolTip.Tip="Remove the large wheel and trails from Home and show the background through the launcher" />
-                        <TextBlock Text="Removes the large wheel and trails from Home and shows your background through the launcher."
+                         <TextBlock Text="{loc:T text.themes.remove_home_artwork_help}"
                                    Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
                         <CheckBox x:Name="HideHomeTitleCheckBox"
-                                  Content="Hide Home title"
+                                   Content="{loc:T text.themes.hide_home_title}"
                                   IsCheckedChanged="HideHomeTitle_OnChanged"
                                   ToolTip.Tip="Hide the large Home label at the top of the Home page" />
-                        <TextBlock Text="Hides the Home label at the top so it does not cover your background."
+                         <TextBlock Text="{loc:T text.themes.hide_home_title_help}"
                                    Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
                         <CheckBox x:Name="CleanSidebarCheckBox"
-                                  Content="Remove sidebar boxes"
+                                   Content="{loc:T text.themes.remove_sidebar_boxes}"
                                   IsCheckedChanged="CleanSidebar_OnChanged"
                                   ToolTip.Tip="Remove gray boxes behind sidebar buttons and the profile area" />
-                        <TextBlock Text="Removes the gray boxes behind sidebar buttons and your profile."
+                         <TextBlock Text="{loc:T text.themes.remove_sidebar_boxes_help}"
                                    Classes="TinyText" TextWrapping="Wrap" Margin="24,-8,0,0" />
                         <TextBlock x:Name="BackgroundStatusText" Classes="TinyText" Foreground="{DynamicResource Primary300}"
                                    TextWrapping="Wrap" />
@@ -292,7 +293,7 @@
                 <TextBlock x:Name="ColorError" Text="Enter valid colors. A name is required to save."
                            Foreground="{StaticResource Danger400}" VerticalAlignment="Center"
                            TextWrapping="Wrap" IsVisible="False" />
-                <components:Button Grid.Column="1" Text="Apply theme" Variant="Default"
+                 <components:Button Grid.Column="1" Text="{loc:T action.apply_theme}" Variant="Default"
                                    IconData="{StaticResource CheckMark}" Click="ApplyTheme_OnClick" />
             </Grid>
         </Border>

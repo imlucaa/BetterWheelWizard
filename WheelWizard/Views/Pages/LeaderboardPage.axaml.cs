@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
+using WheelWizard.Localization;
 using WheelWizard.Models;
 using WheelWizard.RrRooms;
 using WheelWizard.Services.LiveData;
@@ -162,18 +163,18 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         }
     }
 
-    public string RemainingCountText => $"{RemainingPlayers.Count} players";
-    public string LeaderboardPageText => $"Page {_currentLeaderboardPage} / {_totalLeaderboardPages}";
+    public string RemainingCountText => t("text.leaderboard.players_count", RemainingPlayers.Count);
+    public string LeaderboardPageText => t("text.leaderboard.page", _currentLeaderboardPage, _totalLeaderboardPages);
     public bool CanGoToPreviousPage => _currentLeaderboardPage > 1 && !IsLoading;
     public bool CanGoToNextPage => _currentLeaderboardPage < _totalLeaderboardPages && !IsLoading;
     public bool HasActiveSearchResult => _selectedSearchMatchIndex >= 0 && _selectedSearchMatchIndex < _searchMatches.Count;
     public string PodiumTitleText =>
-        HasActiveSearchResult ? "Player"
-        : _currentLeaderboardPage == 1 ? "Top 3 Podium"
-        : "Page leaders";
+        HasActiveSearchResult ? t("text.leaderboard.player")
+        : _currentLeaderboardPage == 1 ? t("text.leaderboard.podium")
+        : t("text.leaderboard.page_leaders");
     public string PodiumCaptionText =>
         HasActiveSearchResult ? string.Empty
-        : _currentLeaderboardPage == 1 ? "Live from RWFC"
+        : _currentLeaderboardPage == 1 ? t("text.leaderboard.live_from_rwfc")
         : LeaderboardPageText;
 
     public LeaderboardPlayerItem? PodiumFirst
@@ -235,9 +236,9 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
     private async void SearchLeaderboardPlayer_OnClick(object? sender, RoutedEventArgs e)
     {
         var input = await new TextInputWindow()
-            .SetMainText("Search leaderboard")
-            .SetExtraText("Search by player name or 12-digit friend code.")
-            .SetPlaceholderText("Player or 0000-0000-0000")
+            .SetMainText(t("popup.search_leaderboard"))
+            .SetExtraText(t("popup.search_player_help"))
+            .SetPlaceholderText(t("placeholder.player_or_friend_code"))
             .SetButtonText("Cancel", "Search")
             .ShowDialog();
 
@@ -635,14 +636,16 @@ public partial class LeaderboardPage : UserControlBase, INotifyPropertyChanged
         {
             return rank switch
             {
-                1 => "Champion",
-                2 => "2nd Place",
-                3 => "3rd Place",
+                1 => t("text.leaderboard.champion"),
+                2 => t("text.leaderboard.second_place"),
+                3 => t("text.leaderboard.third_place"),
                 _ => $"#{rank}",
             };
         }
 
-        return $"{rank}{GetOrdinalSuffix(rank)} Place";
+        return LocalizationProvider.Current.CurrentLanguage == "en"
+            ? t("text.leaderboard.place", $"{rank}{GetOrdinalSuffix(rank)}")
+            : t("text.leaderboard.place", rank);
     }
 
     internal static string GetOrdinalSuffix(int value)

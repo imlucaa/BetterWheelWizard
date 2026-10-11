@@ -1,0 +1,6 @@
+BetterWheelWizard v2.5.19 expands Japanese localization across the launcher.
+
+- Adds persistent English/Japanese language selection.
+- Translates launcher pages, settings, themes, popups, title bars, visible branding, and known room track names.
+- Improves profile-card panel opacity and the VR History background layout.
+- Keeps unknown custom-track names intact when no Japanese title is available.

@@ -4,12 +4,13 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
                    xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   xmlns:loc="clr-namespace:WheelWizard.Localization"
                    mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="360"
                    x:Class="WheelWizard.Views.Popups.Generic.RoomSortWindow">
     <Grid Width="360" RowDefinitions="Auto,Auto" Margin="0,4,0,0">
         <StackPanel>
             <TextBlock Classes="TitleText"
-                       Text="Choose how to sort the room list"
+                        Text="{loc:T popup.room_sort_title}"
                        FontSize="18"
                        Foreground="{StaticResource FormFieldLabelColor}"
                        Margin="0,0,0,8" />
@@ -18,35 +19,35 @@
                 <components:Button x:Name="AllRoomsButton"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Left"
-                                   Text="All rooms"
+                                    Text="{loc:T popup.all_rooms}"
                                    IconData="{StaticResource TableBars}"
                                    Variant="Default"
                                    Click="AllRoomsButton_OnClick" />
                 <components:Button x:Name="LowestToHighestButton"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Left"
-                                   Text="Lowest → highest"
+                                    Text="{loc:T popup.lowest_highest}"
                                    IconData="{StaticResource ArrowUp}"
                                    Variant="Default"
                                    Click="LowestToHighestButton_OnClick" />
                 <components:Button x:Name="HighestToLowestButton"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Left"
-                                   Text="Highest → lowest"
+                                    Text="{loc:T popup.highest_lowest}"
                                    IconData="{StaticResource ArrowDown}"
                                    Variant="Default"
                                    Click="HighestToLowestButton_OnClick" />
                 <components:Button x:Name="LowestRoomOnlyButton"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Left"
-                                   Text="Lowest room only"
+                                    Text="{loc:T popup.lowest_room_only}"
                                    IconData="{StaticResource ChevronDown}"
                                    Variant="Default"
                                    Click="LowestRoomOnlyButton_OnClick" />
                 <components:Button x:Name="HighestRoomOnlyButton"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Left"
-                                   Text="Highest room only"
+                                    Text="{loc:T popup.highest_room_only}"
                                    IconData="{StaticResource ChevronUp}"
                                    Variant="Default"
                                    Click="HighestRoomOnlyButton_OnClick" />

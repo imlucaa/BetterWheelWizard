@@ -19,7 +19,7 @@ public partial class YesNoWindow : PopupContent
     private TaskCompletionSource<bool>? _tcs;
 
     public YesNoWindow()
-        : base(true, false, true, "Wheel Wizard")
+        : base(true, false, true, t("app.display_name"))
     {
         InitializeComponent();
         YesButton.Text = t("action.yes");

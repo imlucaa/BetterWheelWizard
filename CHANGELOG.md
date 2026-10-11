@@ -6,6 +6,23 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.5.19] - 2026-10-11
+
+### Added
+
+- Added an English/Japanese launcher-language selector with persistent live language switching.
+- Added Japanese translations for launcher pages, settings, themes, popup content and title bars, room track names, and visible application/game titles.
+
+### Changed
+
+- Made profile cards use panel opacity without stacking opacity from their outer container.
+- Made the lower VR History controls and graph share one continuous background surface.
+
+### Fixed
+
+- Fixed untranslated English labels remaining throughout Japanese mode, including search, sorting, theme, Mii, friend, profile, and rendering dialogs.
+- Fixed known room courses remaining in English when Japanese is selected while preserving unknown custom-track names.
+
 ## [2.5.18] - 2026-10-11
 
 ### Changed

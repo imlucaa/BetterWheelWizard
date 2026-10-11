@@ -130,7 +130,7 @@
                                            Text="{loc:T page_title.my_miis}" />
             <patterns:SidebarRadioButton IconData="{StaticResource ThemePalette}"
                                            PageType="{x:Type pages:ThemesPage}"
-                                           Text="Themes" />
+                                            Text="{loc:T page_title.themes}" />
             <TextBlock Text="{loc:T attribute.status_online}" Classes="SidebarSectionText" />
             <!-- Repurposing this translation from values -->
             <patterns:SidebarRadioButton IconData="{StaticResource RoomUsers}"

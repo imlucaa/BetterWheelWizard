@@ -293,13 +293,13 @@
                 </Border>
             </StackPanel>
 
-            <components1:FormFieldLabel Text="Font" Margin="0,10,0,4" />
+             <components1:FormFieldLabel Text="{loc:T option.font}" Margin="0,10,0,4" />
             <StackPanel Spacing="4" Margin="0,0,0,7">
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="40">
                         <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
-                            <components1:FormFieldLabel Text="Launcher font" />
-                            <SelectableTextBlock Classes="TinyText" Text="Changes text throughout Wheel Wizard." />
+                             <components1:FormFieldLabel Text="{loc:T option.launcher_font}" />
+                             <SelectableTextBlock Classes="TinyText" Text="{loc:T helper_text.launcher_font}" />
                         </StackPanel>
                         <ComboBox Grid.Column="1" x:Name="LauncherFontDropdown" MinWidth="150"
                                   SelectionChanged="LauncherFontDropdown_OnSelectionChanged"
@@ -309,15 +309,15 @@
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
                     <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="40">
                         <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
-                            <components1:FormFieldLabel Text="Custom font file" />
-                            <SelectableTextBlock x:Name="LauncherFontStatus" Classes="TinyText"
-                                                 Text="Import a .ttf or .otf font." TextWrapping="Wrap" />
+                             <components1:FormFieldLabel Text="{loc:T option.custom_font_file}" />
+                             <SelectableTextBlock x:Name="LauncherFontStatus" Classes="TinyText"
+                                                  Text="{loc:T helper_text.import_font}" TextWrapping="Wrap" />
                         </StackPanel>
                         <components1:Button Grid.Column="1" Variant="Default" ButtonSize="Compact"
-                                            Text="Import" IconData="{StaticResource Folder}"
+                                             Text="{loc:T action.import}" IconData="{StaticResource Folder}"
                                             Click="ImportLauncherFont_OnClick" VerticalAlignment="Center" />
                         <components1:Button Grid.Column="2" x:Name="RemoveLauncherFontButton" Variant="Default"
-                                            ButtonSize="Compact" Text="Delete" Margin="6,0,0,0"
+                                             ButtonSize="Compact" Text="{loc:T action.delete}" Margin="6,0,0,0"
                                             Click="RemoveLauncherFont_OnClick" VerticalAlignment="Center" />
                     </Grid>
                 </Border>

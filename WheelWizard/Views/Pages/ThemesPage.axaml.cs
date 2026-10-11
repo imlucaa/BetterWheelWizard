@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using WheelWizard.Localization;
 using WheelWizard.Services;
 using WheelWizard.Settings;
 using WheelWizard.Shared.DependencyInjection;
@@ -311,12 +312,12 @@ public partial class ThemesPage : UserControlBase
     {
         _selectedTheme = choice;
         DeleteThemeButton.IsEnabled = choice != null;
-        SelectedThemeText.Text = choice?.Theme.Name ?? "Current colors";
+        SelectedThemeText.Text = choice?.Theme.Name ?? t("text.themes.current_colors");
         if (choice == null || !loadEditor)
             return;
 
         SetEditor(choice.Theme);
-        ThemeStatusText.Text = $"Loaded {choice.Theme.Name}. Apply to use it.";
+        ThemeStatusText.Text = t("popup.theme_loaded", choice.Theme.Name);
     }
 
     private async void DeleteTheme_OnClick(object? sender, RoutedEventArgs e)
@@ -325,9 +326,9 @@ public partial class ThemesPage : UserControlBase
             return;
 
         var confirmed = await new YesNoWindow()
-            .SetMainText($"Delete {choice.Theme.Name}?")
-            .SetExtraText(choice.IsBuiltIn ? "You can restore this built-in theme later." : "This saved theme file will be removed.")
-            .SetButtonText("Delete", "Cancel")
+            .SetMainText(t("popup.delete_theme", choice.Theme.Name))
+            .SetExtraText(choice.IsBuiltIn ? t("popup.restore_theme_later") : t("popup.saved_theme_removed"))
+            .SetButtonText(t("action.delete"), t("action.cancel"))
             .SetButtonVariants(
                 WheelWizard.Views.Components.Button.ButtonsVariantType.Danger,
                 WheelWizard.Views.Components.Button.ButtonsVariantType.Default
@@ -349,16 +350,16 @@ public partial class ThemesPage : UserControlBase
         _selectedTheme = null;
         ReloadThemeChoices();
         DeleteThemeButton.IsEnabled = false;
-        SelectedThemeText.Text = "Current colors";
-        ThemeStatusText.Text = $"Deleted {choice.Theme.Name}.";
+        SelectedThemeText.Text = t("text.themes.current_colors");
+        ThemeStatusText.Text = t("popup.theme_deleted", choice.Theme.Name);
     }
 
     private async void RestorePresets_OnClick(object? sender, RoutedEventArgs e)
     {
         var confirmed = await new YesNoWindow()
-            .SetMainText("Restore all built-in themes?")
-            .SetExtraText("Deleted built-in color presets will return to the theme library.")
-            .SetButtonText("Restore", "Cancel")
+            .SetMainText(t("popup.restore_themes"))
+            .SetExtraText(t("popup.restore_themes_help"))
+            .SetButtonText(t("action.restore"), t("action.cancel"))
             .SetButtonVariants(
                 WheelWizard.Views.Components.Button.ButtonsVariantType.Confirm,
                 WheelWizard.Views.Components.Button.ButtonsVariantType.Default
@@ -370,7 +371,7 @@ public partial class ThemesPage : UserControlBase
         if (File.Exists(DeletedBuiltInThemesPath))
             File.Delete(DeletedBuiltInThemesPath);
         ReloadThemeChoices();
-        ThemeStatusText.Text = "Built-in themes restored.";
+        ThemeStatusText.Text = t("popup.themes_restored");
     }
 
     private void SetEditor(LauncherThemeFile theme)
@@ -402,18 +403,18 @@ public partial class ThemesPage : UserControlBase
         SettingsService.Set(SettingsService.LAUNCHER_BODY_TEXT_COLOR, theme.Text);
         SettingsService.Set(SettingsService.LAUNCHER_BACKGROUND_COLOR, theme.Background);
         var appliedName = string.IsNullOrWhiteSpace(theme.Name) ? "Theme" : theme.Name;
-        ThemeStatusText.Text = $"{appliedName} applied.";
+        ThemeStatusText.Text = t("popup.theme_applied", appliedName);
         Dispatcher.UIThread.Post(() => NavigationManager.NavigateTo<ThemesPage>(), DispatcherPriority.Background);
     }
 
     private async void SaveTheme_OnClick(object? sender, RoutedEventArgs e)
     {
         var requestedName = await new TextInputWindow()
-            .SetMainText("Save current colors")
-            .SetExtraText("Give this theme a name so it appears in your library.")
-            .SetPlaceholderText("Theme name")
+            .SetMainText(t("popup.save_current_colors"))
+            .SetExtraText(t("popup.save_current_colors_help"))
+            .SetPlaceholderText(t("placeholder.theme_name"))
             .SetInitialText(_editorThemeName)
-            .SetButtonText("Cancel", "Save")
+            .SetButtonText(t("action.cancel"), t("action.save"))
             .ShowDialog();
         if (requestedName == null)
             return;
@@ -427,9 +428,9 @@ public partial class ThemesPage : UserControlBase
         if (existing != null)
         {
             var replace = await new YesNoWindow()
-                .SetMainText($"Replace {theme.Name}?")
-                .SetExtraText("A saved theme with this name already exists.")
-                .SetButtonText("Replace", "Cancel")
+                .SetMainText(t("popup.replace_theme", theme.Name))
+                .SetExtraText(t("popup.theme_already_exists"))
+                .SetButtonText(t("action.replace"), t("action.cancel"))
                 .SetButtonVariants(
                     WheelWizard.Views.Components.Button.ButtonsVariantType.Confirm,
                     WheelWizard.Views.Components.Button.ButtonsVariantType.Default

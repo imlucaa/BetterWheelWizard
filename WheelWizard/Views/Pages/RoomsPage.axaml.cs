@@ -135,9 +135,9 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
     private async void RoomsSearchButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var input = await new TextInputWindow()
-            .SetMainText("Search rooms")
-            .SetExtraText("Search by room ID, player name, or friend code.")
-            .SetPlaceholderText("Room, player, or friend code")
+            .SetMainText(t("popup.search_rooms"))
+            .SetExtraText(t("popup.search_rooms_help"))
+            .SetPlaceholderText(t("placeholder.room_player_friend_code"))
             .SetInitialText(_searchQuery ?? string.Empty)
             .SetButtonText("Clear", "Search")
             .ShowDialog();
@@ -156,9 +156,9 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
     private async void RoomsVrFilterButton_OnClick(object? sender, RoutedEventArgs e)
     {
         var minInput = await new TextInputWindow()
-            .SetMainText("Minimum average VR")
-            .SetExtraText("Leave blank to remove the minimum VR filter.")
-            .SetPlaceholderText("Min avg. VR")
+            .SetMainText(t("popup.minimum_average_vr"))
+            .SetExtraText(t("popup.minimum_average_vr_help"))
+            .SetPlaceholderText(t("placeholder.minimum_average_vr"))
             .SetInitialText(_minimumAverageVr?.ToString() ?? string.Empty)
             .SetButtonText("Clear", "Next")
             .ShowDialog();
@@ -173,9 +173,9 @@ public partial class RoomsPage : UserControlBase, INotifyPropertyChanged, IRepea
         }
 
         var maxInput = await new TextInputWindow()
-            .SetMainText("Maximum average VR")
-            .SetExtraText("Leave blank to remove the maximum VR filter.")
-            .SetPlaceholderText("Max avg. VR")
+            .SetMainText(t("popup.maximum_average_vr"))
+            .SetExtraText(t("popup.maximum_average_vr_help"))
+            .SetPlaceholderText(t("placeholder.maximum_average_vr"))
             .SetInitialText(_maximumAverageVr?.ToString() ?? string.Empty)
             .SetButtonText("Clear", "Apply")
             .ShowDialog();

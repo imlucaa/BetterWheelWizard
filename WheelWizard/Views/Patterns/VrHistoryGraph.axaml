@@ -23,6 +23,13 @@
             BorderThickness="0"
             DataContext="{Binding RelativeSource={RelativeSource AncestorType=behaviorComp:VrHistoryGraph}}">
         <Grid RowDefinitions="Auto,Auto,*">
+            <!-- Keep the history controls and chart on one surface while leaving the
+                 summary cards above it as separate, non-stacked opacity layers. -->
+            <Border Grid.Row="1" Grid.RowSpan="2"
+                    Background="{DynamicResource Neutral900}"
+                    BorderBrush="{DynamicResource Neutral900}"
+                    BorderThickness="1"
+                    CornerRadius="8" />
             <Grid Grid.Row="0"
                   ColumnDefinitions="*,*,*"
                   Margin="0,0,0,8">
@@ -59,7 +66,7 @@
 
             <Grid Grid.Row="1"
                   ColumnDefinitions="*,Auto"
-                  Margin="0,0,0,8">
+                  Margin="8,8,8,8">
                 <StackPanel Grid.Column="0">
                     <components:FormFieldLabel Text="{loc:T attribute.vr_history}" />
                     <TextBlock Classes="TinyText" FontSize="11" Text="{Binding DateRangeText}" />
@@ -85,12 +92,12 @@
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch">
                 <Border IsVisible="{Binding HasData}"
-                        Background="{DynamicResource Neutral900}"
-                        BorderBrush="{DynamicResource Neutral900}"
-                        BorderThickness="1"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
                         CornerRadius="8"
                         Padding="8"
-                        Margin="0,0,0,8"
+                        Margin="0,0,0,0"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch">
                     <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
@@ -99,9 +106,9 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="TinyText" FontSize="11"
                                    Text="{Binding GraphMinVrText}" Margin="0,0,8,0" VerticalAlignment="Bottom" />
 
-                        <Border Grid.Row="0"
-                                Grid.Column="1"
-                                Background="{DynamicResource Neutral950}"
+                         <Border Grid.Row="0"
+                                 Grid.Column="1"
+                                 Background="Transparent"
                                 BorderBrush="{DynamicResource Neutral900}"
                                 BorderThickness="1"
                                 CornerRadius="6"

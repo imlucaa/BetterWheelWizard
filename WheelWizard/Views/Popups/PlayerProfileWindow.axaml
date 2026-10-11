@@ -16,7 +16,7 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20"
                     IsVisible="{Binding IsLoading}">
             <components:LoadingIcon Width="72" Height="72" Foreground="{DynamicResource Neutral700}" />
-            <TextBlock Text="Loading profile..." Classes="BodyText" FontSize="14" HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:T popup.loading_profile}" Classes="BodyText" FontSize="14" HorizontalAlignment="Center" />
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14"
@@ -49,7 +49,7 @@
                             <components:StateBox Text="{Binding Profile.Rank, StringFormat='Rank #{0}'}"
                                                  Variant="Success" IconSize="0" HorizontalAlignment="Left"
                                                  IsVisible="{Binding Profile.Rank, Converter={x:Static conv:NumberConverters.GreaterThan0}}" />
-                            <components:StateBox Text="Suspicious" Variant="Danger" IconSize="0"
+                            <components:StateBox Text="{loc:T state.suspicious}" Variant="Danger" IconSize="0"
                                                  HorizontalAlignment="Left"
                                                  IsVisible="{Binding Profile.IsSuspicious}" />
                         </StackPanel>
@@ -66,22 +66,22 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,12,8">
-                        <components:FormFieldLabel Text="Last Seen" />
+                        <components:FormFieldLabel Text="{loc:T attribute.last_seen}" />
                         <TextBlock Text="{Binding LastSeenText}" Classes="BodyText" FontSize="12" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Grid.Row="0" Margin="0,0,0,8">
-                        <components:FormFieldLabel Text="VR (24h)" />
+                        <components:FormFieldLabel Text="{loc:T attribute.vr_24h}" />
                         <TextBlock Text="{Binding Vr24HoursText}" Classes="BodyText" FontSize="12" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="0" Grid.Row="1" Margin="0,0,12,0">
-                        <components:FormFieldLabel Text="VR (Week)" />
+                        <components:FormFieldLabel Text="{loc:T attribute.vr_week}" />
                         <TextBlock Text="{Binding VrWeekText}" Classes="BodyText" FontSize="12" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Grid.Row="1" Margin="0,0,12,0">
-                        <components:FormFieldLabel Text="VR (Month)" />
+                        <components:FormFieldLabel Text="{loc:T attribute.vr_month}" />
                         <TextBlock Text="{Binding VrMonthText}" Classes="BodyText" FontSize="12" />
                     </StackPanel>
                 </Grid>

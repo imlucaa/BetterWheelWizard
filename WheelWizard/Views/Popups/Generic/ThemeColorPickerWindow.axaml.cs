@@ -12,7 +12,7 @@ public partial class ThemeColorPickerWindow : PopupContent
     private bool _isUpdatingHex;
 
     public ThemeColorPickerWindow(string title, Color initialColor)
-        : base(true, false, true, "Theme color")
+        : base(true, false, true, t("popup_title.theme_color"))
     {
         InitializeComponent();
         PickerTitle.Text = title;

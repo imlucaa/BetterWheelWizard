@@ -95,8 +95,8 @@ public partial class Layout : BaseWindow, IRepeatedTaskListener
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
-        Title = BrandingService.Branding.DisplayName;
-        TitleLabel.Text = BrandingService.Branding.DisplayName;
+        Title = t("app.display_name");
+        TitleLabel.Text = t("app.display_name");
         VersionTagText.Text = $"v{BrandingService.Branding.Version}";
         UpdateModsButtonText();
         // UpdateModsActionIndicator();

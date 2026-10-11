@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using WheelWizard.Localization;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
 
 namespace WheelWizard.Models.RRInfo;
@@ -155,9 +156,133 @@ public class RrRoom : INotifyPropertyChanged
 
     public string DisplayGameMode => GameMode == "Unknown Mode" ? (IsPublic ? "Public Room" : "Private Room") : GameMode;
 
-    public string TrackDisplay => string.IsNullOrWhiteSpace(TrackName) ? "Waiting for next race" : TrackName;
+    public string TrackDisplay => string.IsNullOrWhiteSpace(TrackName) ? t("text.waiting_for_next_race") : TranslateTrackName(TrackName);
 
-    public string RaceTimeDisplay => RaceObservedAt.HasValue ? tTime(DateTime.UtcNow - RaceObservedAt.Value) : "Waiting";
+    private static string TranslateTrackName(string trackName)
+    {
+        if (!string.Equals(LocalizationProvider.Current.CurrentLanguage, "ja", StringComparison.OrdinalIgnoreCase))
+            return trackName;
+
+        var translated = trackName;
+        // Replace the longest names first so entries such as "Mario Circuit 3"
+        // are not partially matched by the shorter "Mario Circuit" entry.
+        foreach (var (english, japanese) in JapaneseTrackNames.OrderByDescending(pair => pair.Key.Length))
+            translated = translated.Replace(english, japanese, StringComparison.OrdinalIgnoreCase);
+        return translated;
+    }
+
+    private static readonly IReadOnlyDictionary<string, string> JapaneseTrackNames = new Dictionary<string, string>(
+        StringComparer.OrdinalIgnoreCase
+    )
+    {
+        // Wii Mushroom Cup
+        ["Luigi Circuit"] = "ルイージサーキット",
+        ["Moo Moo Meadows"] = "モーモーカントリー",
+        ["Mushroom Gorge"] = "キノコキャニオン",
+        ["Toad's Factory"] = "キノピオファクトリー",
+
+        // Wii Flower Cup
+        ["Mario Circuit"] = "マリオサーキット",
+        ["Coconut Mall"] = "ココナッツモール",
+        ["DK Summit"] = "DKスノーボードクロス",
+        ["Wario's Gold Mine"] = "ワリオこうざん",
+
+        // Wii Star Cup
+        ["Daisy Circuit"] = "デイジーサーキット",
+        ["Koopa Cape"] = "ノコノコみさき",
+        ["Maple Treeway"] = "メイプルツリーハウス",
+        ["Grumble Volcano"] = "グラグラかざん",
+
+        // Wii Special Cup
+        ["Dry Dry Ruins"] = "カラカラいせき",
+        ["Moonview Highway"] = "ムーンリッジ＆ハイウェイ",
+        ["Bowser's Castle"] = "クッパキャッスル",
+        ["Rainbow Road"] = "レインボーロード",
+
+        // Retro Rewind / custom packs commonly use these English names.
+        ["SNES Mario Circuit 3"] = "SFCマリオサーキット3",
+        ["SNES Bowser Castle 2"] = "SFCクッパじょう2",
+        ["SNES Donut Plains 3"] = "SFCドーナツへいや3",
+        ["SNES Ghost Valley 2"] = "SFCおばけぬま2",
+        ["SNES Choco Island 2"] = "SFCチョコレーとう2",
+        ["SNES Vanilla Lake 1"] = "SFCバニラレイク1",
+        ["SNES Rainbow Road"] = "SFCレインボーロード",
+        ["N64 Mario Raceway"] = "N64マリオサーキット",
+        ["N64 Royal Raceway"] = "N64ピーチサーキット",
+        ["N64 Kalimari Desert"] = "N64カラカラさばく",
+        ["N64 Sherbet Land"] = "N64シャーベットランド",
+        ["N64 Yoshi Valley"] = "N64ヨッシーバレー",
+        ["N64 DK's Jungle Parkway"] = "N64 DKジャングルパークウェイ",
+        ["N64 Banshee Boardwalk"] = "N64ヒュードロいけ",
+        ["N64 Wario Stadium"] = "N64ワリオスタジアム",
+        ["N64 Choco Mountain"] = "N64チョコマウンテン",
+        ["GBA Peach Circuit"] = "GBAピーチサーキット",
+        ["GBA Cheese Land"] = "GBAチーズランド",
+        ["GBA Cheep-Cheep Island"] = "GBAプクプクアイランド",
+        ["GBA Cheep Cheep Island"] = "GBAプクプクアイランド",
+        ["GBA Rainbow Road DX"] = "GBAレインボーロードDX",
+        ["GBA Rainbow Road"] = "GBAレインボーロード",
+        ["GBA Bowser Castle 3"] = "GBAクッパキャッスル3",
+        ["GBA Shy Guy Beach"] = "GBAヘイホービーチ",
+        ["GBA Sky Garden"] = "GBAスカイガーデン",
+        ["GCN Peach Beach"] = "GCNピーチビーチ",
+        ["GCN Waluigi Stadium"] = "GCNワルイージスタジアム",
+        ["GCN Mario Circuit"] = "GCNマリオサーキット",
+        ["GCN DK Mountain"] = "GCN DKマウンテン",
+        ["DS Figure-8 Circuit"] = "DSエイトクロスサーキット",
+        ["DS Yoshi Falls"] = "DSヨッシーフォールズ",
+        ["DS Cheep Cheep Beach"] = "DSプクプクビーチ",
+        ["DS Luigi's Mansion"] = "DSルイージマンション",
+        ["DS Desert Hills"] = "DSサンサンさばく",
+        ["DS Delfino Square"] = "DSモンテタウン",
+        ["Delfino Square"] = "モンテタウン",
+        ["DS Waluigi Pinball"] = "DSワルイージピンボール",
+        ["DS Wario Stadium"] = "DSワリオスタジアム",
+        ["DS Rainbow Road"] = "DSレインボーロード",
+        ["DS Shroom Ridge"] = "DSキノコリッジウェイ",
+        ["DS Tick-Tock Clock"] = "DSチクタクロック",
+        ["DS Mario Circuit"] = "DSマリオサーキット",
+        ["DS Airship Fortress"] = "DSキラーシップ",
+        ["Wii U Sunshine Airport"] = "Wii Uサンシャインくうこう",
+        ["Wii U Cheese Land"] = "Wii Uチーズランド",
+        ["Wii U Royal Raceway"] = "Wii Uピーチサーキット",
+        ["Wii U Wario Stadium"] = "Wii Uワリオスタジアム",
+        ["Wii U Dolphin Shoals"] = "Wii Uドルフィンみさき",
+        ["Wii U Electrodrome"] = "Wii Uエレクトロドリーム",
+        ["Wii U Mount Wario"] = "Wii Uワリオスノーマウンテン",
+        ["Wii U Cloudtop Cruise"] = "Wii Uスカイガーデン",
+        ["Wii U Bone-Dry Dunes"] = "Wii Uホネホネさばく",
+        ["Wii U Bowser Castle"] = "Wii Uクッパキャッスル",
+        ["Wii U Rainbow Road"] = "Wii Uレインボーロード",
+        ["Wii U Yoshi Circuit"] = "Wii Uヨッシーサーキット",
+        ["Wii U Animal Crossing"] = "Wii Uどうぶつの森",
+        ["Wii U Excitebike Arena"] = "Wii Uエキサイトバイク",
+        ["Wii U Hyrule Circuit"] = "Wii Uハイラルサーキット",
+        ["Wii U Sunset Wilds"] = "Wii Uサンセットこうや",
+        ["SW2 Ghost Valley"] = "SW2おばけぬま",
+        ["SW2 Dandelion Depths"] = "SW2ダンデライオンデプス",
+        ["SW2 Mario Bros Circuit"] = "SW2マリオブラザーズサーキット",
+        ["SW Kalimari Desert"] = "SWカラカラさばく",
+        ["Great ? Block Ruins"] = "グレート？ブロック遺跡",
+        ["Great Block Ruins"] = "グレートブロック遺跡",
+        ["Block Ruins"] = "ブロック遺跡",
+        ["Beta Delfino Square"] = "ベータ版モンテタウン",
+        ["Beta Nokonoko Beach"] = "ベータ版ノコノコビーチ",
+        ["Beta Waluigi Pinball"] = "ベータ版ワルイージピンボール",
+        ["Madrid Drive"] = "マドリードグランデ",
+        ["Tour Madrid Drive"] = "ツアーマドリードグランデ",
+        ["Tour Cheep-Cheep Island"] = "ツアープクプクアイランド",
+        ["Tour Cheep Cheep Island"] = "ツアープクプクアイランド",
+        ["Tour DK Summit"] = "ツアーDKスノーボードクロス",
+        ["Musical Cliff"] = "ミュージカルクリフ",
+        ["Heavenly Sanctuary"] = "天空の聖域",
+        ["Bridgey City"] = "ブリッジーシティ",
+        ["3DS DK Jungle"] = "3DS DKジャングル",
+        ["Overgrown Temple"] = "草深き神殿",
+        ["Dark Matter Fortress"] = "ダークマター要塞",
+    };
+
+    public string RaceTimeDisplay => RaceObservedAt.HasValue ? tTime(DateTime.UtcNow - RaceObservedAt.Value) : t("text.waiting");
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -10,7 +10,7 @@ public partial class AddFriendConfirmationWindow : PopupContent
     private TaskCompletionSource<bool> _tcs = new();
 
     public AddFriendConfirmationWindow()
-        : base(true, false, true, "Add Friend")
+        : base(true, false, true, t("popup_title.add_friend"))
     {
         InitializeComponent();
     }

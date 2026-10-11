@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Avalonia.Threading;
+using WheelWizard.Localization;
 using WheelWizard.Models;
 using WheelWizard.RrRooms;
 using WheelWizard.Shared.DependencyInjection;
@@ -20,7 +21,7 @@ public partial class PlayerProfileWindow : PopupContent, INotifyPropertyChanged
     private string _errorMessage = string.Empty;
 
     public PlayerProfileWindow(string friendCode)
-        : base(true, true, false, "Player Profile")
+        : base(true, true, false, t("popup_title.player_profile"))
     {
         InitializeComponent();
         DataContext = this;
@@ -100,12 +101,12 @@ public partial class PlayerProfileWindow : PopupContent, INotifyPropertyChanged
 
             var timeAgo = DateTime.UtcNow - Profile.LastSeen;
             if (timeAgo.TotalDays >= 1)
-                return $"{(int)timeAgo.TotalDays} day(s) ago";
+                return t("popup.days_ago", (int)timeAgo.TotalDays);
             if (timeAgo.TotalHours >= 1)
-                return $"{(int)timeAgo.TotalHours} hour(s) ago";
+                return t("popup.hours_ago", (int)timeAgo.TotalHours);
             if (timeAgo.TotalMinutes >= 1)
-                return $"{(int)timeAgo.TotalMinutes} minute(s) ago";
-            return "Just now";
+                return t("popup.minutes_ago", (int)timeAgo.TotalMinutes);
+            return t("popup.just_now");
         }
     }
 
@@ -126,7 +127,7 @@ public partial class PlayerProfileWindow : PopupContent, INotifyPropertyChanged
             }
             else
             {
-                ErrorMessage = result.Error?.Message ?? "Failed to load profile";
+                ErrorMessage = result.Error?.Message ?? t("popup.profile_load_failed");
                 IsLoading = false;
             }
         });

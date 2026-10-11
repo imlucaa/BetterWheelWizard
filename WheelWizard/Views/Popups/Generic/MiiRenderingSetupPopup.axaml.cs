@@ -1,5 +1,6 @@
 using Avalonia.Interactivity;
 using Microsoft.Extensions.Logging;
+using WheelWizard.Localization;
 using WheelWizard.MiiRendering.Services;
 using WheelWizard.Services;
 using WheelWizard.Shared.DependencyInjection;
@@ -21,12 +22,12 @@ public partial class MiiRenderingSetupPopup : PopupContent
     private ILogger<MiiRenderingSetupPopup> Logger { get; set; } = null!;
 
     public MiiRenderingSetupPopup()
-        : base(true, false, true, "Wheel Wizard")
+        : base(true, false, true, t("app.display_name"))
     {
         InitializeComponent();
         PathTextBlock.Text = PathManager.MiiRenderingResourceFilePath;
-        StatusTextBlock.Text = "Download the Mii rendering resource to enable offline 3D Mii rendering.";
-        ProgressTextBlock.Text = "Ready to install.";
+        StatusTextBlock.Text = t("popup.mii_rendering_download_prompt");
+        ProgressTextBlock.Text = t("popup.ready_to_install");
     }
 
     public Task<bool> ShowAndAwaitCompletionAsync()
@@ -41,7 +42,7 @@ public partial class MiiRenderingSetupPopup : PopupContent
             return;
 
         ErrorTextBlock.IsVisible = false;
-        SetBusyState(true, "Downloading required file...");
+        SetBusyState(true, t("popup.downloading_required_file"));
         DownloadProgressBar.Value = 0;
         _downloadCancellationTokenSource = new CancellationTokenSource();
 
@@ -53,7 +54,7 @@ public partial class MiiRenderingSetupPopup : PopupContent
             if (result.IsFailure)
             {
                 Logger.LogWarning("Mii rendering setup failed: {Message}", result.Error?.Message);
-                ShowError(result.Error?.Message ?? "Failed to install the Mii rendering resource.");
+                ShowError(result.Error?.Message ?? t("popup.mii_rendering_install_failed"));
                 return;
             }
 
@@ -67,7 +68,7 @@ public partial class MiiRenderingSetupPopup : PopupContent
             _downloadCancellationTokenSource = null;
 
             if (!_downloadCompleted)
-                SetBusyState(false, "Download the Mii rendering resource to enable offline 3D Mii rendering.");
+                SetBusyState(false, t("popup.mii_rendering_download_prompt"));
         }
     }
 
@@ -85,7 +86,8 @@ public partial class MiiRenderingSetupPopup : PopupContent
         }
 
         DownloadProgressBar.Value = 0;
-        ProgressTextBlock.Text = progress.BytesDownloaded > 0 ? $"{FormatMegabytes(progress.BytesDownloaded)} downloaded" : "Working...";
+        ProgressTextBlock.Text =
+            progress.BytesDownloaded > 0 ? t("popup.downloaded", FormatMegabytes(progress.BytesDownloaded)) : t("popup.working");
     }
 
     private void SkipButton_OnClick(object? sender, RoutedEventArgs e)
@@ -115,7 +117,7 @@ public partial class MiiRenderingSetupPopup : PopupContent
     {
         ErrorTextBlock.Text = message;
         ErrorTextBlock.IsVisible = true;
-        SetBusyState(false, "Download the Mii rendering resource to enable offline 3D Mii rendering.");
+        SetBusyState(false, t("popup.mii_rendering_download_prompt"));
     }
 
     private static string FormatMegabytes(long bytes) => $"{bytes / 1024d / 1024d:F2} MB";

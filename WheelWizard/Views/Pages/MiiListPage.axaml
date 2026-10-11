@@ -116,12 +116,12 @@
                             <components:Button Grid.Column="0"
                                                x:Name="MyMiisTabButton"
                                                Classes="MiiModeTab"
-                                               Text="My Miis"
+                                               Text="{loc:T page_title.my_miis}"
                                                Click="MyMiisTab_OnClick" />
                             <components:Button Grid.Column="1"
                                                x:Name="OnlineMiisTabButton"
                                                Classes="MiiModeTab"
-                                               Text="Mii Downloader"
+                                               Text="{loc:T text.mii_downloader.title}"
                                                Click="OnlineMiisTab_OnClick" />
                         </Grid>
 
@@ -228,7 +228,7 @@
                                                                   FallBackColor="{DynamicResource Neutral600}" />
                             </Border>
                             <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
-                                <TextBlock x:Name="OnlineMiiName" Text="Select a player to preview their Mii"
+                                 <TextBlock x:Name="OnlineMiiName" Text="{loc:T text.mii_downloader.select_player}"
                                            TextWrapping="Wrap" FontSize="14"
                                            FontWeight="SemiBold"
                                            MaxWidth="246" />
@@ -247,7 +247,7 @@
                                                        IconData="{StaticResource ArrowRight}"
                                                        Click="NextOnlineMii_OnClick" IsEnabled="False"
                                                        ToolTip.Tip="Next matching player" />
-                                    <components:Button Grid.Column="3" x:Name="ImportOnlineMiiButton" Text="Import into My Miis"
+                                     <components:Button Grid.Column="3" x:Name="ImportOnlineMiiButton" Text="{loc:T text.mii_downloader.import_into_my_miis}"
                                                        HorizontalAlignment="Left" Margin="6,0,0,0"
                                                        ButtonSize="Compact"
                                                        Click="ImportOnlineMii_OnClick" IsEnabled="False" />
@@ -261,16 +261,16 @@
                     <StackPanel Spacing="8" Margin="2,2,2,8">
                         <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
                             <StackPanel>
-                                <TextBlock Text="Discover Miis" FontSize="18" FontWeight="SemiBold" />
+                                 <TextBlock Text="{loc:T text.mii_downloader.discover}" FontSize="18" FontWeight="SemiBold" />
                             </StackPanel>
                             <components:Button Grid.Column="1" x:Name="RefreshSuggestedMiisButton"
-                                               Text="Refresh" IconData="{StaticResource Refresh}"
+                                               Text="{loc:T action.refresh}" IconData="{StaticResource Refresh}"
                                                ButtonSize="Compact" Click="RefreshSuggestedMiis_OnClick" />
                         </Grid>
 
                         <TextBlock x:Name="SuggestedMiisStatus" Classes="TinyText" TextWrapping="Wrap"
                                    Foreground="{DynamicResource Neutral400}"
-                                   Text="Open Mii Downloader to load random Miis." />
+                                   Text="{loc:T text.mii_downloader.open_help}" />
 
                         <ItemsControl x:Name="SuggestedMiisList" ItemsSource="{Binding SuggestedOnlineMiis}">
                             <ItemsControl.ItemsPanel>

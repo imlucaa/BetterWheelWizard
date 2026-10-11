@@ -10,7 +10,7 @@ public partial class RoomSortWindow : PopupContent
     private TaskCompletionSource<int?>? _tcs;
 
     public RoomSortWindow()
-        : base(true, false, true, "Room sort")
+        : base(true, false, true, t("popup_title.room_sort"))
     {
         InitializeComponent();
     }

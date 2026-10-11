@@ -43,4 +43,8 @@ public static class SettingValues
         language => language.Code,
         language => (Func<string>)(() => LocalizationProvider.GetLanguageDisplayName(language.Code))
     );
+
+    // These are the languages currently offered by the launcher settings UI.
+    // Keep English first because it is the default, followed by Japanese.
+    public static readonly string[] LauncherLanguageOptions = ["en", "ja"];
 }

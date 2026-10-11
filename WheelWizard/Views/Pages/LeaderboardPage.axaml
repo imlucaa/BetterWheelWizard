@@ -165,7 +165,7 @@
                         Width="1"
                         Opacity="0" />
                 <TextBlock Grid.Column="1"
-                           Text="Leaderboard"
+                            Text="{loc:T page_title.leaderboard}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Classes="PageTitleText" />
@@ -194,7 +194,7 @@
                                         Height="68"
                                         Foreground="{DynamicResource Neutral700}"
                                         HorizontalAlignment="Center" />
-                <TextBlock Text="Loading leaderboard..."
+                <TextBlock Text="{loc:T text.leaderboard.loading}"
                            Classes="BodyText"
                            FontSize="14"
                            HorizontalAlignment="Center" />
@@ -210,7 +210,7 @@
                           Height="56"
                           Foreground="{StaticResource Danger500}"
                           HorizontalAlignment="Center" />
-                <TextBlock Text="Could not load leaderboard."
+                <TextBlock Text="{loc:T text.leaderboard.load_error}"
                            Classes="TitleText"
                            FontSize="18"
                            HorizontalAlignment="Center" />
@@ -220,7 +220,7 @@
                             TextWrapping="Wrap"
                            TextAlignment="Center"
                            HorizontalAlignment="Center" />
-                <components:Button Text="Retry"
+                <components:Button Text="{loc:T action.retry}"
                                    Variant="Primary"
                                    IconData="{StaticResource Refresh}"
                                    Width="160"
@@ -232,10 +232,10 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Spacing="10">
-                <components:EmptyPageInfo Title="No leaderboard data"
-                                          BodyText="There are no ranked players available right now."
+                <components:EmptyPageInfo Title="{loc:T text.leaderboard.no_data}"
+                                          BodyText="{loc:T text.leaderboard.no_data_help}"
                                           IconData="{StaticResource Award}" />
-                <components:Button Text="Refresh"
+                <components:Button Text="{loc:T action.refresh}"
                                    Variant="Primary"
                                    IconData="{StaticResource Refresh}"
                                    Width="170"
@@ -663,9 +663,9 @@
                                   RowSpacing="10">
                                 <StackPanel Spacing="2"
                                             HorizontalAlignment="Center">
-                                    <TextBlock Text="Ranked players"
+                                     <TextBlock Text="{loc:T text.leaderboard.ranked_players}"
                                                Classes="LeaderboardSectionTitle" />
-                                    <TextBlock Text="Current placements"
+                                     <TextBlock Text="{loc:T text.leaderboard.current_placements}"
                                                Classes="LeaderboardSectionCaption" />
                                 </StackPanel>
                                 <Grid Grid.Row="1"

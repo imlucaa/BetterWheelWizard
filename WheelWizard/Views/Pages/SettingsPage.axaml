@@ -22,15 +22,15 @@
             <StackPanel Orientation="Horizontal" x:Name="SettingPages" Spacing="3"
                         VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3,0,0,7">
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="WhWzSettings" 
-                              Click="TopBarRadio_OnClick" Content="Wheel Wizard" IsChecked="True" />
+                              Click="TopBarRadio_OnClick" Content="{loc:T category.wheel_wizard}" IsChecked="True" />
                 <RadioButton x:Name="RecompSettingsTab" Classes="TopBar CompactSettingsTab" Tag="RecompSettings"
                               Click="TopBarRadio_OnClick" Content="WiiCompiled" IsVisible="False" />
                 <RadioButton x:Name="VideoSettingsTab" Classes="TopBar CompactSettingsTab" Tag="VideoSettings"
                               Click="TopBarRadio_OnClick" Content="{loc:T category.dolphin}"/>
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="OtherSettings" 
                                Click="TopBarRadio_OnClick" Content="{loc:T category.other}" />
-                <RadioButton Classes="TopBar CompactSettingsTab" Tag="BackupSettings"
-                               Click="TopBarRadio_OnClick" Content="Backup" />
+                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="BackupSettings"
+                                Click="TopBarRadio_OnClick" Content="{loc:T category.backup}" />
                 <RadioButton Classes="TopBar CompactSettingsTab" Tag="AppInfo"
                               Click="TopBarRadio_OnClick" Content="{loc:T category.about}" />
             </StackPanel>

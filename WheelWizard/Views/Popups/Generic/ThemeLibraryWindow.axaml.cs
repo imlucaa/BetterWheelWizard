@@ -12,7 +12,7 @@ public partial class ThemeLibraryWindow : PopupContent
     private TaskCompletionSource<int?>? _tcs;
 
     public ThemeLibraryWindow(IReadOnlyList<string> themeNames)
-        : base(true, false, true, "Theme library")
+        : base(true, false, true, t("popup_title.theme_library"))
     {
         InitializeComponent();
 

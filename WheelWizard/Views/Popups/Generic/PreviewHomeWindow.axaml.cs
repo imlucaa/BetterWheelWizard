@@ -19,7 +19,7 @@ public partial class PreviewHomeWindow : PopupContent
         bool transparentLayout,
         bool hideHomeTitle
     )
-        : base(true, false, true, "Launcher preview")
+        : base(true, false, true, t("popup_title.launcher_preview"))
     {
         InitializeComponent();
         UpdatePreview(theme, background, surfaceOpacity, transparentLayout, hideHomeTitle);
