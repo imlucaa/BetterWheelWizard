@@ -54,6 +54,7 @@ public class RetroRewind : IDistribution
 
     public async Task<OperationResult> InstallAsync(DistributionOperation operation)
     {
+        // #todo: download and validate the replacement before removing the current install, then roll back if publishing fails.
         if (operation.CancellationToken.IsCancellationRequested)
             return Fail("Distribution installation was cancelled.");
         if (GetCurrentVersion() is not null)
@@ -557,6 +558,7 @@ public class RetroRewind : IDistribution
 
     public async Task<OperationResult> ReinstallAsync(DistributionOperation operation)
     {
+        // #todo: use the staged install flow here too so a failed download doesn't leave the user without a working install.
         //Remove and install
         var removeResult = await RemoveAsync(operation);
         if (removeResult.IsFailure)
@@ -567,6 +569,16 @@ public class RetroRewind : IDistribution
 
     public async Task<OperationResult<WheelWizardStatus>> GetCurrentStatusAsync()
     {
+        switch (_settingsManager.CheckExtensionConfiguration())
+        {
+            case ExtensionConfigurationInfo.MissingDolphin:
+                return WheelWizardStatus.NoDolphinExtension;
+            case ExtensionConfigurationInfo.MissingRecomp:
+                return WheelWizardStatus.NoRecompExtension;
+            case ExtensionConfigurationInfo.ExtensionFoundOrNotNeeded:
+                break;
+        }
+
         if (!_settingsManager.PathsSetupCorrectly())
             return WheelWizardStatus.ConfigNotFinished;
 

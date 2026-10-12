@@ -113,6 +113,7 @@ public class WindowsUpdatePlatform(
 
     private OperationResult CreateAndRunPowerShellScript(string currentFilePath, string newFilePath)
     {
+        // #todo: keep the old executable as a backup and restore it if replacing or starting the update fails.
         var currentFolder = fileSystem.Path.GetDirectoryName(currentFilePath);
         if (currentFolder is null)
             return Fail(t("message_warning.unable_update_wh_wz.extra.reason_location"));
@@ -121,6 +122,7 @@ public class WindowsUpdatePlatform(
         var originalFileName = fileSystem.Path.GetFileName(currentFilePath);
         var newFileName = fileSystem.Path.GetFileName(newFilePath);
 
+        // #todo: (#369) include the actual exception and target path in replacement errors so failed updates can be diagnosed.
         var scriptContent = $$"""
 
             Write-Output 'Starting update process...'
