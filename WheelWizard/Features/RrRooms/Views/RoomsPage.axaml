@@ -116,7 +116,7 @@
                                                    Foreground="{DynamicResource Primary300}" HorizontalAlignment="Center" />
                                         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="3"
                                                     HorizontalAlignment="Center">
-                                            <TextBlock Text="Avg. VR" FontSize="10" Foreground="{DynamicResource Neutral300}" />
+                                            <TextBlock Text="{loc:T text.room_avg_vr}" FontSize="10" Foreground="{DynamicResource Neutral300}" />
                                             <TextBlock Text="•" FontSize="10" Foreground="{DynamicResource Neutral500}" />
                                             <PathIcon Data="{StaticResource UserCouple}" Width="9" Height="9"
                                                       Foreground="{DynamicResource Neutral300}" VerticalAlignment="Center" />

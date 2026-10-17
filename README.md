@@ -14,12 +14,11 @@ All builds are standalone single files. No installer or separate .NET installati
 
 ## Features
 
-- **Leaderboard:** search any player by name or friend code and view them in 3D
-- **Rooms:** live room list with search, VR filter and sorting
-- **Miis:** find, download, import and edit Miis
-- **Themes:** custom colours and background images, with share codes
-- **Backups:** save your Mario Kart Wii saves and Retro Rewind ratings
-- **Launch:** play Retro Rewind with Dolphin or WiiCompiled
+- Leaderboard search
+- Live room list
+- Mii downloader and editor
+- Custom themes and backgrounds
+- Save and rating backups
 
 ## Screenshots
 

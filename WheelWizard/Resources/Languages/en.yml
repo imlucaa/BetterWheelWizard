@@ -317,6 +317,11 @@ en:
     text_color_picker: "Text color"
     background_color_picker: "Background color"
   text:
+    room_private: "Private Room"
+    room_public: "Public Room"
+    room_waiting_next_race: "Waiting for next race"
+    room_waiting: "Waiting"
+    room_avg_vr: "Avg. VR"
     made_by_string: |-
       Made by: %{firstAuthor}
       And %{secondAuthor}

@@ -6,6 +6,18 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.6.4] - 2026-10-17
+
+### Changed
+
+- Backing up rksys.dat now asks which region to save, or uses the region you played last.
+- Simplified the Backup tab and the Theme library popup.
+- Centered the Rooms and Leaderboard titles.
+
+### Fixed
+
+- Rooms labels and many settings, leaderboard and friend messages are now translated into Japanese.
+
 ## [2.6.3] - 2026-10-17
 
 ### Changed

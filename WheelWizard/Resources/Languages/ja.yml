@@ -12,6 +12,14 @@ ja:
     room_details: "ルームの詳細"
     my_miis: "自分のMii"
   attribute:
+    date: "日付"
+    all: "すべて"
+    vr_history: "VR履歴"
+    start_vr: "開始時VR"
+    end_vr: "終了時VR"
+    net_change: "増減"
+    match: "マッチ"
+    enable_matches: "マッチ"
     status_online: "オンライン"
     enabled: "有効"
     title: "タイトル"
@@ -90,6 +98,7 @@ ja:
     gender_female: "女"
     gender_male: "男"
   state:
+    loading_leaderboard: "リーダーボードを読み込み中..."
     loading: "ロード中..."
     installing: "インストール中..."
     updating: "アップデート中..."
@@ -112,6 +121,19 @@ ja:
     search_rwfc: "RWFCを検索"
     dev_tool: "開発ツール"
   action:
+    more_actions: "その他の操作"
+    play_anyway: "そのままプレイ"
+    clone: "複製"
+    add_friend: "フレンドに追加"
+    retry: "再試行"
+    refresh: "更新"
+    view_profile: "プロフィールを見る"
+    undo: "元に戻す"
+    redo: "やり直す"
+    leave: "退出"
+    keep_editing: "編集を続ける"
+    surprise_me: "おまかせ"
+    change_mii: "Miiを変更"
     search: "検索"
     filter_vr: "VRフィルター"
     sort: "並び替え"
@@ -272,6 +294,15 @@ ja:
     text_color_picker: "文字色"
     background_color_picker: "背景色"
   text:
+    top_3_podium: "トップ3"
+    live_rwfc: "RWFCからライブ配信"
+    pick_your_mii: "Miiを選択"
+    pick_your_mii_extra: "クリックして開始、またはサイコロを振ってください。"
+    room_private: "プライベートルーム"
+    room_public: "パブリックルーム"
+    room_waiting_next_race: "次のレースを待機中"
+    room_waiting: "待機中"
+    room_avg_vr: "平均VR"
     made_by_string: |-
       作成者: %{firstAuthor}
       と %{secondAuthor}
@@ -299,6 +330,12 @@ ja:
     region_user_selection: "これはあなたがプレイした地域のみを表示します"
     primary_profile: "メインのプロファイルはWheel Wizardクライアントで参照されます"
   empty_content:
+    no_mii_name: "不明なプレイヤー"
+    no_vr_history_title: "VR履歴がありません"
+    no_vr_history: "VR履歴を読み込むにはフレンドコードが必要です。"
+    no_vr_history_range: "この期間のVR履歴はまだありません。"
+    no_leaderboard_title: "リーダーボードのデータがありません"
+    no_leaderboard: "現在ランク付けされているプレイヤーはいません。"
     no_profiles: "ここにプロフィールを載せるには一度プレイする必要があります"
     no_friends_title: "まだフレンドがいません！"
     no_friends: "ゲーム内でフレンドを追加できます"
@@ -311,6 +348,12 @@ ja:
     no_mod_selected_title: "Modが選択されていません"
     no_mod_selected: "リスト内のModを選択して詳細を表示します"
   time:
+    last_24_hours: "過去24時間"
+    last_7_days: "過去7日間"
+    last_30_days: "過去30日間"
+    last_60_days: "過去60日間"
+    lifetime: "通算"
+    lifetime_history: "通算履歴"
     days:
       one: "1日"
       other: "%{count}日"
@@ -443,6 +486,8 @@ ja:
     search_for_players: "プレイヤーを検索します..."
     enter_path: "希望のパスを入力してください..."
   message_error:
+    failed_vr_history: "VR履歴を読み込めませんでした"
+    failed_load_leaderboard: "リーダーボードを読み込めませんでした。"
     no_mod_folder:
       extra: "Modフォルダーがありません"
     abort_rr:
@@ -478,10 +523,19 @@ ja:
       title: "Retro Rewindは最新です。"
     mii_changed: "Miiが正しく変更されました"
   snackbar_warning:
+    mii_invalid: "このプレイヤーには有効なMiiデータがありません。"
+    friend_list_full: "フレンドリストがいっぱいです。"
+    empty_fc: "フレンドコードを入力してください。"
+    invalid_fc: "フレンドコードは12桁である必要があります。"
+    add_own_fc: "自分のフレンドコードは追加できません。"
+    add_existing_friend: "このフレンドはすでにリストにいます。"
+    no_active_room: "このプレイヤーのアクティブなルームが見つかりません。"
     cant_save_mii: "Miiを保存できません"
     no_mii_export: "エクスポートできるMiiがなかったようです"
     no_mii_delete: "削除するMiiが存在しないようです"
   snackbar_success:
+    friend_added: "%{name}をフレンドリストに追加しました。"
+    dolphin_updated: "Dolphin Emulatorを更新しました"
     mii_added: "MiiはあなたのMiiに追加されました"
     copied_fc: "クリップボードにフレンドコードをコピーしました"
     name_change: "名前を'%{name}'に変更しました"
@@ -504,6 +558,11 @@ ja:
     creator_name_less11: "作成者の名前の長さは10文字以下にしてください"
     creator_name_less10: "作成者の名前の長さは10文字以下にしてください"
   option:
+    launch_rr_on_startup: "起動時にRetro Rewindを起動"
+    retro_rewind_installation: "Retro Rewindのインストール"
+    installation_folder: "インストールフォルダ"
+    recomp_resolution: "解像度"
+    recomp_graphics_api: "グラフィックスAPI"
     wheel_wizard_data_folder: "Wheel Wizardのデータフォルダー"
     retro_rewind_folder: "Retro Rewindフォルダー"
     save_folder: "セーブフォルダー"
@@ -540,6 +599,14 @@ ja:
     retro_rewind: "Retro Rewind"
     recomp: "WiiCompiled（ベータ）"
   helper_text:
+    renderer: "Dolphinがゲームを描画する際のグラフィックスバックエンドを選択します。"
+    v_sync: "ゲームのフレームレートをディスプレイと同期し、画面のティアリングを防ぎます。"
+    launch_rr_on_startup: "Wheel Wizardの起動時にRetro Rewindを自動的に起動します"
+    retro_rewind_version: "インストール済みのバージョン: %{version}"
+    installed_version: "インストール済みのバージョン: %{version}"
+    select_dolphin_linux: "Dolphinの実行ファイルを選択するか、起動コマンドを入力してください"
+    select_dolphin_macos: "Dolphin.appを選択してください"
+    wh_wz_language: "ゲーム内の言語ではなく、Wheel Wizardで使用する言語を変更します。"
     topbar:
       location_warning: "設定が無効になっています。最初にパス設定を完了させてください"
     launch_with_dolphin: "ゲームと一緒にDolphinのメインウィンドウを起動します"
@@ -555,6 +622,7 @@ ja:
     wheel_wizard_data_folder: "Wheel Wizardがファイルを保存する場所を選択します。移動には時間がかかる場合があります。"
     retro_rewind_folder: "インストールされたRetro Rewindファイルを含むフォルダーを開きます。"
   category:
+    graphics: "グラフィックス"
     appearance: "外観"
     language: "言語"
     backup: "バックアップ"

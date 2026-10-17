@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
+using static WheelWizard.Localization.TranslationFunctions;
 
 namespace WheelWizard.Models.RRInfo;
 
@@ -139,7 +140,7 @@ public class RrRoom : INotifyPropertyChanged
             "vs_751" => "Versus",
             "vs_-1" => "Regular",
             "vs" => "Regular",
-            _ => IsPublic ? "Unknown Mode" : "Private Room",
+            _ => IsPublic ? "Unknown Mode" : t("text.room_private"),
         };
 
     public int AverageVr
@@ -153,11 +154,11 @@ public class RrRoom : INotifyPropertyChanged
 
     public string AverageVrDisplay => Players.Any(player => player.Vr.HasValue) ? AverageVr.ToString("N0") : "—";
 
-    public string DisplayGameMode => GameMode == "Unknown Mode" ? (IsPublic ? "Public Room" : "Private Room") : GameMode;
+    public string DisplayGameMode => GameMode == "Unknown Mode" ? (IsPublic ? t("text.room_public") : t("text.room_private")) : GameMode;
 
-    public string TrackDisplay => string.IsNullOrWhiteSpace(TrackName) ? "Waiting for next race" : TrackName;
+    public string TrackDisplay => string.IsNullOrWhiteSpace(TrackName) ? t("text.room_waiting_next_race") : TrackName;
 
-    public string RaceTimeDisplay => RaceObservedAt.HasValue ? tTime(DateTime.UtcNow - RaceObservedAt.Value) : "Waiting";
+    public string RaceTimeDisplay => RaceObservedAt.HasValue ? tTime(DateTime.UtcNow - RaceObservedAt.Value) : t("text.room_waiting");
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
