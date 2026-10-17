@@ -19,4 +19,12 @@ public static class PopupFactoryExtensions
 {
     public static ThemeLibraryWindow CreateThemeLibrary(this IPopupFactory factory, IReadOnlyList<string> themeNames) =>
         factory.Create<ThemeLibraryWindow>((object)themeNames);
+
+    public static ChoiceListWindow CreateChoiceList(
+        this IPopupFactory factory,
+        string title,
+        string heading,
+        string description,
+        IReadOnlyList<ChoiceOption> options
+    ) => factory.Create<ChoiceListWindow>(title, heading, description, options);
 }

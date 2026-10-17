@@ -6,6 +6,33 @@
                    xmlns:loc="clr-namespace:WheelWizard.Localization"
                    mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="520"
                    x:Class="WheelWizard.Views.Dialogs.ThemeLibraryWindow">
+    <base:PopupContent.Styles>
+        <Style Selector="Button.ThemeRow">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
+                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"
+                                          HorizontalAlignment="Stretch" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.ThemeRow:pointerover /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        </Style>
+        <Style Selector="Button.ThemeRow.Active /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        </Style>
+    </base:PopupContent.Styles>
     <Grid Width="400" MaxHeight="600" RowDefinitions="Auto,*" Margin="0,4,0,0">
         <StackPanel Spacing="3" Margin="0,0,0,10">
             <TextBlock Text="{loc:T theme.choose_theme}" Classes="TitleText" FontSize="18"
@@ -15,7 +42,7 @@
         </StackPanel>
         <ScrollViewer Grid.Row="1" MaxHeight="500" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
-            <StackPanel x:Name="ThemeList" Spacing="6" />
+            <StackPanel x:Name="ThemeList" Spacing="4" Margin="0,0,10,0" />
         </ScrollViewer>
     </Grid>
 </base:PopupContent>

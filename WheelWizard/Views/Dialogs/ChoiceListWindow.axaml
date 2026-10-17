@@ -1,0 +1,48 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:loc="clr-namespace:WheelWizard.Localization"
+                   mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="520"
+                   x:Class="WheelWizard.Views.Dialogs.ChoiceListWindow">
+    <base:PopupContent.Styles>
+        <Style Selector="Button.ChoiceRow">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}" MinHeight="{TemplateBinding MinHeight}">
+                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"
+                                          HorizontalAlignment="Stretch" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.ChoiceRow:pointerover /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        </Style>
+        <Style Selector="Button.ChoiceRow.Active /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+        </Style>
+    </base:PopupContent.Styles>
+    <Grid Width="400" MaxHeight="600" RowDefinitions="Auto,*" Margin="0,4,0,0">
+        <StackPanel Spacing="3" Margin="0,0,0,10">
+            <TextBlock x:Name="HeadingText" Classes="TitleText" FontSize="18"
+                       Foreground="{StaticResource FormFieldLabelColor}" />
+            <TextBlock x:Name="DescriptionText"
+                       Classes="TinyText" TextWrapping="Wrap" />
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" MaxHeight="500" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="ChoiceList" Spacing="4" Margin="0,0,10,0" />
+        </ScrollViewer>
+    </Grid>
+</base:PopupContent>

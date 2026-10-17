@@ -4,8 +4,11 @@ using Avalonia.Interactivity;
 using WheelWizard.CustomDistributions;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.Features.Backups;
+using WheelWizard.Models.Enums;
 using WheelWizard.Shared.Desktop.Storage;
+using WheelWizard.Views.Dialogs;
 using WheelWizard.WiiManagement;
+using WheelWizard.WiiManagement.GameLicense;
 
 namespace WheelWizard.Settings.Views;
 
@@ -18,13 +21,15 @@ public partial class BackupSettings : UserControl
     private readonly IDolphinPaths _dolphinPaths;
     private readonly IFilePickerService _filePicker;
     private readonly IFileSystem _fileSystem;
+    private readonly IPopupFactory _popups;
 
     public BackupSettings(
         GameDataBackupService backups,
         ICustomDistributionPaths distributionPaths,
         IDolphinPaths dolphinPaths,
         IFilePickerService filePicker,
-        IFileSystem fileSystem
+        IFileSystem fileSystem,
+        IPopupFactory popups
     )
     {
         _backups = backups;
@@ -32,6 +37,7 @@ public partial class BackupSettings : UserControl
         _dolphinPaths = dolphinPaths;
         _filePicker = filePicker;
         _fileSystem = fileSystem;
+        _popups = popups;
         InitializeComponent();
         RefreshFileStatus();
     }
@@ -53,11 +59,57 @@ public partial class BackupSettings : UserControl
 
     private async void BackupRksys_OnClick(object? sender, RoutedEventArgs e)
     {
+        var saves = _backups.FindRksysSaves(_distributionPaths.SaveFolderPath);
+        IReadOnlyCollection<MarioKartWiiEnums.Regions>? regions = null;
+        if (saves.Count > 1)
+        {
+            regions = await ChooseRegionsAsync(saves);
+            if (regions == null)
+                return;
+        }
+
         var destination = await ChooseDestinationAsync("Choose where to back up rksys.dat");
         if (destination == null)
             return;
-        RunBackup(() => _backups.BackupRksysFiles(destination, _distributionPaths.SaveFolderPath), "rksys.dat");
+        RunBackup(() => _backups.BackupRksysFiles(destination, _distributionPaths.SaveFolderPath, regions), "rksys.dat");
     }
+
+    /// <summary>Asks which region to back up; the most recently played save is offered first as the current one.</summary>
+    private async Task<IReadOnlyCollection<MarioKartWiiEnums.Regions>?> ChooseRegionsAsync(IReadOnlyList<RksysSave> saves)
+    {
+        var current = saves.OrderByDescending(save => save.LastWriteUtc).First();
+        var options = new List<ChoiceOption> { new($"Current region — {RegionName(current.Region)}", "Detected", true) };
+        var results = new List<IReadOnlyCollection<MarioKartWiiEnums.Regions>> { new[] { current.Region } };
+
+        options.Add(new("All regions", $"{saves.Count} saves"));
+        results.Add(saves.Select(save => save.Region).ToArray());
+
+        foreach (var save in saves)
+        {
+            options.Add(new(RegionName(save.Region), GameRegion.GetGameId(save.Region)));
+            results.Add(new[] { save.Region });
+        }
+
+        var index = await _popups
+            .CreateChoiceList(
+                "Back up rksys.dat",
+                "Which region?",
+                "Pick the save to back up, or let it use the region you played last.",
+                options
+            )
+            .AwaitAnswer();
+        return index is >= 0 && index < results.Count ? results[index.Value] : null;
+    }
+
+    private static string RegionName(MarioKartWiiEnums.Regions region) =>
+        region switch
+        {
+            MarioKartWiiEnums.Regions.America => "Americas",
+            MarioKartWiiEnums.Regions.Europe => "Europe",
+            MarioKartWiiEnums.Regions.Japan => "Japan",
+            MarioKartWiiEnums.Regions.Korea => "Korea",
+            _ => region.ToString(),
+        };
 
     private async void BackupRating_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -79,6 +131,7 @@ public partial class BackupSettings : UserControl
     {
         BackupRksysButton.IsEnabled = false;
         BackupRatingButton.IsEnabled = false;
+        BackupResultText.IsVisible = true;
         BackupResultText.Text = $"Backing up {label}…";
         try
         {

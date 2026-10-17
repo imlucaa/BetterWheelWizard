@@ -159,7 +159,7 @@
                     <Setter Property="Foreground" Value="Transparent" />
                 </Style>
                 <Style Selector="Border.Warning PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Warning500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
                     <Setter Property="Data" Value="{StaticResource WarningTip}" />
                 </Style>
                 <Style Selector="Border.Error PathIcon">
@@ -175,7 +175,7 @@
                     <Setter Property="Data" Value="{StaticResource InfoTip}" />
                 </Style>
                 <Style Selector="Border.Question PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Warning600}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
                     <Setter Property="Data" Value="{StaticResource QuestionTip}" />
                 </Style>
                 <Style Selector="Border.Party PathIcon">

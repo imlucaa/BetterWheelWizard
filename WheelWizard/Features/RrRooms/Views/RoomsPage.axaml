@@ -16,7 +16,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,8">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,8">
             <TextBlock Text="{loc:T page_title.rooms}" Classes="PageTitleText" />
             <Border VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0,0,0"
                     ToolTip.Tip="{loc:T hover.rooms_page_disclaimer}"

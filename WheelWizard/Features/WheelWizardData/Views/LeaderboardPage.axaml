@@ -45,7 +45,7 @@
             <RowDefinition Height="0" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
-            <TextBlock Text="{loc:T page_title.leaderboard}" Classes="PageTitleText" />
+            <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{loc:T page_title.leaderboard}" Classes="PageTitleText" IsVisible="{Binding !HasActiveSearchResult}" />
             <components:ActionButton Grid.Column="1"
                                      Classes="LeaderboardSearchTranslucent"
                                      Text="{loc:T action.search}"

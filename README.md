@@ -14,20 +14,24 @@ All builds are standalone single files. No installer or separate .NET installati
 
 ## Features
 
-- Search the RWFC leaderboard by player name or friend code
-- Browse rooms with quick search, VR filters, and sorting
-- Find, import, edit, and manage Miis
-- Create, save, share, and import custom launcher themes
-- Back up Mario Kart Wii saves and Retro Rewind ratings
-- Launch Retro Rewind with Dolphin or WiiCompiled
+- **Leaderboard:** search any player by name or friend code and view them in 3D
+- **Rooms:** live room list with search, VR filter and sorting
+- **Miis:** find, download, import and edit Miis
+- **Themes:** custom colours and background images, with share codes
+- **Backups:** save your Mario Kart Wii saves and Retro Rewind ratings
+- **Launch:** play Retro Rewind with Dolphin or WiiCompiled
 
 ## Screenshots
 
-| Themes | Leaderboard |
-| --- | --- |
-| [![Custom themes](docs/screenshots/custom-themes.png)](docs/screenshots/custom-themes.png) | [![Leaderboard](docs/screenshots/better-leaderboard.png)](docs/screenshots/better-leaderboard.png) |
-| Rooms | Mii Downloader |
-| [![Rooms](docs/screenshots/better-rooms.png)](docs/screenshots/better-rooms.png) | [![Mii Downloader](docs/screenshots/mii-downloader.png)](docs/screenshots/mii-downloader.png) |
+<p align="center">
+  <img src="docs/screenshots/home.png" width="230" alt="Home" />
+  <img src="docs/screenshots/custom-background.png" width="230" alt="Custom background" />
+  <img src="docs/screenshots/leaderboard.png" width="230" alt="Leaderboard" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/rooms.png" width="230" alt="Rooms" />
+  <img src="docs/screenshots/backup.png" width="230" alt="Backup" />
+</p>
 
 ## Setup
 

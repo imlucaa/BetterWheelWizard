@@ -7,8 +7,7 @@
              x:Class="WheelWizard.Settings.Views.BackupSettings">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,15,0,0">
-            <TextBlock Text="Back up rksys.dat and RRRating.pul files"
-                       FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
+            <components:FormFieldLabel Text="Back up rksys.dat and RRRating.pul files" Margin="0,0,0,10" />
             <StackPanel Spacing="4">
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
                     <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
@@ -45,13 +44,8 @@
                 </Border>
             </StackPanel>
 
-            <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0,12,0,0">
-                <TextBlock x:Name="BackupResultText" Classes="TinyText BackupStatus" TextWrapping="Wrap"
-                           Text="Select a backup button, then choose where to save the file." />
-            </Border>
-            <TextBlock Classes="TinyText" Margin="4,10,4,0" TextWrapping="Wrap"
-                       Foreground="{DynamicResource Neutral400}"
-                       Text="If a backup with the same name already exists in your chosen folder, it will be replaced." />
+            <TextBlock x:Name="BackupResultText" Classes="TinyText BackupStatus" TextWrapping="Wrap"
+                       Margin="4,12,4,0" IsVisible="False" />
             <Border Classes="SettingsBottomSpacer" />
         </StackPanel>
     </ScrollViewer>

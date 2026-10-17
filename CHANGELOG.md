@@ -6,6 +6,20 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.6.3] - 2026-10-17
+
+### Changed
+
+- Restyled the launcher with flat, theme-aware controls: no outlines, dark panel buttons, and accent buttons that stay readable on every theme.
+- Redesigned the My Miis and Mii Downloader pages, with an interactive 3D Mii preview in the downloader and in Leaderboard search results.
+- Refreshed Rooms, Leaderboard, Patches, Themes and Settings layouts, and restyled all popups.
+- Custom background images no longer show a seam at the window edge.
+
+### Fixed
+
+- Accent-coloured button labels are now always crisp black or white for contrast.
+- Disabled accent buttons are visibly dimmed instead of turning grey.
+
 ## [2.6.0] - 2026-09-28
 
 ### Changed
