@@ -33,15 +33,6 @@ All builds are standalone single files. No installer or separate .NET installati
   <img src="docs/screenshots/backup.png" width="230" alt="Backup" />
 </p>
 
-## Setup
-
-1. Download and open `BetterWheelWizard.exe`.
-2. Select your Dolphin executable.
-3. Select your legally dumped Mario Kart Wii game.
-4. Let BetterWheelWizard install or update Retro Rewind.
-
-Dolphin supports any game region. WiiCompiled currently requires a PAL game.
-
 ## Build from source
 
 BetterWheelWizard requires the .NET 10 SDK.
