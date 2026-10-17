@@ -6,38 +6,38 @@
         <Border Padding="2" Background="{DynamicResource Neutral950}">
             <UniformGrid Columns="4">
                 <!-- Just so you know, the border is not necessary, its just here to also show the bounding box-->
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="WhWzDev" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="RrDev" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="Translator" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="TranslatorLead" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="Heart" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="Firestarter_GoldWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="Firestarter_SilverWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="Firestarter_BronzeWinner" />
                 </Border>
 
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="SummitShowdown_GoldWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="SummitShowdown_SilverWinner" />
                 </Border>
-                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{StaticResource Neutral900}">
+                <Border Width="31" Height="31" Margin="5" CornerRadius="999" Background="{DynamicResource Neutral900}">
                     <communityControls:CommunityBadge Variant="SummitShowdown_BronzeWinner" />
                 </Border>
             </UniformGrid>
@@ -76,13 +76,13 @@
                 <Grid RowDefinitions="1*,1*,10*,1*,1*" ColumnDefinitions="1*,1*,10*,1*,1*">
                     <Border Grid.Row="0" Grid.Column="0"
                             Grid.ColumnSpan="999" Grid.RowSpan="999" CornerRadius="999"
-                            Background="{StaticResource Brand100}" />
+                            Background="{DynamicResource Brand100}" />
 
                     <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Grid.RowSpan="3" CornerRadius="999"
-                            Background="{StaticResource Brand400}" />
+                            Background="{DynamicResource Brand400}" />
 
                     <Path Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                          Fill="{StaticResource Brand900}" Data="{StaticResource Code}"
+                          Fill="{DynamicResource Brand900}" Data="{StaticResource Code}"
                           Stretch="Uniform" />
                 </Grid>
             </ControlTemplate>

@@ -134,6 +134,9 @@ public class ApplicationCompositionTests
             Assert.False(original.CanMaximize);
             original.UpdateLayout();
             await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
+            Assert.Same(Avalonia.Media.Brushes.Transparent, original.FindControl<Border>("LiveStatusBorder")!.Background);
+            Assert.Same(Avalonia.Media.Brushes.Transparent, original.FindControl<Border>("SidebarInfoButton")!.Background);
+            Assert.Same(Avalonia.Media.Brushes.Transparent, original.FindControl<Border>("SidebarSettingsButton")!.Background);
             var navigation = services.GetRequiredService<INavigationService>();
             Assert.IsType<HomePage>(navigation.CurrentPage);
             Type[] pages =
@@ -165,19 +168,19 @@ public class ApplicationCompositionTests
                     Assert.Equal(sidebarPosition, sidebar.TranslatePoint(default, original));
                 }
             }
-            navigation.NavigateTo<SettingsPage>(typeof(AppearanceSettings));
+            navigation.NavigateTo<SettingsPage>(typeof(LanguageSettings));
             original.UpdateLayout();
             await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
             var settingsPage = Assert.IsType<SettingsPage>(navigation.CurrentPage);
             var settingsContent = settingsPage.FindControl<ContentControl>("SettingsContent")!;
-            var appearance = Assert.IsType<AppearanceSettings>(settingsContent.Content);
-            var languages = appearance.FindControl<Dropdown>("WhWzLanguageDropdown")!;
+            var languageSettings = Assert.IsType<LanguageSettings>(settingsContent.Content);
+            var languages = languageSettings.FindControl<Dropdown>("WhWzLanguageDropdown")!;
             Assert.Equal("Settings", settingsPage.FindControl<TextBlock>("SettingsTitle")!.Text);
             // Cancel leaves both the setting and the selected language unchanged.
             languages.SelectedIndex = 1;
             var cancelPopup = Assert.IsType<PopupWindow>(confirmation);
             var cancelQuestion = Assert.IsType<YesNoWindow>(cancelPopup.FindControl<ContentPresenter>("PopupContent")!.Content);
-            cancelQuestion.FindControl<ActionButton>("NoButton")!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            cancelQuestion.FindControl<ActionButton>("NoButton")!.RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
             await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
             Assert.Equal("en", settings.WW_LANGUAGE.Value);
             Assert.Equal(0, languages.SelectedIndex);
@@ -189,7 +192,7 @@ public class ApplicationCompositionTests
                 );
                 var popup = Assert.IsType<PopupWindow>(confirmation);
                 var question = Assert.IsType<YesNoWindow>(popup.FindControl<ContentPresenter>("PopupContent")!.Content);
-                question.FindControl<ActionButton>("YesButton")!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                question.FindControl<ActionButton>("YesButton")!.RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
                 await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
                 original.UpdateLayout();
                 Assert.Equal(language, settings.WW_LANGUAGE.Value);
@@ -198,13 +201,13 @@ public class ApplicationCompositionTests
                 Assert.True(original.IsVisible);
                 Assert.True(original.CompleteContentEnabled);
                 Assert.Same(settingsPage, navigation.CurrentPage);
-                Assert.Same(appearance, settingsContent.Content);
+                Assert.Same(languageSettings, settingsContent.Content);
                 Assert.Equal(
                     LocalizationProvider.Translate("page_title.settings"),
                     settingsPage.FindControl<TextBlock>("SettingsTitle")!.Text
                 );
                 Assert.Contains(
-                    appearance.GetVisualDescendants().OfType<FormFieldLabel>(),
+                    languageSettings.GetVisualDescendants().OfType<FormFieldLabel>(),
                     label => label.Text == LocalizationProvider.Translate("option.wh_wz_language")
                 );
                 Assert.Equal(LocalizationProvider.Translate("component.dropdown.search_placeholder"), languages.SearchPlaceholder);

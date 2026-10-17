@@ -21,6 +21,67 @@ namespace WheelWizard.UI.Test;
 public class SharedControlTests
 {
     [AvaloniaFact]
+    public void LegacyButton_DefaultVariantUsesTheModernStyledButtonTemplate()
+    {
+        var button = new WheelWizard.Views.Components.Button
+        {
+            Text = "Save",
+            IconData = Geometry.Parse("M0 0 H16 V16 H0 Z"),
+            Variant = WheelWizard.Views.Components.Button.ButtonsVariantType.Default,
+            ButtonSize = WheelWizard.Views.Components.Button.ButtonsSizeType.Compact,
+        };
+        var window = new Window
+        {
+            Content = button,
+            Width = 240,
+            Height = 80,
+        };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            Assert.Equal(ActionButtonVariant.Button, ((ActionButton)button).Variant);
+            Assert.Equal(ActionButtonTone.Secondary, button.Tone);
+            Assert.Equal(ButtonSize.Compact, button.Size);
+            Assert.NotNull(button.Background);
+            Assert.Contains(button.GetVisualDescendants(), control => control.Name == "PART_Background");
+            Assert.Contains(button.GetVisualDescendants(), control => control is PathIcon);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public void DefaultButton_TracksLiveNeutralThemeResources()
+    {
+        var resources = Application.Current!.Resources;
+        var oldNeutral700 = resources["Neutral700"];
+        var themedSurface = Color.FromArgb(96, 40, 16, 6);
+        resources["Neutral700"] = themedSurface;
+        var button = new ActionButton { Text = "Search", Tone = ActionButtonTone.Secondary };
+        var window = new Window
+        {
+            Content = button,
+            Width = 160,
+            Height = 70,
+        };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            var brush = Assert.IsAssignableFrom<ISolidColorBrush>(button.Background);
+            Assert.Equal(themedSurface, brush.Color);
+        }
+        finally
+        {
+            window.Close();
+            resources["Neutral700"] = oldNeutral700;
+        }
+    }
+
+    [AvaloniaFact]
     public void ButtonLoading_ReplacesItsIconAndPreservesItsLabel()
     {
         var button = new ActionButton { Text = "Load", IconData = Geometry.Parse("M0 0 H16 V16 H0 Z") };
@@ -994,7 +1055,10 @@ public class SharedControlTests
                 var initialX = transform.X;
                 window.MouseMove(button.TranslatePoint(new Point(button.Bounds.Width - 2, 15), window)!.Value);
                 window.UpdateLayout();
-                Assert.NotEqual(initialX, transform.X);
+                // The sidebar deliberately has no hover glow (clean sidebar); the glow only has to follow the pointer on
+                // controls that show it. Layout must stay untouched by the pointer either way.
+                if (button is not SidebarRadioButton)
+                    Assert.NotEqual(initialX, transform.X);
                 Assert.Equal(before, button.Bounds);
                 Assert.Equal(desired, button.DesiredSize);
                 Assert.False(glow.IsHitTestVisible);

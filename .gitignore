@@ -492,3 +492,4 @@ $RECYCLE.BIN/
 *.swp
 AGENTS.md
 /.dotnet
+.artifacts/

@@ -64,7 +64,7 @@
                         </components:StatusBadge>
                     </Panel>
 
-                    <components:FormFieldLabel Foreground="{StaticResource Brand400}"
+                    <components:FormFieldLabel Foreground="{DynamicResource Brand400}"
                                                Text="Nice!"
                                                x:Name="PART_NiceLabel"
                                                IsVisible="False"

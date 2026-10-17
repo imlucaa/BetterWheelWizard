@@ -52,6 +52,18 @@ public interface ISettingsProperties
     Setting<double> SAVED_WINDOW_SCALE { get; }
     Setting<MarioKartWiiEnums.Regions> RR_REGION { get; }
     Setting<string> WW_LANGUAGE { get; }
+    Setting<string> LAUNCHER_THEME_COLOR { get; }
+    Setting<string> LAUNCHER_TEXT_COLOR { get; }
+    Setting<string> LAUNCHER_BODY_TEXT_COLOR { get; }
+    Setting<string> LAUNCHER_BACKGROUND_COLOR { get; }
+    Setting<string> LAUNCHER_BACKGROUND_FILE { get; }
+    Setting<string> LAUNCHER_BACKGROUND_STRETCH { get; }
+    Setting<double> LAUNCHER_BACKGROUND_OPACITY { get; }
+    Setting<double> LAUNCHER_SURFACE_OPACITY { get; }
+    Setting<bool> LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    Setting<bool> LAUNCHER_HIDE_HOME_TITLE { get; }
+    Setting<bool> LAUNCHER_CLEAN_SIDEBAR { get; }
+    Setting<string> LAUNCHER_FONT { get; }
     Setting<string> NAND_ROOT_PATH { get; }
     Setting<string> LOAD_PATH { get; }
     Setting<bool> VSYNC { get; }

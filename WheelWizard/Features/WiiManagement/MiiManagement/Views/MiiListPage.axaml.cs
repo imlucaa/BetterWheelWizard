@@ -1,15 +1,21 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Abstractions;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using Testably.Abstractions;
 using WheelWizard.CustomCharacters;
+using WheelWizard.MiiAnimations.Library;
+using WheelWizard.MiiRendering.Services;
 using WheelWizard.RrRooms;
 using WheelWizard.Settings;
+using WheelWizard.Shared.Calendar;
 using WheelWizard.Shared.Desktop.Storage;
 using WheelWizard.Shared.MessageTranslations;
+using WheelWizard.Shared.Services;
 using WheelWizard.Views.DesignTime;
 using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell;
@@ -60,6 +66,13 @@ public partial class MiiListPage : UserControl
 
     private bool _suggestionsLoaded;
 
+    private readonly IMiiNativeRenderer _stageRenderer;
+    private readonly IMiiAnimationLibrary _stageAnimations;
+    private readonly ISeasonalCalendar _stageCalendar;
+    private readonly IRandomSystem _stageRandom;
+    private MiiEditorScene? _onlineStage;
+    private bool _onlineStageStarted;
+
     private INavigationService Navigation { get; }
 
     public MiiListPage(
@@ -69,9 +82,20 @@ public partial class MiiListPage : UserControl
         IMiiRepositoryService miiRepositoryService,
         IFileSystem fileSystem,
         ISettingsManager settingsService,
-        INavigationService navigation
+        INavigationService navigation,
+        IApiCaller<IRwfcApi> apiCaller,
+        IRrLeaderboardSingletonService leaderboardService,
+        IPopupFactory popups,
+        IMiiNativeRenderer renderer,
+        IMiiAnimationLibrary animations,
+        ISeasonalCalendar calendar,
+        IRandomSystem random
     )
     {
+        _stageRenderer = renderer;
+        _stageAnimations = animations;
+        _stageCalendar = calendar;
+        _stageRandom = random;
         Navigation = navigation;
         FilePicker = filePicker;
         CustomCharactersService = customCharactersService;
@@ -85,6 +109,7 @@ public partial class MiiListPage : UserControl
         Popups = popups;
         InitializeComponent();
         DataContext = this;
+        MyMiisTabButton.Classes.Set("Active", true);
         _isPageReady = true;
 
         var miiDbExists = MiiDbService.Exists();
@@ -126,6 +151,10 @@ public partial class MiiListPage : UserControl
 
     private void ShowOnlineMiis(bool showOnline)
     {
+        MyMiisTabButton.Classes.Set("Active", !showOnline);
+        OnlineMiisTabButton.Classes.Set("Active", showOnline);
+        // The "My Miis" heading belongs to the saved-Miis view only.
+        MiiPageTitle.IsVisible = !showOnline;
         MiiList.IsVisible = !showOnline;
         OnlineMiiPanel.IsVisible = showOnline;
         SavedMiiFilterPanel.IsVisible = !showOnline;
@@ -200,7 +229,7 @@ public partial class MiiListPage : UserControl
 
         SearchOnlineMiiButton.IsEnabled = false;
         SetOnlineLookupStatus(
-            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}ΓÇª" : $"Searching RWFC for \"{query}\"ΓÇª",
             isError: false
         );
 
@@ -230,7 +259,7 @@ public partial class MiiListPage : UserControl
 
                 SetOnlineMii(miiResult.Value, result.Value.Name, normalizedFriendCode);
                 SetOnlineSearchMatches([new OnlineSearchMatch(miiResult.Value, result.Value.Name, normalizedFriendCode, result.Value.Vr)]);
-                SetOnlineLookupStatus($"Loaded from RWFC · {result.Value.Vr:N0} VR", isError: false);
+                SetOnlineLookupStatus($"Loaded from RWFC ┬╖ {result.Value.Vr:N0} VR", isError: false);
                 return;
             }
 
@@ -283,10 +312,38 @@ public partial class MiiListPage : UserControl
     private void SetOnlineMii(Mii mii, string playerName, string friendCode)
     {
         _selectedOnlineMii = mii;
-        OnlineMiiPreview.Mii = mii;
+        ShowOnlineStage(mii);
         OnlineMiiName.Text = string.IsNullOrWhiteSpace(playerName) ? mii.Name.ToString() : playerName;
         OnlineMiiFriendCode.Text = friendCode;
         ImportOnlineMiiButton.IsEnabled = true;
+    }
+
+    /// <summary>
+    /// Shows the previewed Mii on the editor's 3D stage. The stage is built on first use (not when the page opens),
+    /// then every later Mii is swapped onto it so it keeps its camera and animation.
+    /// </summary>
+    private void ShowOnlineStage(Mii mii)
+    {
+        if (_onlineStage is null)
+        {
+            _onlineStage = new MiiEditorScene(
+                _stageRenderer,
+                _stageAnimations,
+                _stageCalendar,
+                _stageRandom.Random.Shared,
+                SettingsService.ENABLE_ANIMATIONS.Get()
+            );
+            OnlineMiiStageHost.Children.Add(_onlineStage);
+        }
+
+        if (!_onlineStageStarted)
+        {
+            _onlineStage.ShowEditor(mii);
+            _onlineStageStarted = true;
+            return;
+        }
+
+        _onlineStage.Present(mii);
     }
 
     private int _onlineSearchTotalMatches;
@@ -312,8 +369,8 @@ public partial class MiiListPage : UserControl
 
         var match = _onlineSearchMatches[_selectedOnlineMatchIndex];
         SetOnlineMii(match.Mii, match.Name, match.FriendCode);
-        var vrText = match.Vr.HasValue ? $" · {match.Vr.Value:N0} VR" : string.Empty;
-        SetOnlineLookupStatus($"Loaded match {_selectedOnlineMatchIndex + 1} of {_onlineSearchTotalMatches}{vrText}", isError: false);
+        var vrText = match.Vr.HasValue ? $" ┬╖ {match.Vr.Value:N0} VR" : string.Empty;
+        SetOnlineLookupStatus($"{_selectedOnlineMatchIndex + 1} of {_onlineSearchTotalMatches}{vrText}", isError: false);
 
         RefreshOnlinePreviewNavigation();
     }
@@ -394,7 +451,7 @@ public partial class MiiListPage : UserControl
     private async Task LoadSuggestedMiisAsync()
     {
         RefreshSuggestedMiisButton.IsEnabled = false;
-        SuggestedMiisStatus.Text = "Finding random public Miis…";
+        SuggestedMiisStatus.Text = "Finding random public MiisΓÇª";
         try
         {
             var result = await LeaderboardService.GetTopPlayersAsync(200);
@@ -435,9 +492,7 @@ public partial class MiiListPage : UserControl
 
             _suggestionsLoaded = suggestions.Count > 0;
             SuggestedMiisStatus.Text =
-                suggestions.Count > 0
-                    ? "Refresh for a different set. Click a card to preview it above."
-                    : "RWFC did not return any downloadable Miis. Try again later.";
+                suggestions.Count > 0 ? "Click a Mii to preview it." : "RWFC did not return any downloadable Miis. Try again later.";
         }
         finally
         {
@@ -445,16 +500,9 @@ public partial class MiiListPage : UserControl
         }
     }
 
-    private void SuggestedMiiCard_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void SuggestedMiiBlock_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            return;
-
-        var sourceControl = e.Source as Control;
-        if (sourceControl?.GetSelfAndVisualAncestors().OfType<Avalonia.Controls.Button>().Any() == true)
-            return;
-
-        if (sender is not Control { DataContext: SuggestedOnlineMii suggestion })
+        if (sender is not MiiBlock { DataContext: SuggestedOnlineMii suggestion })
             return;
 
         _onlinePreviewSource = OnlineMiiPreviewSource.Suggested;
@@ -474,7 +522,7 @@ public partial class MiiListPage : UserControl
 
         var suggestion = SuggestedOnlineMiis[_selectedSuggestedMiiIndex];
         SetOnlineMii(suggestion.Mii, suggestion.Name, suggestion.FriendCode);
-        SetOnlineLookupStatus("Preview loaded from Discover Miis. Use the arrows to cycle through this set.", isError: false);
+        SetOnlineLookupStatus(string.Empty, isError: false);
         RefreshOnlinePreviewNavigation();
     }
 
@@ -580,9 +628,9 @@ public partial class MiiListPage : UserControl
             : _miiEntries.Where(entry => MiiNameMatchesQuery(entry, query, normalizedQuery)).ToList();
 
         MiiRows.Clear();
-        for (var i = 0; i < visibleEntries.Count; i += 4)
+        for (var i = 0; i < visibleEntries.Count; i += 3)
         {
-            var chunk = visibleEntries.Skip(i).Take(4).ToList();
+            var chunk = visibleEntries.Skip(i).Take(3).ToList();
             MiiRows.Add(new MiiListRow(chunk));
         }
     }

@@ -7,9 +7,9 @@
         <Setter Property="Padding" Value="8,3" />
         <Setter Property="MinHeight" Value="24" />
         <Setter Property="CornerRadius" Value="3" />
-        <Setter Property="Background" Value="{StaticResource Neutral900}" />
+        <Setter Property="Background" Value="{DynamicResource Neutral900}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="PART_StateBox_Root" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
@@ -36,13 +36,13 @@
             </ControlTemplate>
         </Setter>
         <Style Selector="^[Variant=Gray]">
-            <Setter Property="Background"><SolidColorBrush Color="{StaticResource Neutral100}" Opacity="0.12" /></Setter>
-            <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
+            <Setter Property="Background"><SolidColorBrush Color="{DynamicResource Neutral100}" Opacity="0.12" /></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
         </Style>
-        <Style Selector="^[Variant=Dark]"><Setter Property="Background" Value="{StaticResource Neutral950}" /><Setter Property="Foreground" Value="{StaticResource Neutral300}" /></Style>
+        <Style Selector="^[Variant=Dark]"><Setter Property="Background" Value="{DynamicResource Neutral950}" /><Setter Property="Foreground" Value="{DynamicResource Neutral300}" /></Style>
         <Style Selector="^[Variant=Brand]">
-            <Setter Property="Background"><SolidColorBrush Color="{StaticResource Brand400}" Opacity="0.12" /></Setter>
-            <Setter Property="Foreground" Value="{StaticResource Brand300}" />
+            <Setter Property="Background"><SolidColorBrush Color="{DynamicResource Brand400}" Opacity="0.12" /></Setter>
+            <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
         </Style>
         <Style Selector="^[Variant=Success]">
             <Setter Property="Background"><SolidColorBrush Color="#88D6AC" Opacity="0.12" /></Setter>

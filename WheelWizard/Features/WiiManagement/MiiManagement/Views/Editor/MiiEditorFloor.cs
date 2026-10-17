@@ -103,7 +103,7 @@ public sealed class MiiEditorFloor : Control
 
     private static SKSvg LoadPattern()
     {
-        using var stream = AssetLoader.Open(new Uri("avares://WheelWizard/Resources/Images/MiiEditorFloor.svg"));
+        using var stream = AssetLoader.Open(new Uri("avares://BetterWheelWizard/Resources/Images/MiiEditorFloor.svg"));
         var svg = new SKSvg();
         svg.Load(stream);
         return svg;

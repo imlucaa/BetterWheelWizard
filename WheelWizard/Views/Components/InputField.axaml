@@ -5,14 +5,14 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="MinWidth" Value="140" />
         <Setter Property="MinHeight" Value="36" />
-        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
-        <Setter Property="PlaceholderForeground" Value="{StaticResource Neutral500}" />
-        <Setter Property="CaretBrush" Value="{StaticResource Neutral50}" />
-        <Setter Property="SelectionBrush" Value="{StaticResource Brand400}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Neutral500}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Neutral50}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brand400}" />
         <Setter Property="SelectionForegroundBrush" Value="White" />
-        <Setter Property="Background" Value="{StaticResource Neutral950}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Neutral700}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Neutral950}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="10,7" />
         <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -27,7 +27,7 @@
                             <Grid ColumnDefinitions="Auto,*">
                                 <Grid Name="PART_IconArea" ColumnDefinitions="16" Margin="0,0,10,0"
                                       IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
-                                    <PathIcon Name="PART_Icon" Data="{TemplateBinding IconData}" Width="16" Height="16" VerticalAlignment="Center" Foreground="{StaticResource Neutral400}" />
+                                    <PathIcon Name="PART_Icon" Data="{TemplateBinding IconData}" Width="16" Height="16" VerticalAlignment="Center" Foreground="{DynamicResource Neutral400}" />
                                 </Grid>
                                 <ScrollViewer Grid.Column="1" Name="PART_ScrollViewer"
                                               HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
@@ -59,17 +59,17 @@
                             <PathIcon Data="{StaticResource WarningTip}" Width="15" Height="15" Foreground="{StaticResource Danger400}" />
                             <TextBlock Grid.Column="1" Text="{TemplateBinding ErrorText}" FontSize="13" Foreground="{StaticResource Danger400}" TextWrapping="Wrap" />
                         </Grid>
-                        <TextBlock Name="PART_Note" Text="{TemplateBinding Note}" Foreground="{StaticResource Neutral400}" FontSize="13" TextWrapping="Wrap" Margin="4,4,0,0" IsVisible="False" />
+                        <TextBlock Name="PART_Note" Text="{TemplateBinding Note}" Foreground="{DynamicResource Neutral400}" FontSize="13" TextWrapping="Wrap" Margin="4,4,0,0" IsVisible="False" />
                     </StackPanel>
                 </DataValidationErrors>
             </ControlTemplate>
         </Setter>
         <Style Selector="^[Variant=Borderless]"><Setter Property="BorderBrush" Value="Transparent" /><Setter Property="Background" Value="Transparent" /><Setter Property="MinHeight" Value="30" /><Setter Property="Padding" Value="8,5" /></Style>
         <Style Selector="^:has-note /template/ TextBlock#PART_Note"><Setter Property="IsVisible" Value="True" /></Style>
-        <Style Selector="^:pointerover, ^[Variant=Borderless]:pointerover"><Setter Property="BorderBrush" Value="{StaticResource Neutral500}" /></Style>
+        <Style Selector="^:pointerover, ^[Variant=Borderless]:pointerover"><Setter Property="BorderBrush" Value="{DynamicResource Neutral500}" /></Style>
         <Style Selector="^:focus, ^[Variant=Borderless]:focus">
-            <Setter Property="BorderBrush" Value="{StaticResource Brand400}" />
-            <Style Selector="^ /template/ PathIcon#PART_Icon"><Setter Property="Foreground" Value="{StaticResource Brand400}" /></Style>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand400}" />
+            <Style Selector="^ /template/ PathIcon#PART_Icon"><Setter Property="Foreground" Value="{DynamicResource Brand400}" /></Style>
         </Style>
         <Style Selector="^:has-error, ^:error, ^[Variant=Borderless]:has-error, ^[Variant=Borderless]:error">
             <Setter Property="BorderBrush" Value="{StaticResource Danger400}" />
@@ -77,9 +77,9 @@
         </Style>
         <Style Selector="^:has-error-text /template/ Grid#PART_Error"><Setter Property="IsVisible" Value="True" /></Style>
         <Style Selector="^:disabled, ^[Variant=Borderless]:disabled">
-            <Setter Property="Foreground" Value="{StaticResource Neutral600}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral800}" />
-            <Style Selector="^ /template/ PathIcon#PART_Icon"><Setter Property="Foreground" Value="{StaticResource Neutral600}" /></Style>
+            <Setter Property="Foreground" Value="{DynamicResource Neutral600}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral800}" />
+            <Style Selector="^ /template/ PathIcon#PART_Icon"><Setter Property="Foreground" Value="{DynamicResource Neutral600}" /></Style>
         </Style>
     </Style>
 </Styles>

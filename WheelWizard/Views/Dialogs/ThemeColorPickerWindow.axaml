@@ -4,13 +4,14 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
                    xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   xmlns:loc="clr-namespace:WheelWizard.Localization"
                    mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="430"
-                   x:Class="WheelWizard.Views.Popups.Generic.ThemeColorPickerWindow">
+                   x:Class="WheelWizard.Views.Dialogs.ThemeColorPickerWindow">
     <Grid Width="340" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14">
         <StackPanel Grid.Row="0" Spacing="3">
-            <TextBlock x:Name="PickerTitle" Text="Choose color" FontSize="18" FontWeight="SemiBold"
+            <TextBlock x:Name="PickerTitle" Text="{loc:T theme.choose_color}" FontSize="18" FontWeight="SemiBold"
                         Foreground="{DynamicResource Neutral50}" />
-            <TextBlock Text="Pick a color below, then select Use color."
+            <TextBlock Text="{loc:T theme.choose_color_description}"
                         Classes="TinyText" TextWrapping="Wrap" />
         </StackPanel>
 
@@ -35,15 +36,15 @@
         </Border>
 
         <StackPanel Grid.Row="2" Spacing="5">
-            <TextBlock Text="HEX COLOR" FontSize="10" FontWeight="Bold"
+            <TextBlock Text="{loc:T theme.hex_color}" FontSize="10" FontWeight="Bold"
                        Foreground="{DynamicResource Neutral400}" />
             <TextBox x:Name="HexTextBox" PlaceholderText="#FFFFFF" MaxLength="7"
                      TextChanged="HexTextBox_OnTextChanged" />
         </StackPanel>
 
         <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8">
-            <components:Button Text="Cancel" Variant="Default" Click="Cancel_OnClick" />
-            <components:Button Grid.Column="1" Text="Use color" Variant="Primary"
+            <components:Button Text="{loc:T action.cancel}" Variant="Default" Click="Cancel_OnClick" />
+            <components:Button Grid.Column="1" Text="{loc:T theme.use_color}" Variant="Primary"
                                IconData="{StaticResource CheckMark}" Click="UseColor_OnClick" />
         </Grid>
     </Grid>

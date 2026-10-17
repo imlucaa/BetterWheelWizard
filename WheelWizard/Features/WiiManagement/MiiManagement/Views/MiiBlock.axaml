@@ -4,7 +4,7 @@
         xmlns:miis="clr-namespace:WheelWizard.WiiManagement.MiiManagement.Views"
         xmlns:miiImages="clr-namespace:WheelWizard.MiiImages.Views">
     <Design.PreviewWith>
-        <StackPanel Spacing="13" Background="{StaticResource Neutral950}">
+        <StackPanel Spacing="13" Background="{DynamicResource Neutral950}">
             <miis:MiiBlock Width="90" Height="90" IsGlobal="True"/>
             <miis:MiiBlock Width="90" Height="90" IsChecked="True" />
             <miis:MiiBlock Width="90" Height="90" />
@@ -19,7 +19,7 @@
                 <Grid x:Name="PART_ParentGrid" ClipToBounds="False">
                     <Border CornerRadius="{StaticResource GlobalCornerRadius}" BorderThickness="1"
                             x:Name="PART_MainBorder" ClipToBounds="True"
-                            Background="{DynamicResource Neutral900}" BorderBrush="{DynamicResource Neutral600}">
+                            Background="{DynamicResource Neutral900}" BorderBrush="Transparent">
                         <Grid>
                             <Border CornerRadius="99999" HorizontalAlignment="Right" VerticalAlignment="Top"
                                     Opacity="0.7" IsVisible="False" x:Name="PART_BackgroundBlur"
@@ -42,7 +42,7 @@
 
                             <PathIcon Data="{StaticResource PlusMark}" Height="35" x:Name="PART_AddIcon"
                                       IsVisible="{TemplateBinding Mii, Converter={x:Static ObjectConverters.IsNull} }"
-                                      Width="1000" Foreground="{StaticResource Neutral500}" />
+                                      Width="1000" Foreground="{DynamicResource Neutral500}" />
                             
                             <miiImages:MiiImageLoader x:Name="PART_MiiImageLoader" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                                         IsVisible="{TemplateBinding Mii, Converter={x:Static ObjectConverters.IsNotNull} }"
@@ -76,7 +76,7 @@
         </Setter>
 
         <Style Selector="^:pointerover /template/ Border#PART_MainBorder">
-            <Setter Property="BorderBrush" Value="{DynamicResource Neutral500}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Background" Value="{DynamicResource Neutral700}" />
             <Style Selector="^ PathIcon#PART_AddIcon">
                 <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
@@ -103,13 +103,13 @@
         </Style>
 
         <Style Selector="^[IsChecked=True] /template/ Border#PART_MainBorder">
-            <Setter Property="BorderBrush" Value="{StaticResource Brand400}"></Setter>
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand400}"></Setter>
             <Style Selector="^ PathIcon#PART_AddIcon">
-                <Setter Property="Foreground" Value="{StaticResource Brand400}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brand400}" />
             </Style>
             <Style Selector="^ Border#PART_BackgroundBlur">
                 <Setter Property="IsVisible" Value="True" />
-                <Setter Property="Background" Value="{StaticResource Brand200}" />
+                <Setter Property="Background" Value="{DynamicResource Brand200}" />
             </Style>
         </Style>
         <Style Selector="^:pointerover[IsChecked=True] /template/ Border#PART_MainBorder">

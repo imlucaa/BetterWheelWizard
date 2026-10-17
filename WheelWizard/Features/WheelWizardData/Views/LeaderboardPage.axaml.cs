@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Avalonia.Controls;
@@ -14,6 +14,7 @@ using WheelWizard.RrRooms;
 using WheelWizard.RrRooms.Views;
 using WheelWizard.Settings;
 using WheelWizard.Shared.Calendar;
+using WheelWizard.Shared.Services;
 using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell;
 using WheelWizard.Views.Shell.Navigation;
@@ -24,6 +25,7 @@ using WheelWizard.WiiManagement.FriendCodes;
 using WheelWizard.WiiManagement.GameLicense;
 using WheelWizard.WiiManagement.MiiManagement;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
+using WheelWizard.WiiManagement.MiiManagement.Views.Editor;
 
 namespace WheelWizard.WheelWizardData.Views;
 
@@ -48,10 +50,7 @@ public sealed record LeaderboardPlayerItem
     public Mii? FirstMii => Mii;
     public bool HasBadges => HasBadge;
     public bool IsTopLeaderboardPlayer => true;
-    public WheelWizard.Views.Components.StatusVariant RankBadgeVariant =>
-        Rank is 4 or 5 ? WheelWizard.Views.Components.StatusVariant.Brand
-        : Rank is >= 6 and <= 10 ? WheelWizard.Views.Components.StatusVariant.Info
-        : WheelWizard.Views.Components.StatusVariant.Gray;
+    public WheelWizard.Views.Components.StatusVariant RankBadgeVariant => WheelWizard.Views.Components.StatusVariant.Gray;
 
     public string TopLabel => t("placement.other", new { rank = Rank });
     public bool IsOpenHost => false;
@@ -99,6 +98,8 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     private int _selectedSearchMatchIndex = -1;
     private int _currentLeaderboardPage = 1;
     private int _totalLeaderboardPages = 1;
+    private string _leaderboardSearchStatus = string.Empty;
+    private bool _isSearching;
 
     public ObservableCollection<LeaderboardPlayerItem> RemainingPlayers { get; } = [];
 
@@ -167,6 +168,50 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     public bool CanGoToPreviousPage => _currentLeaderboardPage > 1 && !IsLoading;
     public bool CanGoToNextPage => _currentLeaderboardPage < _totalLeaderboardPages && !IsLoading;
     public bool HasActiveSearchResult => _selectedSearchMatchIndex >= 0 && _selectedSearchMatchIndex < _searchMatches.Count;
+    public bool HasLeaderboardSearchStatus => !string.IsNullOrWhiteSpace(_leaderboardSearchStatus);
+    public string LeaderboardSearchStatus => _leaderboardSearchStatus;
+    public bool CanSearchLeaderboard => !_isSearching;
+    public string SearchResultRankText => CurrentSearchMatch?.Rank is > 0 ? $"#{CurrentSearchMatch.Rank}" : "Search hit";
+    public string SearchResultPlayerName => CurrentSearchMatch?.Name ?? string.Empty;
+    public string SearchResultFriendCode => CurrentSearchMatch?.FriendCode ?? string.Empty;
+    public string SearchResultVrText => CurrentSearchMatch == null ? string.Empty : $"{CurrentSearchMatch.VrText} VR";
+    public Mii? SearchResultMii => CurrentSearchMatch?.Mii;
+
+    /// <summary>
+    /// Shows the matched player's Mii on the editor's 3D stage. It is built the first time a result needs it, then
+    /// every later match is swapped onto the same stage.
+    /// </summary>
+    private void ShowSearchResultStage(Mii? mii)
+    {
+        if (mii is null)
+            return;
+
+        if (_searchStage is null)
+        {
+            _searchStage = new MiiEditorScene(
+                _stageRenderer,
+                _stageAnimations,
+                _stageCalendar,
+                _stageRandom.Random.Shared,
+                SettingsManager.ENABLE_ANIMATIONS.Get()
+            );
+            SearchResultStageHost.Children.Add(_searchStage);
+        }
+
+        if (!_searchStageStarted)
+        {
+            _searchStage.ShowEditor(mii);
+            _searchStageStarted = true;
+            return;
+        }
+
+        _searchStage.Present(mii);
+    }
+
+    public string SearchResultMatchIndex =>
+        _searchMatches.Count > 1 ? $"{_selectedSearchMatchIndex + 1} of {_searchMatches.Count}" : string.Empty;
+    public bool HasMultipleSearchResults => _searchMatches.Count > 1;
+    private LeaderboardSearchMatch? CurrentSearchMatch => HasActiveSearchResult ? _searchMatches[_selectedSearchMatchIndex] : null;
     public string PodiumTitleText =>
         HasActiveSearchResult ? "Player"
         : _currentLeaderboardPage == 1 ? "Top 3 Podium"
@@ -198,7 +243,19 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     public bool HasPodiumSecond => _podiumSecond != null;
     public bool HasPodiumThird => _podiumThird != null;
 
+    private readonly IMiiNativeRenderer _stageRenderer;
+    private readonly IMiiAnimationLibrary _stageAnimations;
+    private readonly ISeasonalCalendar _stageCalendar;
+    private readonly IRandomSystem _stageRandom;
+    private MiiEditorScene? _searchStage;
+    private bool _searchStageStarted;
+
     public LeaderboardPage(
+        IApiCaller<IRwfcApi> apiCaller,
+        IMiiDbService miiDbService,
+        LiveRoomsService liveRooms,
+        IPopupFactory popups,
+        INavigationService navigation,
         IRrLeaderboardSingletonService leaderboardService,
         IWhWzDataSingletonService badgeService,
         IGameLicenseSingletonService gameDataService,
@@ -209,6 +266,10 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         IRandomSystem random
     )
     {
+        _stageRenderer = miiRenderer;
+        _stageAnimations = miiAnimations;
+        _stageCalendar = calendar;
+        _stageRandom = random;
         LeaderboardService = leaderboardService;
         BadgeService = badgeService;
         GameDataService = gameDataService;
@@ -246,11 +307,6 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         OnPropertyChanged(nameof(RemainingCountText));
     }
 
-    private void LeaderboardSearchField_OnTextChanged(object? sender, TextChangedEventArgs e) =>
-        LeaderboardSearchStatus.Text = string.Empty;
-
-    private void LeaderboardSearchField_OnKeyDown(object? sender, KeyEventArgs e) { }
-
     private async void SearchLeaderboardPlayer_OnClick(object? sender, RoutedEventArgs e)
     {
         var input = await Popups
@@ -279,10 +335,11 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         }
 
         var normalizedFriendCode = TryNormalizeFriendCode(query);
-        LeaderboardSearchButton.IsEnabled = false;
+        _isSearching = true;
+        OnPropertyChanged(nameof(CanSearchLeaderboard));
 
         SetLeaderboardSearchStatus(
-            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}ΓÇª" : $"Searching RWFC for \"{query}\"ΓÇª",
             false
         );
 
@@ -344,7 +401,8 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         }
         finally
         {
-            LeaderboardSearchButton.IsEnabled = true;
+            _isSearching = false;
+            OnPropertyChanged(nameof(CanSearchLeaderboard));
         }
     }
 
@@ -387,8 +445,10 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         _searchMatches.Clear();
         _selectedSearchMatchIndex = -1;
         _leaderboardSearchTotalMatches = 0;
-        LeaderboardSearchStatus.Text = string.Empty;
+        _leaderboardSearchStatus = string.Empty;
         ApplyCurrentLeaderboardSearchMatch();
+        OnPropertyChanged(nameof(HasLeaderboardSearchStatus));
+        OnPropertyChanged(nameof(LeaderboardSearchStatus));
         OnPropertyChanged(nameof(HasActiveSearchResult));
         OnPropertyChanged(nameof(PodiumTitleText));
         OnPropertyChanged(nameof(PodiumCaptionText));
@@ -398,60 +458,36 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     {
         if (_selectedSearchMatchIndex < 0 || _selectedSearchMatchIndex >= _searchMatches.Count)
         {
-            LeaderboardSearchResultCard.IsVisible = false;
-            DefaultPodiumFirstCard.IsVisible = HasPodiumFirst;
-            DefaultPodiumSecondCard.IsVisible = HasPodiumSecond;
-            DefaultPodiumThirdCard.IsVisible = HasPodiumThird;
-            SearchResultPodiumControls.IsVisible = false;
-            SearchResultSingleLayout.IsVisible = false;
-            CloseSearchResultButton.IsVisible = false;
-            LeaderboardSearchOpenProfileButton.IsVisible = false;
-            PreviousSearchMatchButton.IsEnabled = false;
-            NextSearchMatchButton.IsEnabled = false;
-            LeaderboardSearchOpenProfileButton.IsEnabled = false;
-            LeaderboardSearchMatchIndex.Text = string.Empty;
-            SearchResultCompactCard.IsVisible = false;
-            SearchResultRankText.Text = string.Empty;
-            SearchResultPlayerName.Text = string.Empty;
-            SearchResultVrText.Text = string.Empty;
-            SearchResultMiiImage.Mii = null;
-            OnPropertyChanged(nameof(HasActiveSearchResult));
-            OnPropertyChanged(nameof(PodiumTitleText));
-            OnPropertyChanged(nameof(PodiumCaptionText));
+            NotifySearchResultChanged();
             return;
         }
 
-        var match = _searchMatches[_selectedSearchMatchIndex];
-        LeaderboardSearchResultCard.IsVisible = false;
-        DefaultPodiumFirstCard.IsVisible = false;
-        DefaultPodiumSecondCard.IsVisible = false;
-        DefaultPodiumThirdCard.IsVisible = false;
-        SearchResultPodiumControls.IsVisible = true;
-        SearchResultSingleLayout.IsVisible = true;
-        CloseSearchResultButton.IsVisible = true;
-        SearchResultCompactCard.IsVisible = true;
-        SearchResultRankText.Text = match.Rank > 0 ? $"#{match.Rank}" : "Search hit";
-        SearchResultPlayerName.Text = match.Name;
-        SearchResultVrText.Text = match.VrText;
-        SearchResultMiiImage.Mii = match.Mii;
-        LeaderboardSearchOpenProfileButton.IsEnabled = !string.IsNullOrWhiteSpace(match.FriendCode);
-        LeaderboardSearchOpenProfileButton.IsVisible = LeaderboardSearchOpenProfileButton.IsEnabled;
-        PreviousSearchMatchButton.IsEnabled = _searchMatches.Count > 1;
-        NextSearchMatchButton.IsEnabled = _searchMatches.Count > 1;
-        LeaderboardSearchMatchIndex.Text = string.Empty;
+        _leaderboardSearchStatus = string.Empty;
+        NotifySearchResultChanged();
+    }
 
+    private void NotifySearchResultChanged()
+    {
         OnPropertyChanged(nameof(HasActiveSearchResult));
+        OnPropertyChanged(nameof(HasLeaderboardSearchStatus));
+        OnPropertyChanged(nameof(LeaderboardSearchStatus));
+        OnPropertyChanged(nameof(SearchResultRankText));
+        OnPropertyChanged(nameof(SearchResultPlayerName));
+        OnPropertyChanged(nameof(SearchResultFriendCode));
+        OnPropertyChanged(nameof(SearchResultVrText));
+        OnPropertyChanged(nameof(SearchResultMii));
+        ShowSearchResultStage(SearchResultMii);
+        OnPropertyChanged(nameof(SearchResultMatchIndex));
+        OnPropertyChanged(nameof(HasMultipleSearchResults));
         OnPropertyChanged(nameof(PodiumTitleText));
         OnPropertyChanged(nameof(PodiumCaptionText));
     }
 
     private void SetLeaderboardSearchStatus(string message, bool isError)
     {
-        LeaderboardSearchResultCard.IsVisible = !string.IsNullOrWhiteSpace(message) && !HasActiveSearchResult;
-        LeaderboardSearchStatus.Text = message;
-        LeaderboardSearchStatus.Foreground = new Avalonia.Media.SolidColorBrush(
-            isError ? ViewUtils.Colors.Danger400 : ViewUtils.Colors.Neutral400
-        );
+        _leaderboardSearchStatus = message;
+        OnPropertyChanged(nameof(HasLeaderboardSearchStatus));
+        OnPropertyChanged(nameof(LeaderboardSearchStatus));
         OnPropertyChanged(nameof(PodiumCaptionText));
     }
 
@@ -612,7 +648,7 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         };
     }
 
-    internal static int ResolveRank(RwfcLeaderboardEntry entry, int index)
+    public static int ResolveRank(RwfcLeaderboardEntry entry, int index)
     {
         if (entry.Rank is > 0)
             return entry.Rank.Value;
@@ -625,7 +661,7 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
 
     private string GetPlacementLabel(int rank)
     {
-        if (_currentLeaderboardPage == 1)
+        return rank switch
         {
             1 => t("placement.first"),
             2 => t("placement.second"),
@@ -705,15 +741,6 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         HasError = false;
         HasNoData = false;
         HasData = true;
-        if (HasActiveSearchResult)
-        {
-            DefaultPodiumFirstCard.IsVisible = false;
-            DefaultPodiumSecondCard.IsVisible = false;
-            DefaultPodiumThirdCard.IsVisible = false;
-            SearchResultSingleLayout.IsVisible = true;
-            SearchResultCompactCard.IsVisible = true;
-            SearchResultPodiumControls.IsVisible = true;
-        }
         OnPropertyChanged(nameof(CanGoToPreviousPage));
         OnPropertyChanged(nameof(CanGoToNextPage));
     }
@@ -723,9 +750,6 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         PodiumFirst = null;
         PodiumSecond = null;
         PodiumThird = null;
-        DefaultPodiumFirstCard.IsVisible = false;
-        DefaultPodiumSecondCard.IsVisible = false;
-        DefaultPodiumThirdCard.IsVisible = false;
         RemainingPlayers.Clear();
         OnPropertyChanged(nameof(RemainingCountText));
     }

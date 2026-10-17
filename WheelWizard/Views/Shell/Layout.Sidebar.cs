@@ -194,6 +194,10 @@ public partial class Layout
 
     private void ApplySidebarContents(bool compact)
     {
+        // Compact/clean modes never hide or fade the footer controls.
+        SidebarBottomBar.Opacity = 1;
+        SidebarInfoButton.IsVisible = true;
+        SidebarSettingsButton.IsVisible = true;
         SidebarCurrentUserProfile.Opacity = compact ? 0 : 1;
         // Keep the same bottom anchor and overflowing portrait in both sidebar sizes.
         SidebarMii.Width = SidebarMii.Height = 80;

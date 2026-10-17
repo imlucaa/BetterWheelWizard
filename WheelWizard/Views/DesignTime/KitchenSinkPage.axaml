@@ -6,9 +6,9 @@
         <Style Selector="Border.KitchenSinkSectionBlock">
             <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
             <Setter Property="Padding" Value="10" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral900}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Background" Value="{StaticResource Neutral950}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Property="Background" Duration="0:0:0.12" />
@@ -16,25 +16,25 @@
             </Setter>
         </Style>
         <Style Selector="Border.KitchenSinkSectionBlock.BlockBackground900">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral950}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral950}" />
         </Style>
         <Style Selector="Border.KitchenSinkAttributeTable">
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral700}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{StaticResource GlobalCornerRadius}" />
         </Style>
         <Style Selector="Border.KitchenSinkAttributeRow">
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral700}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
             <Setter Property="BorderThickness" Value="0,1,0,0" />
             <Setter Property="Padding" Value="10,8" />
         </Style>
         <Style Selector="Border.KitchenSinkAttributeHeader">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
             <Setter Property="CornerRadius" Value="6,6,0,0" />
         </Style>
         <Style Selector="Border.BlockBackground900 Border.KitchenSinkAttributeHeader">
-            <Setter Property="Background" Value="{StaticResource Neutral800}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
         </Style>
     </UserControl.Styles>
     <Grid>

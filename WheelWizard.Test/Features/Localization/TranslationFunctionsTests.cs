@@ -4,6 +4,48 @@ namespace WheelWizard.Test.Features.Localization;
 
 public class TranslationFunctionsTests
 {
+    [Theory]
+    [InlineData("en", "action.play", "Play")]
+    [InlineData("en", "action.save", "Save")]
+    [InlineData("en", "action.change", "Change")]
+    [InlineData("en", "action.browse", "Browse")]
+    [InlineData("en", "action.import", "Import")]
+    [InlineData("en", "action.enable_all", "Enable All")]
+    [InlineData("en", "action.link.support", "Support us!")]
+    [InlineData("en", "action.cancel", "Cancel")]
+    [InlineData("en", "action.apply", "Apply")]
+    [InlineData("ja", "action.play", "プレイ")]
+    [InlineData("ja", "action.save", "保存")]
+    [InlineData("ja", "action.change", "変更")]
+    [InlineData("ja", "action.browse", "探す")]
+    [InlineData("ja", "action.import", "インポート")]
+    [InlineData("ja", "action.enable_all", "すべて有効")]
+    [InlineData("ja", "action.link.support", "サポート")]
+    [InlineData("ja", "action.cancel", "キャンセル")]
+    [InlineData("ja", "action.apply", "適用")]
+    public void EmbeddedActionTranslationsResolveWithoutExposingRawKeys(string language, string key, string expected)
+    {
+        var localization = new EmbeddedYamlLocalizationService();
+
+        var result = localization.TranslateForLanguage(key, language);
+
+        Assert.Equal(expected, result);
+        Assert.NotEqual(key, result);
+    }
+
+    [Theory]
+    [InlineData("en", "Do you want to apply the new language settings?")]
+    [InlineData("ja", "新しい言語設定を適用しますか？")]
+    public void LanguageConfirmationPromptUsesTheRequestedLanguage(string language, string expected)
+    {
+        var localization = new EmbeddedYamlLocalizationService();
+
+        var result = localization.TranslateForLanguage("question.apply_language_settings.extra", language);
+
+        Assert.Equal(expected, result);
+        Assert.NotEqual("question.apply_language_settings.extra", result);
+    }
+
     [Fact]
     public void CountIsReservedEvenWithoutAnExplicitCountArgument()
     {

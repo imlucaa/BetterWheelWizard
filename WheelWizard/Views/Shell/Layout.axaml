@@ -18,32 +18,25 @@
         xmlns:rooms="clr-namespace:WheelWizard.RrRooms.Views"
         xmlns:community="clr-namespace:WheelWizard.WheelWizardData.Views"
         xmlns:shellViews="clr-namespace:WheelWizard.Views.Shell.Views"
+        xmlns:pages="clr-namespace:WheelWizard.Views.Pages"
         xmlns:design="clr-namespace:WheelWizard.Views.DesignTime"
         xmlns:miiImages="clr-namespace:WheelWizard.MiiImages.Views"
-        xmlns:shellControls="clr-namespace:WheelWizard.Views.Shell.Controls">
-    <Grid x:Name="WindowFrame" RowDefinitions="30,*"
-          Background="{StaticResource FrameColor}">
-        <Border Grid.Row="0" Background="Transparent"
+        xmlns:shellControls="clr-namespace:WheelWizard.Views.Shell.Controls"
+        xmlns:themes="clr-namespace:WheelWizard.Themes">
+        <Grid x:Name="WindowFrame" RowDefinitions="30,*"
+           Background="{DynamicResource LauncherBaseBrush}">
+        <themes:LauncherBackgroundImage x:Name="LauncherBackground" Grid.RowSpan="2" />
+        <Border x:Name="TopChromeSurface" Grid.Row="0" Background="{DynamicResource LauncherSurfaceBrush}"
                 WindowDecorationProperties.ElementRole="TitleBar"
                 PointerPressed="TopBar_PointerPressed">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"
-                            IsVisible="{OnPlatform Default=True, macOS=False}">
-                    <components:IconLabel IconData="{StaticResource WheelIcon}" x:Name="TitleLabel" Text=""
-                                          Foreground="{StaticResource Neutral400}"
-                                          FontSize="16" IconSize="20"
-                                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                                          Margin="5,0,5,0" AutomationProperties.Name="Wheel Wizard"
-                                          PointerPressed="TitleLabel_OnPointerPressed" />
-                </StackPanel>
-            </Grid>
+            <Grid />
         </Border>
     <Grid Grid.Row="1" ColumnDefinitions="221,*" RowDefinitions="0,17,18,96,*,80" x:Name="CompleteGrid"
-          Background="{StaticResource FrameColor}">
+          Background="Transparent">
 
-        <Border x:Name="ContentBackground" Grid.Column="1" Grid.Row="1" Grid.RowSpan="5"
-                CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
-                Background="{StaticResource BackgroundColor}" />
+        <Border x:Name="ContentBackground" Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" Margin="-1,0,0,0"
+                 CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
+                 Background="{DynamicResource LauncherSurfaceBrush}" />
         <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" ClipToBounds="True">
             <TransitioningContentControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                          ClipToBounds="False"
@@ -52,7 +45,8 @@
         </Grid>
 
         <!-- Keep page content measurement independent of the sidebar rows. -->
-        <Grid x:Name="SidebarGrid" Grid.Column="0" Grid.RowSpan="6" RowDefinitions="0,17,18,96,*,80">
+         <Grid x:Name="SidebarGrid" Grid.Column="0" Grid.RowSpan="6" RowDefinitions="0,17,18,96,*,80">
+         <Border x:Name="SidebarPageSurface" Grid.RowSpan="6" Background="{DynamicResource LauncherSidebarBrush}" />
         <!-- Sidebar -->
         <Grid Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="3"
               Height="60"
@@ -71,7 +65,7 @@
                 <Grid>
                     <Border CornerRadius="99999" IsVisible="False" Opacity="0.3" Name="SidebarProfileHoverEffect"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Background="{StaticResource Brand200}" Height="46" Width="46" Effect="blur(150)" />
+                            Background="{DynamicResource Brand200}" Height="46" Width="46" Effect="blur(150)" />
 
                     <community:CurrentUserProfile x:Name="SidebarCurrentUserProfile"
                                                  Margin="5,0"
@@ -87,7 +81,7 @@
                                         VerticalAlignment="Bottom"
                                         IsHitTestVisible="False"
                                         LoadingColor="Transparent"
-                                        FallBackColor="{StaticResource Neutral600}"
+                                        FallBackColor="{DynamicResource Neutral600}"
                                         Mii="{Binding Mii, ElementName=SidebarCurrentUserProfile}"
                                         Performance="{x:Static miiAnimations:MiiPerformances.SidebarPlayer}"
                                         ImageVariant="{x:Static miiVars:MiiImageVariants.FriendsSideProfileLive}"
@@ -110,9 +104,9 @@
             <shellControls:SidebarRadioButton IconData="{StaticResource Shirt}"
                                            PageType="{x:Type miis:MiiListPage}"
                                            Text="{loc:T page_title.my_miis}" />
-            <patterns:SidebarRadioButton IconData="{StaticResource ThemePalette}"
-                                           PageType="{x:Type pages:ThemesPage}"
-                                           Text="Themes" />
+             <shellControls:SidebarRadioButton IconData="{StaticResource ThemePalette}"
+                                            PageType="{x:Type pages:ThemesPage}"
+                                            Text="{loc:T page_title.themes}" />
             <TextBlock Text="{loc:T attribute.status_online}" Classes="SidebarSectionText" />
             <!-- Repurposing this translation from values -->
             <shellControls:SidebarRadioButton IconData="{StaticResource RoomUsers}"
@@ -142,7 +136,8 @@
                                     x:Name="SupportUsButton"
                                     IconData="{StaticResource CoffeeIcon}"
                                     Text="{loc:T action.link.support}"
-                                    FontSize="13"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource LauncherFooterIconBrush}"
                                     Click="SupportUs_OnClick"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"
@@ -172,11 +167,11 @@
                     <Setter Property="Data" Value="{StaticResource ErrorTip}" />
                 </Style>
                 <Style Selector="Border.Success PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Brand300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
                     <Setter Property="Data" Value="{StaticResource SuccessTip}" />
                 </Style>
                 <Style Selector="Border.Info PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
                     <Setter Property="Data" Value="{StaticResource InfoTip}" />
                 </Style>
                 <Style Selector="Border.Question PathIcon">
@@ -188,7 +183,7 @@
                     <Setter Property="Data" Value="{StaticResource StarIcon}" />
                 </Style>
                 <Style Selector="Border#LiveStatusBorder:pointerover PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
                 </Style>
             </Border.Styles>
         </Border>
@@ -293,15 +288,15 @@
                 <Button.Styles>
                     <Style Selector="Button#VersionTagBorder">
                         <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderBrush" Value="{StaticResource Neutral600}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Neutral600}" />
                         <Setter Property="BorderThickness" Value="1" />
-                        <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+                        <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
                         <Setter Property="Padding" Value="0" />
                     </Style>
                     <Style Selector="Button#VersionTagBorder.UpdateAvailable">
                         <Setter Property="Background" Value="{StaticResource Warning500}" />
                         <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Foreground" Value="{StaticResource Neutral950}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Neutral950}" />
                         <Setter Property="Cursor" Value="Hand" />
                     </Style>
                     <Style Selector="Button#VersionTagBorder.UpdateAvailable:pointerover /template/ Border#BadgeBackground">
@@ -327,12 +322,14 @@
             <Grid.Styles>
                 <Style Selector="Border.BottomSidebarIcon">
                     <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="CornerRadius" Value="14" />
                 </Style>
                 <Style Selector="PathIcon#SidebarInfoIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
                 </Style>
                 <Style Selector="PathIcon#SidebarSettingsIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
                 </Style>
                 <Style Selector="Border#SidebarInfoButton:pointerover PathIcon#SidebarInfoIcon">
                     <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
@@ -349,8 +346,8 @@
                 Margin="0,0,-13,13.5" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 UseLayoutRounding="False"
                 ZIndex="10" CornerRadius="13" BorderThickness="1"
-                BorderBrush="{StaticResource Neutral600}" Background="{StaticResource FrameColor}"
-                Foreground="{StaticResource Neutral300}" Cursor="Hand"
+                BorderBrush="{DynamicResource Neutral600}" Background="{StaticResource FrameColor}"
+                Foreground="{DynamicResource Neutral300}" Cursor="Hand"
                 AutomationProperties.Name="Toggle sidebar" Click="SidebarToggle_OnClick">
             <Button.Template>
                 <ControlTemplate>
@@ -363,10 +360,10 @@
             </Button.Template>
             <Button.Styles>
                 <Style Selector="Button#SidebarToggle:pointerover /template/ Border#ToggleBackground">
-                    <Setter Property="Background" Value="{StaticResource Neutral700}" />
+                    <Setter Property="Background" Value="{DynamicResource Neutral700}" />
                 </Style>
                 <Style Selector="Button#SidebarToggle:pointerover PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral100}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
                 </Style>
                 <Style Selector="Button#SidebarToggle:disabled">
                     <Setter Property="Opacity" Value="1" />
@@ -421,13 +418,13 @@
                 <Style Selector="Grid#Snackbar.success">
                     <Style Selector="^ PathIcon">
                         <Setter Property="Data" Value="{StaticResource SuccessTip}" />
-                        <Setter Property="Foreground" Value="{StaticResource Brand400}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brand400}" />
                     </Style>
                     <Style Selector="^ Border#SnackbarBlur">
-                        <Setter Property="Background" Value="{StaticResource Brand300}" />
+                        <Setter Property="Background" Value="{DynamicResource Brand300}" />
                     </Style>
                     <Style Selector="^ Border#SnackbarContainer">
-                        <Setter Property="BorderBrush" Value="{StaticResource Brand400}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Brand400}" />
                     </Style>
                 </Style>
 

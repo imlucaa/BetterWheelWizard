@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:community="clr-namespace:WheelWizard.WheelWizardData.Views">
     <Design.PreviewWith>
-        <Border Background="{StaticResource Neutral950}" Padding="20,160,20,0">
+        <Border Background="{DynamicResource Neutral950}" Padding="20,160,20,0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" Spacing="3">
                 <community:LeaderboardPodiumStep Classes="Silver" Width="110" Height="100" VerticalAlignment="Bottom"
                                                  Rank="2" PlayerName="RoadRunner" VrText="18,611"
@@ -67,7 +67,7 @@
                                                               IsVisible="{TemplateBinding ShowBadge}"
                                                               Width="16" Height="16" VerticalAlignment="Center" />
                                     <TextBlock Text="{TemplateBinding PlayerName}"
-                                               FontWeight="Bold" FontSize="14" MaxWidth="92"
+                                               FontWeight="Bold" FontSize="13" MaxWidth="112"
                                                TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                                Foreground="{TemplateBinding Foreground}" />
                                     <PathIcon Data="{StaticResource WarningTip}" Width="12" Height="12"
@@ -77,10 +77,10 @@
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5">
                                     <Viewbox Width="12" Height="12" VerticalAlignment="Center">
                                         <Path Width="24" Height="24" Data="M3 3v16a2 2 0 0 0 2 2h16 M7 16c.5-2 1.5-7 4-7 2 0 2 3 4 3 2.5 0 4.5-5 5-7"
-                                              Stroke="{StaticResource Neutral300}" StrokeThickness="2" StrokeLineCap="Round" StrokeJoin="Round" />
+                                              Stroke="{DynamicResource Neutral300}" StrokeThickness="2" StrokeLineCap="Round" StrokeJoin="Round" />
                                     </Viewbox>
                                     <TextBlock Text="{TemplateBinding VrText}" FontSize="12" FontWeight="SemiBold"
-                                               VerticalAlignment="Center" Foreground="{StaticResource Neutral200}" />
+                                               VerticalAlignment="Center" Foreground="{DynamicResource Neutral200}" />
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

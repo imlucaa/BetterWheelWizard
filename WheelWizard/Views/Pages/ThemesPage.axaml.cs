@@ -1,31 +1,33 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using WheelWizard.ApplicationData;
 using WheelWizard.Settings;
+using WheelWizard.Shared.Desktop.Storage;
 using WheelWizard.Themes;
-using WheelWizard.Views.Popups;
-using WheelWizard.Views.Popups.Generic;
+using WheelWizard.Views.Components;
+using WheelWizard.Views.Dialogs;
 
 namespace WheelWizard.Views.Pages;
 
 public sealed record LauncherThemeFile(string Name, string Accent, string Branding, string Text, string Background)
 {
-    internal bool HasValidNameAndColors() =>
+    public bool HasValidNameAndColors() =>
         !string.IsNullOrWhiteSpace(Name) && new[] { Accent, Branding, Text, Background }.All(LauncherThemeService.IsValidHexColor);
 }
 
-internal static class LauncherThemeShareCode
+public static class LauncherThemeShareCode
 {
     private const string Prefix = "BWW1";
 
-    internal static string Encode(LauncherThemeFile theme) =>
+    public static string Encode(LauncherThemeFile theme) =>
         $"{Prefix}:{WithoutHash(theme.Accent)}:{WithoutHash(theme.Branding)}:{WithoutHash(theme.Text)}:{WithoutHash(theme.Background)}";
 
-    internal static bool TryDecode(string? code, out LauncherThemeFile theme)
+    public static bool TryDecode(string? code, out LauncherThemeFile theme)
     {
         theme = new LauncherThemeFile(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
         if (string.IsNullOrWhiteSpace(code))
@@ -79,12 +81,16 @@ public partial class ThemesPage : UserControl
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
     private readonly IFileSystem _fileSystem;
     private readonly IPopupFactory _popups;
+    private readonly ILauncherBackgroundService _backgrounds;
+    private readonly IFilePickerService _filePicker;
+    private bool _loadingAppearance;
     private string ThemesFolderPath { get; }
     private string DeletedBuiltInThemesPath => _fileSystem.Path.Combine(ThemesFolderPath, "deleted-built-in-themes.json");
     private readonly List<ThemeChoice> _themeChoices = [];
     private ThemeChoice? _selectedTheme;
     private string _editorThemeName = string.Empty;
     private bool _isLoadingTheme;
+    private PreviewHomeWindow? _homePreview;
 
     private ISettingsManager SettingsService { get; }
 
@@ -92,17 +98,152 @@ public partial class ThemesPage : UserControl
         ISettingsManager settingsService,
         IApplicationDataLocation applicationData,
         IFileSystem fileSystem,
-        IPopupFactory popups
+        IPopupFactory popups,
+        ILauncherBackgroundService backgrounds,
+        IFilePickerService filePicker
     )
     {
         SettingsService = settingsService;
         _fileSystem = fileSystem;
         _popups = popups;
+        _backgrounds = backgrounds;
+        _filePicker = filePicker;
         ThemesFolderPath = fileSystem.Path.Combine(applicationData.DirectoryPath, "Themes");
         InitializeComponent();
         LoadCurrentTheme();
         ReloadThemeChoices();
         UpdatePreview();
+        LoadAppearance();
+    }
+
+    private void LoadAppearance()
+    {
+        _loadingAppearance = true;
+        try
+        {
+            var state = _backgrounds.Current;
+            BackgroundFileText.Text = state.Path == null ? t("theme.no_background") : _fileSystem.Path.GetFileName(state.Path);
+            BackgroundOpacitySlider.Value = SettingsService.LAUNCHER_BACKGROUND_OPACITY.Get();
+            SurfaceOpacitySlider.Value = SettingsService.LAUNCHER_SURFACE_OPACITY.Get();
+            MinimalHomeArtworkCheckBox.IsChecked = SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK.Get();
+            HideHomeTitleCheckBox.IsChecked = SettingsService.LAUNCHER_HIDE_HOME_TITLE.Get();
+            CleanSidebarCheckBox.IsChecked = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
+            FontFileText.Text = string.IsNullOrWhiteSpace(SettingsService.LAUNCHER_FONT.Get())
+                ? t("theme.default")
+                : SettingsService.LAUNCHER_FONT.Get();
+            var stretch = SettingsService.LAUNCHER_BACKGROUND_STRETCH.Get();
+            BackgroundFitBox.SelectedItem =
+                BackgroundFitBox.Items.OfType<ComboBoxItem>().FirstOrDefault(item => Equals(item.Tag, stretch))
+                ?? BackgroundFitBox.Items[0];
+        }
+        finally
+        {
+            _loadingAppearance = false;
+        }
+    }
+
+    private async void ChooseBackground_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var types = new[]
+        {
+            new FilePickerFileType(t("theme.images")) { Patterns = ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp"] },
+        };
+        var path = await _filePicker.OpenSingleFileAsync(t("theme.choose_background"), types);
+        if (path == null)
+            return;
+        await RunBackgroundAction(async () => await _backgrounds.ImportFileAsync(path), t("theme.background_imported"));
+    }
+
+    private async void BackgroundUrl_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var url = await _popups
+            .Create<TextInputWindow>()
+            .SetMainText(t("theme.background_url"))
+            .SetExtraText(t("theme.background_url_description"))
+            .SetPlaceholderText("https://example.com/background.gif")
+            .SetButtonText(t("action.cancel"), t("action.import"))
+            .ShowDialog();
+        if (url == null)
+            return;
+        await RunBackgroundAction(async () => await _backgrounds.ImportUrlAsync(url), t("theme.background_downloaded"));
+    }
+
+    private void RemoveBackground_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _backgrounds.Remove();
+        BackgroundStatusText.Text = t("theme.background_removed");
+        LoadAppearance();
+    }
+
+    private async Task RunBackgroundAction(Func<Task> action, string success)
+    {
+        try
+        {
+            await action();
+            BackgroundStatusText.Text = success;
+            LoadAppearance();
+        }
+        catch (Exception ex)
+        {
+            BackgroundStatusText.Text = ex.Message;
+        }
+    }
+
+    private void BackgroundFit_OnChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_loadingAppearance || BackgroundFitBox.SelectedItem is not ComboBoxItem { Tag: string value })
+            return;
+        SettingsService.LAUNCHER_BACKGROUND_STRETCH.Set(value);
+    }
+
+    private void BackgroundOpacity_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_BACKGROUND_OPACITY.Set(e.NewValue);
+    }
+
+    private void SurfaceOpacity_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_SURFACE_OPACITY.Set(e.NewValue);
+    }
+
+    private void AppearanceToggle_OnChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_loadingAppearance)
+            return;
+        SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK.Set(MinimalHomeArtworkCheckBox.IsChecked == true);
+        SettingsService.LAUNCHER_HIDE_HOME_TITLE.Set(HideHomeTitleCheckBox.IsChecked == true);
+        SettingsService.LAUNCHER_CLEAN_SIDEBAR.Set(CleanSidebarCheckBox.IsChecked == true);
+    }
+
+    private async void ImportFont_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var types = new[] { new FilePickerFileType(t("theme.fonts")) { Patterns = ["*.ttf", "*.otf"] } };
+        var path = await _filePicker.OpenSingleFileAsync(t("theme.choose_font"), types);
+        if (path == null)
+            return;
+        try
+        {
+            var folder = _fileSystem.Path.Combine(_fileSystem.Path.GetDirectoryName(ThemesFolderPath)!, "Appearance", "Fonts");
+            _fileSystem.Directory.CreateDirectory(folder);
+            var fileName = $"font-{Guid.NewGuid():N}{_fileSystem.Path.GetExtension(path).ToLowerInvariant()}";
+            _fileSystem.File.Copy(path, _fileSystem.Path.Combine(folder, fileName), true);
+            SettingsService.LAUNCHER_FONT.Set(fileName);
+            BackgroundStatusText.Text = t("theme.font_imported");
+            LoadAppearance();
+        }
+        catch (Exception ex)
+        {
+            BackgroundStatusText.Text = ex.Message;
+        }
+    }
+
+    private void ResetFont_OnClick(object? sender, RoutedEventArgs e)
+    {
+        SettingsService.LAUNCHER_FONT.Set(string.Empty);
+        BackgroundStatusText.Text = t("theme.font_reset");
+        LoadAppearance();
     }
 
     private void ReloadThemeChoices(string? selectName = null)
@@ -150,12 +291,12 @@ public partial class ThemesPage : UserControl
     {
         _selectedTheme = choice;
         DeleteThemeButton.IsEnabled = choice != null;
-        SelectedThemeText.Text = choice?.Theme.Name ?? "Current colors";
+        SelectedThemeText.Text = choice?.Theme.Name ?? t("theme.current_colors");
         if (choice == null || !loadEditor)
             return;
 
         SetEditor(choice.Theme);
-        ThemeStatusText.Text = $"Loaded {choice.Theme.Name}. Apply to use it.";
+        ThemeStatusText.Text = t("theme.loaded", new { name = choice.Theme.Name });
     }
 
     private async void DeleteTheme_OnClick(object? sender, RoutedEventArgs e)
@@ -165,13 +306,10 @@ public partial class ThemesPage : UserControl
 
         var confirmed = await _popups
             .Create<YesNoWindow>()
-            .SetMainText($"Delete {choice.Theme.Name}?")
-            .SetExtraText(choice.IsBuiltIn ? "You can restore this built-in theme later." : "This saved theme file will be removed.")
-            .SetButtonText("Delete", "Cancel")
-            .SetButtonVariants(
-                WheelWizard.Views.Components.Button.ButtonsVariantType.Danger,
-                WheelWizard.Views.Components.Button.ButtonsVariantType.Default
-            )
+            .SetMainText(t("theme.delete_confirm", new { name = choice.Theme.Name }))
+            .SetExtraText(choice.IsBuiltIn ? t("theme.restore_builtin_later") : t("theme.saved_theme_removed"))
+            .SetButtonText(t("action.delete"), t("action.cancel"))
+            .SetButtonTones(ActionButtonTone.Danger, ActionButtonTone.Secondary)
             .AwaitAnswer();
         if (!confirmed)
             return;
@@ -189,21 +327,18 @@ public partial class ThemesPage : UserControl
         _selectedTheme = null;
         ReloadThemeChoices();
         DeleteThemeButton.IsEnabled = false;
-        SelectedThemeText.Text = "Current colors";
-        ThemeStatusText.Text = $"Deleted {choice.Theme.Name}.";
+        SelectedThemeText.Text = t("theme.current_colors");
+        ThemeStatusText.Text = t("theme.deleted", new { name = choice.Theme.Name });
     }
 
     private async void RestorePresets_OnClick(object? sender, RoutedEventArgs e)
     {
         var confirmed = await _popups
             .Create<YesNoWindow>()
-            .SetMainText("Restore all built-in themes?")
-            .SetExtraText("Deleted built-in color presets will return to the theme library.")
-            .SetButtonText("Restore", "Cancel")
-            .SetButtonVariants(
-                WheelWizard.Views.Components.Button.ButtonsVariantType.Primary,
-                WheelWizard.Views.Components.Button.ButtonsVariantType.Default
-            )
+            .SetMainText(t("theme.restore_all"))
+            .SetExtraText(t("theme.restore_all_description"))
+            .SetButtonText(t("theme.restore"), t("action.cancel"))
+            .SetButtonTones(ActionButtonTone.Brand, ActionButtonTone.Secondary)
             .AwaitAnswer();
         if (!confirmed)
             return;
@@ -211,7 +346,7 @@ public partial class ThemesPage : UserControl
         if (_fileSystem.File.Exists(DeletedBuiltInThemesPath))
             _fileSystem.File.Delete(DeletedBuiltInThemesPath);
         ReloadThemeChoices();
-        ThemeStatusText.Text = "Built-in themes restored.";
+        ThemeStatusText.Text = t("theme.restored");
     }
 
     private void SetEditor(LauncherThemeFile theme)
@@ -241,19 +376,46 @@ public partial class ThemesPage : UserControl
         SettingsService.Set(SettingsService.LAUNCHER_TEXT_COLOR, theme.Branding);
         SettingsService.Set(SettingsService.LAUNCHER_BODY_TEXT_COLOR, theme.Text);
         SettingsService.Set(SettingsService.LAUNCHER_BACKGROUND_COLOR, theme.Background);
-        var appliedName = string.IsNullOrWhiteSpace(theme.Name) ? "Theme" : theme.Name;
-        ThemeStatusText.Text = $"{appliedName} applied.";
+        var appliedName = string.IsNullOrWhiteSpace(theme.Name) ? t("theme.unnamed") : theme.Name;
+        ThemeStatusText.Text = t("theme.applied", new { name = appliedName });
+    }
+
+    private void PreviewHome_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var theme = ReadEditor(requireName: false);
+        if (theme == null)
+            return;
+        if (_homePreview?.IsOpen == true)
+        {
+            _homePreview.UpdatePreview(
+                theme,
+                _backgrounds.Current,
+                SurfaceOpacitySlider.Value,
+                MinimalHomeArtworkCheckBox.IsChecked == true,
+                HideHomeTitleCheckBox.IsChecked == true
+            );
+            _homePreview.Focus();
+            return;
+        }
+        _homePreview = new PreviewHomeWindow(
+            theme,
+            _backgrounds.Current,
+            SurfaceOpacitySlider.Value,
+            MinimalHomeArtworkCheckBox.IsChecked == true,
+            HideHomeTitleCheckBox.IsChecked == true
+        );
+        _homePreview.Show();
     }
 
     private async void SaveTheme_OnClick(object? sender, RoutedEventArgs e)
     {
         var requestedName = await _popups
             .Create<TextInputWindow>()
-            .SetMainText("Save current colors")
-            .SetExtraText("Give this theme a name so it appears in your library.")
-            .SetPlaceholderText("Theme name")
+            .SetMainText(t("theme.save_colors"))
+            .SetExtraText(t("theme.save_colors_description"))
+            .SetPlaceholderText(t("theme.name_placeholder"))
             .SetInitialText(_editorThemeName)
-            .SetButtonText("Cancel", "Save")
+            .SetButtonText(t("action.cancel"), t("action.save"))
             .ShowDialog();
         if (requestedName == null)
             return;
@@ -268,13 +430,10 @@ public partial class ThemesPage : UserControl
         {
             var replace = await _popups
                 .Create<YesNoWindow>()
-                .SetMainText($"Replace {theme.Name}?")
-                .SetExtraText("A saved theme with this name already exists.")
-                .SetButtonText("Replace", "Cancel")
-                .SetButtonVariants(
-                    WheelWizard.Views.Components.Button.ButtonsVariantType.Primary,
-                    WheelWizard.Views.Components.Button.ButtonsVariantType.Default
-                )
+                .SetMainText(t("theme.replace_confirm", new { name = theme.Name }))
+                .SetExtraText(t("theme.replace_description"))
+                .SetButtonText(t("theme.replace"), t("action.cancel"))
+                .SetButtonTones(ActionButtonTone.Brand, ActionButtonTone.Secondary)
                 .AwaitAnswer();
             if (!replace)
                 return;
@@ -283,7 +442,7 @@ public partial class ThemesPage : UserControl
         _fileSystem.File.WriteAllText(path, JsonSerializer.Serialize(theme, JsonOptions));
         ReloadThemeChoices(theme.Name);
         SelectedThemeText.Text = theme.Name;
-        ThemeStatusText.Text = existing == null ? $"{theme.Name} saved." : $"{theme.Name} updated.";
+        ThemeStatusText.Text = t(existing == null ? "theme.saved" : "theme.updated", new { name = theme.Name });
     }
 
     private async void CopyThemeCode_OnClick(object? sender, RoutedEventArgs e)
@@ -295,12 +454,12 @@ public partial class ThemesPage : UserControl
         var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
         if (clipboard == null)
         {
-            ThemeStatusText.Text = "Clipboard is not available.";
+            ThemeStatusText.Text = t("theme.clipboard_unavailable");
             return;
         }
 
         await clipboard.SetTextAsync(LauncherThemeShareCode.Encode(theme));
-        ThemeStatusText.Text = "Theme code copied.";
+        ThemeStatusText.Text = t("theme.code_copied");
     }
 
     private async void PasteThemeCode_OnClick(object? sender, RoutedEventArgs e)
@@ -309,7 +468,7 @@ public partial class ThemesPage : UserControl
         var code = clipboard == null ? null : await clipboard.TryGetTextAsync();
         if (!LauncherThemeShareCode.TryDecode(code, out var theme))
         {
-            ThemeStatusText.Text = "Clipboard does not contain a valid BWW theme code.";
+            ThemeStatusText.Text = t("theme.invalid_code");
             return;
         }
 
@@ -319,10 +478,10 @@ public partial class ThemesPage : UserControl
         BackgroundColorTextBox.Text = theme.Background;
         _editorThemeName = string.Empty;
         _selectedTheme = null;
-        SelectedThemeText.Text = "Imported colors";
+        SelectedThemeText.Text = t("theme.imported_colors");
         DeleteThemeButton.IsEnabled = false;
         UpdatePreview();
-        ThemeStatusText.Text = "Theme code loaded. Apply or save it when ready.";
+        ThemeStatusText.Text = t("theme.code_loaded");
     }
 
     private LauncherThemeFile? ReadEditor(bool requireName)
@@ -372,8 +531,8 @@ public partial class ThemesPage : UserControl
 
     private string FormatThemeName(LauncherThemeFile theme, bool isBuiltIn)
     {
-        var suffix = isBuiltIn ? " (built-in)" : string.Empty;
-        return ThemesMatchCurrentSettings(theme) ? $"✓ {theme.Name}{suffix} — Active" : $"{theme.Name}{suffix}";
+        var suffix = isBuiltIn ? t("theme.builtin_suffix") : string.Empty;
+        return ThemesMatchCurrentSettings(theme) ? $"✓ {theme.Name}{suffix}{t("theme.active_suffix")}" : $"{theme.Name}{suffix}";
     }
 
     private bool ThemesMatchCurrentSettings(LauncherThemeFile theme) =>
@@ -443,22 +602,25 @@ public partial class ThemesPage : UserControl
         EffectiveTextColorPreview.Background = new SolidColorBrush(effective);
         if (effective == selected)
             return;
-        TextContrastMessage.Text =
-            $"{textColor} is too dark for this background. It will display as #{effective.R:X2}{effective.G:X2}{effective.B:X2}.";
+        TextContrastMessage.Text = t(
+            "theme.contrast_warning",
+            new { color = textColor, effective = $"#{effective.R:X2}{effective.G:X2}{effective.B:X2}" }
+        );
         TextContrastNotice.IsVisible = true;
     }
 
     private async void AccentColor_OnClick(object? sender, RoutedEventArgs e) =>
-        ColorTextBox.Text = await PickColor("Main color", ColorTextBox.Text) ?? ColorTextBox.Text;
+        ColorTextBox.Text = await PickColor(t("theme.main_color_picker"), ColorTextBox.Text) ?? ColorTextBox.Text;
 
     private async void BrandColor_OnClick(object? sender, RoutedEventArgs e) =>
-        BrandColorTextBox.Text = await PickColor("Wheel and title color", BrandColorTextBox.Text) ?? BrandColorTextBox.Text;
+        BrandColorTextBox.Text = await PickColor(t("theme.wheel_title_picker"), BrandColorTextBox.Text) ?? BrandColorTextBox.Text;
 
     private async void TextColor_OnClick(object? sender, RoutedEventArgs e) =>
-        TextColorTextBox.Text = await PickColor("Text color", TextColorTextBox.Text) ?? TextColorTextBox.Text;
+        TextColorTextBox.Text = await PickColor(t("theme.text_color_picker"), TextColorTextBox.Text) ?? TextColorTextBox.Text;
 
     private async void BackgroundColor_OnClick(object? sender, RoutedEventArgs e) =>
-        BackgroundColorTextBox.Text = await PickColor("Background color", BackgroundColorTextBox.Text) ?? BackgroundColorTextBox.Text;
+        BackgroundColorTextBox.Text =
+            await PickColor(t("theme.background_color_picker"), BackgroundColorTextBox.Text) ?? BackgroundColorTextBox.Text;
 
     private async Task<string?> PickColor(string title, string? currentValue)
     {

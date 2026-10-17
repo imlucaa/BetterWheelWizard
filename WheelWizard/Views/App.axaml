@@ -42,11 +42,11 @@
                                 <Panel x:Name="PART_UnderlayWrapper">
                                     <Border x:Name="PART_WindowBorder" Background="Transparent"
                                             BorderThickness="{TemplateBinding FrameThickness}"
-                                            BorderBrush="{StaticResource Neutral600}" IsHitTestVisible="False" />
+                                            BorderBrush="{DynamicResource Neutral600}" IsHitTestVisible="False" />
                                     <Panel x:Name="PART_TitleBar" VerticalAlignment="Top"
                                            Height="{TemplateBinding TitleBarHeight}"
                                            IsVisible="{TemplateBinding HasTitleBar}"
-                                           Background="{StaticResource FrameColor}"
+                                            Background="Transparent"
                                            WindowDecorationProperties.ElementRole="TitleBar" />
                                 </Panel>
                             </WindowDrawnDecorationsContent.Underlay>
@@ -70,7 +70,6 @@
                                             </Viewbox>
                                         </Button>
                                         <Button x:Name="PART_CloseButton" Theme="{StaticResource FluentDrawnCaptionButton}"
-                                                Background="#ffe81123" BorderBrush="#fff1707a"
                                                 WindowDecorationProperties.ElementRole="CloseButton">
                                             <PathIcon Width="11" Height="11" Data="{StaticResource XMark}"
                                                       Foreground="{Binding $parent[Button].Foreground}" />
@@ -83,18 +82,26 @@
                 </Setter>
                 <Style Selector="^ /template/ Button">
                     <Setter Property="Width" Value="30" />
-                    <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
                 </Style>
                 <Style Selector="^ /template/ Button:pointerover">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+                    <Setter Property="Background" Value="{DynamicResource Neutral600}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Neutral500}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
+                </Style>
+                <Style Selector="^ /template/ Button:pressed">
+                    <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Neutral500}" />
                 </Style>
                 <Style Selector="^ /template/ Button:disabled">
-                    <Setter Property="Foreground" Value="{StaticResource Neutral950}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Neutral950}" />
                     <Setter Property="Opacity" Value="1" />
                 </Style>
-                <Style Selector="^ /template/ Button#PART_MinimizeButton">
-                    <Setter Property="Background" Value="{StaticResource Neutral600}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Neutral500}" />
+                <!-- A disabled maximize button is invisible but still reserves 30px, leaving a gap between minimize and close. -->
+                <Style Selector="^ /template/ Button#PART_MaximizeButton:disabled">
+                    <Setter Property="IsVisible" Value="False" />
                 </Style>
             </ControlTheme>
             <ControlTheme x:Key="LinuxWindowDecorations" TargetType="WindowDrawnDecorations"
@@ -114,7 +121,7 @@
                     Value="{OnPlatform Default={StaticResource DesktopWindowDecorations}, Linux={StaticResource LinuxWindowDecorations}, macOS={x:Null}}" />
         </Style>
         <!-- !!Only used for the designer!! -->
-        <StyleInclude Source="avares://WheelWizard/Views/DesignTime/Controls/MultiColorExampleComponent.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Views/DesignTime/Controls/MultiColorExampleComponent.axaml" />
         <!-- !!Only used for the designer!! -->
 
         <!-- STYLES -->
@@ -137,16 +144,16 @@
         <StyleInclude Source="Components/FormFieldLabel.axaml" />
         <StyleInclude Source="Components/Spinner.axaml" />
         <StyleInclude Source="Components/SegmentedControl.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Views/Shell/Controls/SidebarRadioButton.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/WheelWizardData/Views/CommunityCountBadge.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Views/Shell/Controls/SidebarRadioButton.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/WheelWizardData/Views/CommunityCountBadge.axaml" />
 
         <!-- PAGE/WHWZ SPECIFIC COMPONENTS -->
-        <StyleInclude Source="avares://WheelWizard/Features/Mods/Views/ModBrowserListItem.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/RrRooms/Views/PlayerListItem.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/WheelWizardData/Views/CommunityBadge.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/WiiManagement/MiiManagement/Views/MiiBlock.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Views/Shell/Controls/WheelTrail.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/WheelWizardData/Views/LeaderboardPodiumStep.axaml" />
-        <StyleInclude Source="avares://WheelWizard/Features/MiiImages/Views/MiiPeeker.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/Mods/Views/ModBrowserListItem.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/RrRooms/Views/PlayerListItem.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/WheelWizardData/Views/CommunityBadge.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/WiiManagement/MiiManagement/Views/MiiBlock.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Views/Shell/Controls/WheelTrail.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/WheelWizardData/Views/LeaderboardPodiumStep.axaml" />
+        <StyleInclude Source="avares://BetterWheelWizard/Features/MiiImages/Views/MiiPeeker.axaml" />
     </Application.Styles>
 </Application>

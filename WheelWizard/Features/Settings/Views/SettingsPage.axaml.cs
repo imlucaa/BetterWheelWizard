@@ -38,7 +38,6 @@ public partial class SettingsPage : UserControl, ILockedSidebarPage
         SettingsSignalBus = settingsSignalBus;
         Pages = pages;
         InitializeComponent();
-        VersionInfoSidebar.Content = Pages.Create<SettingsVersionInfo>();
         UpdateTabVisibility();
         _settingsSignalSubscription = SettingsSignalBus.Subscribe(OnSettingChanged);
 

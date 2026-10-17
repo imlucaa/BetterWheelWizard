@@ -3,16 +3,17 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:loc="clr-namespace:WheelWizard.Localization"
                    mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="520"
-                   x:Class="WheelWizard.Views.Popups.Generic.ThemeLibraryWindow">
-    <Grid Width="360" MaxHeight="560" RowDefinitions="Auto,*" Margin="0,4,0,0">
+                   x:Class="WheelWizard.Views.Dialogs.ThemeLibraryWindow">
+    <Grid Width="400" MaxHeight="600" RowDefinitions="Auto,*" Margin="0,4,0,0">
         <StackPanel Spacing="3" Margin="0,0,0,10">
-            <TextBlock Text="Choose a theme" Classes="TitleText" FontSize="18"
+            <TextBlock Text="{loc:T theme.choose_theme}" Classes="TitleText" FontSize="18"
                        Foreground="{StaticResource FormFieldLabelColor}" />
-            <TextBlock Text="Select a built-in preset or one of your saved themes."
+            <TextBlock Text="{loc:T theme.choose_theme_description}"
                        Classes="TinyText" TextWrapping="Wrap" />
         </StackPanel>
-        <ScrollViewer Grid.Row="1" MaxHeight="460" VerticalScrollBarVisibility="Auto"
+        <ScrollViewer Grid.Row="1" MaxHeight="500" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="ThemeList" Spacing="6" />
         </ScrollViewer>

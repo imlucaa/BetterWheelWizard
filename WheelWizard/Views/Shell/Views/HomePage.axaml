@@ -114,41 +114,43 @@
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-        <TextBlock Grid.Row="0" Text="{loc:T page_title.home}" HorizontalAlignment="Left"
+        <TextBlock x:Name="HomeTitle" Grid.Row="0" Text="{loc:T page_title.home}" HorizontalAlignment="Left"
                    VerticalAlignment="Bottom"
                    Classes="PageTitleText" />
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
-
-
+        <Grid x:Name="HomeArtwork" Grid.Row="1" IsHitTestVisible="False">
+        <Grid x:Name="HomeTrailArtwork">
         <!-- These are invisible by default, they will be set to visible once the button is turned to green
             This way we don't have to take in account whether or not an animation can play, since if it plays but it is not allowed, it will be invisible anyways -->
-        <shellControls:WheelTrail Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail1"
+        <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail1"
                                Width="137" Angle="45" Y="-60" X="-20" ExtendedHeight="1000" IsVisible="False"
-                               Background="{StaticResource Brand400}" Foreground="{StaticResource Brand700}" />
-        <shellControls:WheelTrail Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail2"
+                                Background="{DynamicResource Brand400}" Foreground="{DynamicResource Brand700}" />
+        <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail2"
                                Width="137" Angle="45" Y="-40" X="170" ExtendedHeight="1000" IsVisible="False"
-                               Background="{StaticResource Brand600}" Foreground="{StaticResource Brand800}" />
-        <shellControls:WheelTrail Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail3"
+                                Background="{DynamicResource Brand600}" Foreground="{DynamicResource Brand800}" />
+        <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="HomeTrail3"
                                Width="137" Angle="45" Y="165" X="175" ExtendedHeight="1000" IsVisible="False"
-                               Background="{StaticResource Brand200}" Foreground="{StaticResource Brand600}" />
+                               Background="{DynamicResource Brand200}" Foreground="{DynamicResource Brand600}" />
 
-        <Border Grid.Row="1" Height="630" Width="250" CornerRadius="125,125,0,0" VerticalAlignment="Bottom"
-                Background="{StaticResource FrameColor}" Margin="{StaticResource NegativeEdgeGap}">
+        <shellControls:WheelTrail HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="HomeTrail4"
+                               Width="137" Angle="-35" X="-160" ExtendedHeight="1000" IsVisible="False"
+                                 Background="{DynamicResource Brand400}" Foreground="{DynamicResource Brand700}" />
+        <shellControls:WheelTrail HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="HomeTrail5"
+                                Width="137" Angle="-35" X="40" Y="30" ExtendedHeight="1000" IsVisible="False"
+                                  Background="{DynamicResource Brand600}" Foreground="{DynamicResource Brand800}" />
+        </Grid>
+
+        <Border x:Name="HomeWheelArtwork"
+                Height="630" Width="250" CornerRadius="125,125,0,0"
+                VerticalAlignment="Bottom" IsHitTestVisible="False"
+                Background="{DynamicResource LauncherBaseBrush}"
+                Margin="{StaticResource NegativeEdgeGap}">
             <PathIcon HorizontalAlignment="Center" VerticalAlignment="Top"
                       Data="{StaticResource WheelIcon}"
                       x:Name="WheelIcon"
                       Foreground="{DynamicResource LauncherBrandColor}"
                       Width="200" Height="200" Margin="0,25" />
-            <!--
-                Note that this icon should have the same margin on each side. Decide a padding/border, enter that number in the margin at tb.
-                Then, double this number, take the width of the parent container, and subtract the doubled margin.
-                This will give you the width & height of the icon.
-            -->
         </Border>
+        </Grid>
 
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="180" Margin="0,220">
 
@@ -174,11 +176,5 @@
                                ToolTip.ShowDelay="50"  -->
         </StackPanel>
         
-        <shellControls:WheelTrail Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="HomeTrail4"
-                               Width="137" Angle="-35" X="-160" ExtendedHeight="1000" IsVisible="False"
-                               Background="{StaticResource Brand400}" Foreground="{StaticResource Brand700}" />
-        <shellControls:WheelTrail Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="HomeTrail5"
-                               Width="137" Angle="-35" X="40" Y="30" ExtendedHeight="1000" IsVisible="False"
-                               Background="{StaticResource Brand600}" Foreground="{StaticResource Brand800}" />
     </Grid>
 </UserControl>

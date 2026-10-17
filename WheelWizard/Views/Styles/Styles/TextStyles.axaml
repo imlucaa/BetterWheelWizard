@@ -51,7 +51,7 @@
     </Style>
 
     <Style Selector="SelectableTextBlock">
-        <Setter Property="SelectionBrush" Value="{StaticResource Brand500}"/>
-        <Setter Property="SelectionForegroundBrush" Value="{StaticResource Neutral50}"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brand500}"/>
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource Neutral50}"/>
     </Style>
 </Styles>

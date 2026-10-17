@@ -1,9 +1,10 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:loc="clr-namespace:WheelWizard.Localization"
              xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             xmlns:miiViews="clr-namespace:WheelWizard.MiiImages.Views"
              mc:Ignorable="d"
              d:DesignWidth="477"
              d:DesignHeight="700"
@@ -12,15 +13,28 @@
         xmlns:rooms="clr-namespace:WheelWizard.RrRooms.Views"
         xmlns:community="clr-namespace:WheelWizard.WheelWizardData.Views">
     <UserControl.Styles>
+        <!-- Keep leaderboard search consistent with the translucent shell controls. -->
+        <Style Selector="components|ActionButton.LeaderboardSearchTranslucent">
+            <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LauncherPanelBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+        </Style>
+        <Style Selector="components|ActionButton.LeaderboardSearchTranslucent:pointerover">
+            <Setter Property="Background" Value="{DynamicResource LauncherReadableSurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LauncherReadableSurfaceBrush}" />
+        </Style>
+        <Style Selector="components|ActionButton.LeaderboardSearchTranslucent:pressed">
+            <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
+        </Style>
         <!-- Match RoomDetailsPage entry background treatment for PlayerListItem -->
         <Style Selector="rooms|PlayerListItem /template/ Border.BoxItemBackground">
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Margin" Value="0,3" />
             <Setter Property="Padding" Value="7,0" />
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
         </Style>
         <Style Selector="rooms|PlayerListItem:pointerover /template/ Border.BoxItemBackground">
-            <Setter Property="Background" Value="{StaticResource Neutral700}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
         </Style>
     </UserControl.Styles>
 
@@ -28,21 +42,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="64" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="1" />
+            <RowDefinition Height="0" />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0"
-                Background="{StaticResource BackgroundLineColor}"
-                Height="1"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
-        <TextBlock Grid.Row="0"
-                   Text="{loc:T page_title.leaderboard}"
-                   VerticalAlignment="Bottom"
-                   Classes="PageTitleText" />
-
-        <Border Grid.Row="2" Background="{StaticResource BackgroundLineColor}" Height="1" ZIndex="1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
+            <TextBlock Text="{loc:T page_title.leaderboard}" Classes="PageTitleText" />
+            <components:ActionButton Grid.Column="1"
+                                     Classes="LeaderboardSearchTranslucent"
+                                     Text="{loc:T action.search}"
+                                     IconData="{StaticResource Search}"
+                                     IsEnabled="{Binding CanSearchLeaderboard}"
+                                     Click="SearchLeaderboardPlayer_OnClick"
+                                     Margin="0,0,4,8" />
+        </Grid>
 
         <Grid Grid.Row="1">
             <StackPanel IsVisible="{Binding IsLoading}"
@@ -108,15 +119,61 @@
                           VerticalScrollBarVisibility="Hidden"
                           IsScrollInertiaEnabled="True">
                 <StackPanel Spacing="10"
-                            Margin="0,0,0,12">
+                             Margin="0,0,0,12">
+                    <Border IsVisible="{Binding HasLeaderboardSearchStatus}"
+                            Background="{DynamicResource LauncherPanelBrush}"
+                            BorderBrush="{DynamicResource LauncherPanelBrush}"
+                            BorderThickness="1" CornerRadius="10" Padding="12">
+                        <TextBlock Text="{Binding LeaderboardSearchStatus}"
+                                   Classes="BodyText" TextWrapping="Wrap" />
+                    </Border>
+
+                    <Border IsVisible="{Binding HasActiveSearchResult}"
+                            Background="Transparent" BorderThickness="0" CornerRadius="12" Padding="4,8">
+                        <Grid ColumnDefinitions="96,*,Auto" ColumnSpacing="8">
+                            <Border Width="96" Height="140" ClipToBounds="True" Background="Transparent" VerticalAlignment="Center">
+                                <!-- Laid out larger than the frame and clipped: the Mii scales with the stage height, so this zooms in. -->
+                                <Grid x:Name="SearchResultStageHost" Margin="-18,-18" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding SearchResultPlayerName}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding SearchResultFriendCode}" Classes="TinyText" />
+                                <WrapPanel>
+                                    <TextBlock Text="{Binding SearchResultRankText}" FontWeight="Bold" Margin="0,0,8,0"
+                                               Foreground="{DynamicResource Neutral100}" />
+                                    <TextBlock Text="{Binding SearchResultVrText}" Classes="BodyText" />
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Center" Width="112">
+                                <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                                         Text="{loc:T action.view_profile}"
+                                                         Size="Compact" HorizontalAlignment="Stretch"
+                                                         Click="OpenSearchProfile_OnClick" />
+                                <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasMultipleSearchResults}">
+                                    <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                                             IconData="{StaticResource ArrowLeft}"
+                                                             Size="Compact" IsCircular="True"
+                                                             ToolTip.Tip="Previous matching player"
+                                                             Click="PreviousSearchMatch_OnClick" />
+                                    <TextBlock Grid.Column="1" Text="{Binding SearchResultMatchIndex}" Classes="TinyText"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <components:ActionButton Grid.Column="2"
+                                                             Classes="LeaderboardSearchTranslucent"
+                                                             IconData="{StaticResource ArrowRight}"
+                                                             Size="Compact" IsCircular="True"
+                                                             ToolTip.Tip="Next matching player"
+                                                             Click="NextSearchMatch_OnClick" />
+                                </Grid>
+                                <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                                         Text="Close" Size="Compact" HorizontalAlignment="Stretch"
+                                                         Click="CloseSearchResult_OnClick" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
                     <Border>
                         <Grid RowDefinitions="Auto,Auto"
                               ClipToBounds="False">
-                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                <Ellipse Width="7" Height="7" Fill="{StaticResource Brand300}" VerticalAlignment="Center" />
-                                <TextBlock Text="{loc:T text.live_rwfc}" Classes="TinyText"
-                                           Foreground="{StaticResource Neutral300}" VerticalAlignment="Center" />
-                            </StackPanel>
 
                             <!-- The top three stand on a podium in 3D. Pulled up a bit so confetti can fly over the header. -->
                             <community:LeaderboardPodiumStage x:Name="PodiumStage"
@@ -230,6 +287,29 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          Margin="0,4"
+                          VerticalAlignment="Center">
+                        <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                                 IconData="{StaticResource ArrowLeft}"
+                                                 Size="Compact" IsCircular="True"
+                                                 IsEnabled="{Binding CanGoToPreviousPage}"
+                                                 ToolTip.Tip="Previous leaderboard page"
+                                                 Click="PreviousLeaderboardPage_OnClick" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding LeaderboardPageText}"
+                                   Classes="TinyText"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        <components:ActionButton Grid.Column="2"
+                                                 Classes="LeaderboardSearchTranslucent"
+                                                 IconData="{StaticResource ArrowRight}"
+                                                 Size="Compact" IsCircular="True"
+                                                 IsEnabled="{Binding CanGoToNextPage}"
+                                                 ToolTip.Tip="Next leaderboard page"
+                                                 Click="NextLeaderboardPage_OnClick" />
+                    </Grid>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

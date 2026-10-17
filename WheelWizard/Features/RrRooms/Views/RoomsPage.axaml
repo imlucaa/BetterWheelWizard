@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -16,10 +16,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6,0,0">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,8">
             <TextBlock Text="{loc:T page_title.rooms}" Classes="PageTitleText" />
             <Border VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0,0,0"
                     ToolTip.Tip="{loc:T hover.rooms_page_disclaimer}"
@@ -30,13 +27,21 @@
             </Border>
         </StackPanel>
 
-        <components:InputField Grid.Row="0" Width="200" IconData="{StaticResource Search}"
-                 Placeholder="{loc:T placeholder.search_for_players}"
-                 VerticalAlignment="Bottom"
-                 TextChanged="PlayerSearchField_OnTextChanged"
-                 HorizontalAlignment="Right"
-                 Margin="10,0,10,10"
-                 x:Name="PlayerSearchField" />
+        <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,8"
+                Padding="0" CornerRadius="12" Background="Transparent"
+                BorderBrush="Transparent" BorderThickness="0">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <components:Button x:Name="RoomsSearchButton" Text="{loc:T action.search}"
+                                   IconData="{StaticResource Search}" Variant="Default" ButtonSize="Compact"
+                                   Click="RoomsSearchButton_OnClick" ToolTip.Tip="Search rooms" />
+                <components:Button x:Name="RoomsVrFilterButton" Text="{loc:T action.filter_vr}"
+                                   IconData="{StaticResource Chart}" Variant="Default" ButtonSize="Compact"
+                                   Click="RoomsVrFilterButton_OnClick" ToolTip.Tip="Set VR filters" />
+                <components:Button x:Name="RoomsSortButton" Text="{loc:T action.sort}"
+                                   IconData="{StaticResource ArrowSwap}" Variant="Default" ButtonSize="Compact"
+                                   Click="RoomsSortButton_OnClick" ToolTip.Tip="Choose room sort" />
+            </StackPanel>
+        </Border>
 
         <components:EmptyPageInfo Grid.Row="2" x:Name="EmptyRoomsView"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -62,7 +67,7 @@
                      SelectionChanged="RoomsView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Classes="BoxItemBackground" Padding="9,6">
+                        <Border Classes="BoxItemBackground" Padding="10,8">
                             <Grid ColumnDefinitions="34,*,88" RowDefinitions="Auto,Auto" ColumnSpacing="9">
                                 <PathIcon Data="{StaticResource Road}" Width="32" Height="32" Classes="RoadIcon"
                                           IsVisible="{Binding IsPublic }" VerticalAlignment="Center"
@@ -104,10 +109,26 @@
                                                TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                 </Grid>
 
-                                <components:StatusBadge Grid.Column="2" IconData="{StaticResource UserCouple}"
-                                                     Text="{Binding PlayerCount}" VerticalAlignment="Center"
-                                                     Variant="Gray"
-                                                     HorizontalAlignment="Right" Margin="0,0,10,0" />
+                                <Border Grid.Column="2" Grid.RowSpan="2" Background="{DynamicResource Neutral800}"
+                                        CornerRadius="6" Padding="6,3" VerticalAlignment="Center">
+                                    <Grid RowDefinitions="Auto,Auto,Auto">
+                                        <TextBlock Text="{Binding AverageVrDisplay}" FontSize="14" FontWeight="Bold"
+                                                   Foreground="{DynamicResource Primary300}" HorizontalAlignment="Center" />
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="3"
+                                                    HorizontalAlignment="Center">
+                                            <TextBlock Text="Avg. VR" FontSize="10" Foreground="{DynamicResource Neutral300}" />
+                                            <TextBlock Text="•" FontSize="10" Foreground="{DynamicResource Neutral500}" />
+                                            <PathIcon Data="{StaticResource UserCouple}" Width="9" Height="9"
+                                                      Foreground="{DynamicResource Neutral300}" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding PlayerCount}" FontSize="10"
+                                                       Foreground="{DynamicResource Neutral300}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="2" Text="{Binding RaceTimeDisplay}" FontSize="10"
+                                                   Foreground="{DynamicResource Neutral200}"
+                                                   HorizontalAlignment="Center" TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </Grid>
+                                </Border>
                             </Grid>
 
                             <Border.Styles>

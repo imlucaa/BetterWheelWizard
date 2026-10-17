@@ -8,17 +8,25 @@
              mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="876"
              x:Class="WheelWizard.Mods.Views.ModsPage"
              x:DataType="mods:ModsPage"
-        xmlns:mods="clr-namespace:WheelWizard.Mods.Views">
+         xmlns:mods="clr-namespace:WheelWizard.Mods.Views">
+    <UserControl.Styles>
+        <Style Selector="components|SplitButton.PatchesTranslucentSearch /template/ components|ActionButton">
+            <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource LauncherPanelBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral100}" />
+        </Style>
+        <Style Selector="components|SplitButton.PatchesTranslucentSearch /template/ components|ActionButton:pointerover">
+            <Setter Property="Background" Value="{DynamicResource LauncherReadableSurfaceBrush}" />
+        </Style>
+        <Style Selector="components|SplitButton.PatchesTranslucentSearch /template/ components|ActionButton:pressed">
+            <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
+        </Style>
+    </UserControl.Styles>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="95" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
 
         <StackPanel Grid.Row="0" Orientation="Vertical" VerticalAlignment="Bottom">
             <components:ToggleCheckBox Variant="Switch" x:Name="EnableAllCheckbox"
@@ -35,7 +43,7 @@
 
         <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,12"
                     Orientation="Vertical" x:Name="TopBarButtons" Spacing="3">
-                        <components:SplitButton Text="{loc:T action.browse}" IconData="{StaticResource Search}" Tone="Brand" Height="40" Click="BrowseMod_Click" IsVisible="{Binding HasMods}">
+                        <components:SplitButton Classes="PatchesTranslucentSearch" Text="{loc:T action.browse}" IconData="{StaticResource Search}" Tone="Secondary" Height="40" Click="BrowseMod_Click" IsVisible="{Binding HasMods}">
                 <components:SplitButton.Flyout>
                     <MenuFlyout>
                         <components:SplitButtonItem Header="{loc:T action.browse}" IconData="{StaticResource Search}" Click="BrowseMod_Click" />
@@ -51,7 +59,7 @@
             <components:EmptyPageInfo Title="{loc:T empty_content.no_mods_title}"
                                       BodyText="{loc:T empty_content.no_mods}"
                                       HorizontalAlignment="Center" />
-                        <components:SplitButton Text="{loc:T action.browse}" IconData="{StaticResource Search}" Tone="Brand" Height="40" Click="BrowseMod_Click" Margin="0,15,0,0">
+                        <components:SplitButton Classes="PatchesTranslucentSearch" Text="{loc:T action.browse}" IconData="{StaticResource Search}" Tone="Secondary" Height="40" Click="BrowseMod_Click" Margin="0,15,0,0">
                 <components:SplitButton.Flyout>
                     <MenuFlyout>
                         <components:SplitButtonItem Header="{loc:T action.browse}" IconData="{StaticResource Search}" Click="BrowseMod_Click" />
@@ -100,7 +108,7 @@
                                           Variant="Switch" Margin="0,5"
                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding Mod.Title}" FontSize="14"
-                                           Foreground="{StaticResource Neutral100}"
+                                           Foreground="{DynamicResource Neutral100}"
                                            Grid.Column="2" VerticalAlignment="Center" Margin="10,0,8,0"
                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
 
@@ -115,7 +123,7 @@
                                              LostFocus="PriorityText_OnLostFocus" HorizontalContentAlignment="Center"
                                              KeyDown="PriorityText_OnKeyDown"
                                              x:Name="VisibleWithRows"
-                                             MinWidth="25" MaxWidth="50" MinHeight="28" Height="28" Padding="2,0" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                             BorderThickness="0" MinWidth="25" MaxWidth="50" MinHeight="28" Height="28" Padding="2,0" VerticalAlignment="Center" VerticalContentAlignment="Center">
                                     </components:InputField>
 
                                     <Border Width="16" Margin="8,0" VerticalAlignment="Center">
@@ -201,7 +209,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <components:SegmentedControl Grid.Row="1" x:Name="ViewModeToggle" ZIndex="10" Variant="Light"
+            <components:SegmentedControl Grid.Row="1" x:Name="ViewModeToggle" ZIndex="10" Variant="Light" HasBorder="False"
                 Margin="0,0,12,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" SelectionChanged="ModsView_OnSelectionChanged">
                 <components:SegmentOption x:Name="GridViewOption" IconData="{StaticResource Grid2x2}" AutomationProperties.Name="Grid view" ToolTip.Tip="Grid view" Width="40" Height="40" />
                 <components:SegmentOption x:Name="ListViewOption" IconData="{StaticResource Rows3}" AutomationProperties.Name="List view" ToolTip.Tip="List view" Width="40" Height="40" />

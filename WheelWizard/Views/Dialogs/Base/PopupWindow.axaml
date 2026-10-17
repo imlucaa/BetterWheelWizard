@@ -13,19 +13,43 @@
         x:DataType="dialogBase:PopupWindow"
         Title="{Binding WindowTitle}"
         xmlns:dialogBase="clr-namespace:WheelWizard.Views.Dialogs.Base">
+    <Window.Styles>
+        <!-- All popups share one look: dark secondary buttons, flat input wells, no outlines. -->
+        <Style Selector=":is(components|ActionButton)[Tone=Secondary][Variant=Button]">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
+        </Style>
+        <Style Selector=":is(components|ActionButton)[Tone=Secondary][Variant=Button]:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Neutral600}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector=":is(components|ActionButton)[Tone=Secondary][Variant=Button]:pressed">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+        </Style>
+        <Style Selector="components|InputField">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
+            <Setter Property="MinHeight" Value="40" />
+        </Style>
+        <Style Selector="UniformGrid#ButtonContainer">
+            <Setter Property="Margin" Value="0,16,0,0" />
+        </Style>
+    </Window.Styles>
     <!-- SizeToContent owns the entire frame size; modal content stays at its natural scale. -->
-    <Grid x:Name="WindowFrame" RowDefinitions="30,*">
-        <Border Background="{StaticResource FrameColor}" PointerPressed="TopBar_PointerPressed"
+    <Grid x:Name="WindowFrame" RowDefinitions="30,*" Background="{DynamicResource PopupBackgroundBrush}">
+        <Border Background="{DynamicResource PopupBackgroundBrush}" PointerPressed="TopBar_PointerPressed"
                 WindowDecorationProperties.ElementRole="TitleBar">
             <StackPanel Orientation="Horizontal" Spacing="10" Margin="{OnPlatform Default='10,0,150,0', macOS='80,0,10,0'}" VerticalAlignment="Center">
                 <components:StatusBadge Text="Beta" Variant="Warning" IsVisible="{Binding BetaFlag}" />
-                <TextBlock FontSize="16" Text="{Binding WindowTitle}" Foreground="{StaticResource Neutral300}" />
+                <TextBlock FontSize="13" Text="{Binding WindowTitle}" Foreground="{DynamicResource Neutral400}" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
     <Grid Grid.Row="1" x:Name="CompleteGrid">
-        <Border Background="{StaticResource  BackgroundColor}" CornerRadius="0,0,4,4"
+        <Border Background="{DynamicResource PopupSurfaceBrush}" CornerRadius="0,0,4,4"
                 x:Name="CompleteBorder"
-                BorderThickness="1" BorderBrush="{StaticResource BackgroundLineColor}">
+                BorderThickness="0">
             <Grid>
                 <ContentPresenter x:Name="PopupContent" ClipToBounds="False"
                                   HorizontalContentAlignment="Stretch"

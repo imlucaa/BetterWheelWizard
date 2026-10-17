@@ -14,7 +14,7 @@
             <StackPanel x:Name="WhWzAppearance"
                         Spacing="4"
                         Margin="0,0,0,7">
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="40">
                         <components1:FormFieldLabel Grid.Column="0"
                                                     Margin="0,0,16,0"
@@ -29,30 +29,6 @@
                     </Grid>
                 </Border>
 
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
-                    <Grid ColumnDefinitions="*,Auto" MinHeight="40">
-                        <StackPanel Grid.Column="0"
-                                    Margin="0,0,16,0"
-                                    Spacing="3"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center">
-                            <components1:FormFieldLabel Text="{loc:T option.wh_wz_language}" />
-                            <SelectableTextBlock Classes="TinyText"
-                                       Text="{loc:T helper_text.wh_wz_language}"
-                                       TextAlignment="Left"
-                                       TextWrapping="Wrap" />
-                            <SelectableTextBlock Classes="TinyText"
-                                       x:Name="TranslationsPercentageText"
-                                       TextAlignment="Left"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                        <components1:Dropdown Grid.Column="1"
-                                  x:Name="WhWzLanguageDropdown" Search="True"
-                                  HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"
-                                  ZIndex="2" />
-                    </Grid>
-                </Border>
             </StackPanel>
             <StackPanel Spacing="4" Margin="0,0,0,7">
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">

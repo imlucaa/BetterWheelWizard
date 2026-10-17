@@ -12,25 +12,16 @@ public partial class AppearanceSettings : UserControl
 {
     private ISettingsManager SettingsService { get; }
 
-    private readonly ISettingsLocalizationService LocalizationService;
     private readonly bool _pageLoaded;
     private bool _editingScale;
-    private bool _updatingLanguageDropdown;
 
-    private sealed record LanguageDropdownItem(string Key, string DisplayName)
-    {
-        public override string ToString() => DisplayName;
-    }
-
-    public AppearanceSettings(ISettingsManager settingsService, ISettingsLocalizationService localizationService)
+    public AppearanceSettings(ISettingsManager settingsService)
     {
         SettingsService = settingsService;
-        LocalizationService = localizationService;
         InitializeComponent();
         EnableAnimations.IsChecked = SettingsService.ENABLE_ANIMATIONS.Get();
         LoadSettings();
         _pageLoaded = true;
-        WhWzLanguageDropdown.SelectionChanged += WhWzLanguageDropdown_OnSelectionChanged;
     }
 
     private void EnableAnimations_OnClick(object sender, RoutedEventArgs e) =>
@@ -38,12 +29,6 @@ public partial class AppearanceSettings : UserControl
 
     private void LoadSettings()
     {
-        // -----------------
-        // Wheel Wizard Language Dropdown
-        // -----------------
-        RefreshLanguageDropdown();
-        RefreshTranslationCredit();
-
         // -----------------
         // Window Scale settings
         // -----------------
@@ -66,34 +51,6 @@ public partial class AppearanceSettings : UserControl
         {
             _editingScale = false;
         }
-    }
-
-    private void RefreshLanguageDropdown()
-    {
-        var currentWhWzLanguage = (string)SettingsService.WW_LANGUAGE.Get();
-        _updatingLanguageDropdown = true;
-        try
-        {
-            WhWzLanguageDropdown.Items.Clear();
-            foreach (var (key, displayNameFactory) in SettingValues.WhWzLanguages)
-            {
-                WhWzLanguageDropdown.Items.Add(new LanguageDropdownItem(key, displayNameFactory()));
-            }
-
-            WhWzLanguageDropdown.SelectedItem = WhWzLanguageDropdown
-                .Items.OfType<LanguageDropdownItem>()
-                .FirstOrDefault(item => item.Key == currentWhWzLanguage);
-        }
-        finally
-        {
-            _updatingLanguageDropdown = false;
-        }
-    }
-
-    private void RefreshTranslationCredit()
-    {
-        TranslationsPercentageText.Text = t("text.language_translated_by", new { translators = t("value.language.z_translators") });
-        TranslationsPercentageText.IsVisible = t("value.language.z_translators") != "-";
     }
 
     private static string ScaleToString(double scale)
@@ -157,45 +114,5 @@ public partial class AppearanceSettings : UserControl
         }
 
         _editingScale = false;
-    }
-
-    private async void WhWzLanguageDropdown_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (_updatingLanguageDropdown)
-            return;
-
-        if (WhWzLanguageDropdown.SelectedItem == null)
-            return;
-
-        if (WhWzLanguageDropdown.SelectedItem is not LanguageDropdownItem selectedLanguage)
-            return;
-
-        var currentLanguage = (string)SettingsService.WW_LANGUAGE.Get();
-        if (selectedLanguage.Key == currentLanguage)
-            return;
-
-        var promptCurrent = t($"{currentLanguage}.question.apply_language_settings.extra");
-        var promptTarget = t($"{selectedLanguage.Key}.question.apply_language_settings.extra");
-
-        // popup now shows its selection in both languages
-        var yesNoWindow = await new YesNoWindow()
-            .SetMainText($"{promptCurrent}\n\n{promptTarget}")
-            .SetButtonText(t("action.apply"), t("action.cancel"))
-            .AwaitAnswer();
-
-        if (!yesNoWindow)
-        {
-            var currentWhWzLanguage = (string)SettingsService.WW_LANGUAGE.Get();
-            WhWzLanguageDropdown.SelectedItem = WhWzLanguageDropdown
-                .Items.OfType<LanguageDropdownItem>()
-                .FirstOrDefault(item => item.Key == currentWhWzLanguage);
-            return; // We only want to change the setting if we really apply this change
-        }
-
-        if (SettingsEditing.Set(SettingsService, SettingsService.WW_LANGUAGE, selectedLanguage.Key))
-        {
-            LocalizationService.ApplyCurrentLanguage();
-            LoadSettings();
-        }
     }
 }

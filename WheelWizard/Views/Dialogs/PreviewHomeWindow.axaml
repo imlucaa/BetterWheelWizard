@@ -1,0 +1,94 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Dialogs.Base"
+                   xmlns:themes="clr-namespace:WheelWizard.Themes"
+                   x:Class="WheelWizard.Views.Dialogs.PreviewHomeWindow">
+    <Grid Width="620" Height="650" ClipToBounds="True">
+        <Grid.Styles>
+            <Style Selector="Border.PreviewCard">
+                <Setter Property="Background" Value="{DynamicResource PreviewCardBrush}" />
+                <Setter Property="CornerRadius" Value="9" />
+                <Setter Property="BorderBrush" Value="{DynamicResource PreviewTextBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Opacity" Value="0.96" />
+            </Style>
+            <Style Selector="Button">
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="Foreground" Value="{DynamicResource PreviewTextBrush}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+        </Grid.Styles>
+        <Border x:Name="PreviewBase" />
+        <themes:LauncherBackgroundImage x:Name="PreviewBackground" IsHitTestVisible="False" />
+        <Grid ColumnDefinitions="172,*" RowDefinitions="42,*">
+            <Border Grid.ColumnSpan="2" x:Name="PreviewTopSurface">
+                <StackPanel Margin="12,0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <PathIcon Data="{StaticResource WheelIcon}" Width="20" Height="20"
+                              Foreground="{DynamicResource PreviewBrandBrush}" />
+                    <TextBlock Text="BetterWheelWizard" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PreviewTextBrush}" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" x:Name="PreviewSidebarSurface">
+                <StackPanel Margin="8,12" Spacing="3">
+                    <Button Content="⌂  Home" Tag="Home" Click="PreviewTab_OnClick" />
+                    <Button Content="●  My profiles" Tag="My profiles" Click="PreviewTab_OnClick" />
+                    <Button Content="▦  Patches" Tag="Patches" Click="PreviewTab_OnClick" />
+                    <Button Content="◆  My Miis" Tag="My Miis" Click="PreviewTab_OnClick" />
+                    <Button Content="●  Themes" Tag="Themes" Click="PreviewTab_OnClick" />
+                    <Separator Margin="0,6" />
+                    <Button Content="▣  Rooms" Tag="Rooms" Click="PreviewTab_OnClick" />
+                    <Button Content="★  Leaderboard" Tag="Leaderboard" Click="PreviewTab_OnClick" />
+                    <Button Content="+  Friends" Tag="Friends" Click="PreviewTab_OnClick" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="1" x:Name="PreviewPageSurface">
+                <Grid Margin="18" RowDefinitions="Auto,*">
+                    <StackPanel Spacing="2">
+                        <TextBlock x:Name="PreviewPageTitle" Text="Home" FontSize="25" FontWeight="Bold"
+                                   Foreground="{DynamicResource PreviewTextBrush}" />
+                        <TextBlock x:Name="PreviewPageSubtitle" Text="Launcher preview"
+                                   Foreground="{DynamicResource PreviewTextBrush}" Opacity="0.78" />
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <StackPanel x:Name="HomePreview" Width="210" HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" Spacing="12">
+                            <TextBlock Text="Retro Rewind" FontSize="22" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="{DynamicResource PreviewBrandBrush}" />
+                            <Border Height="42" CornerRadius="7" Background="{DynamicResource PreviewAccentBrush}">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                                    <PathIcon Data="{StaticResource Play}" Width="16" Height="16"
+                                              Foreground="{DynamicResource PreviewTextBrush}" />
+                                    <TextBlock Text="Play" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource PreviewTextBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel x:Name="ListPreview" IsVisible="False" Margin="0,24,0,0" Spacing="10">
+                            <Border Classes="PreviewCard" Padding="14">
+                                <TextBlock x:Name="ListItemOne" Text="Example item" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource PreviewTextBrush}" />
+                            </Border>
+                            <Border Classes="PreviewCard" Padding="14">
+                                <TextBlock x:Name="ListItemTwo" Text="Another item" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource PreviewTextBrush}" />
+                            </Border>
+                        </StackPanel>
+                        <StackPanel x:Name="ThemesPreview" IsVisible="False" Margin="0,24,0,0" Spacing="10">
+                            <Border Classes="PreviewCard" Padding="14">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Theme library" FontSize="17" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource PreviewTextBrush}" />
+                                    <TextBlock Text="Built-in presets and saved themes appear here."
+                                               Foreground="{DynamicResource PreviewTextBrush}" Opacity="0.75" />
+                                    <Border Height="34" CornerRadius="6" Background="{DynamicResource PreviewAccentBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</base:PopupContent>

@@ -3,13 +3,13 @@
         xmlns:miiVars="using:WheelWizard.MiiImages.Domain"
         xmlns:miiImages="clr-namespace:WheelWizard.MiiImages.Views">
     <Design.PreviewWith>
-        <StackPanel Background="{StaticResource Neutral950}" Width="420">
+        <StackPanel Background="{DynamicResource Neutral950}" Width="420">
             <UniformGrid Rows="1" Height="96" Margin="0,30,0,0">
                 <miiImages:MiiPeeker Content="patchzy" IsActive="True" />
                 <miiImages:MiiPeeker Content="Bee" />
                 <miiImages:MiiPeeker Content="patch-she" />
             </UniformGrid>
-            <Border Height="60" Background="{StaticResource Neutral900}" CornerRadius="12" />
+            <Border Height="60" Background="{DynamicResource Neutral900}" CornerRadius="12" />
         </StackPanel>
     </Design.PreviewWith>
 
@@ -28,7 +28,7 @@
                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                 Mii="{TemplateBinding Mii}"
                                                 LoadingColor="Transparent"
-                                                FallBackColor="{StaticResource Neutral700}"
+                                                FallBackColor="{DynamicResource Neutral700}"
                                                 MaxFramesPerSecond="30"
                                                 ImageVariant="{x:Static miiVars:MiiImageVariants.PeekLive}" />
 
@@ -46,18 +46,18 @@
     </Style>
 
     <Style Selector="miiImages|MiiPeeker /template/ ContentPresenter#PART_Tag">
-        <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
     <Style Selector="miiImages|MiiPeeker:pointerover /template/ ContentPresenter#PART_Tag">
-        <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
     </Style>
     <Style Selector="miiImages|MiiPeeker:focus-visible /template/ ContentPresenter#PART_Tag">
-        <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+        <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
     </Style>
     <!-- Last, so the picked one stays teal while hovered or focused. -->
     <Style Selector="miiImages|MiiPeeker:active /template/ ContentPresenter#PART_Tag">
-        <Setter Property="Foreground" Value="{StaticResource Brand300}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
     </Style>
     <Style Selector="miiImages|MiiPeeker:disabled">
         <Setter Property="Opacity" Value="0.5" />

@@ -20,8 +20,8 @@
         <!-- CARD -->
         <Style Selector="Border.FriendCard">
             <Setter Property="Margin" Value="5" />
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="ClipToBounds" Value="True" />
@@ -33,13 +33,13 @@
             </Setter>
         </Style>
         <Style Selector="Border.FriendCard:pointerover">
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral600}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral600}" />
         </Style>
         <Style Selector="Border.FriendCard.Online">
-            <Setter Property="BorderBrush" Value="{StaticResource Brand700}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand700}" />
         </Style>
         <Style Selector="Border.FriendCard.Online:pointerover">
-            <Setter Property="BorderBrush" Value="{StaticResource Brand400}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand400}" />
         </Style>
         <Style Selector="Border.FriendCard.Pending">
             <Setter Property="BorderBrush" Value="{StaticResource Warning800}" />
@@ -52,7 +52,7 @@
         <Style Selector="Border.FriendCard Panel.Portrait">
             <Setter Property="Background">
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                    <GradientStop Color="{StaticResource Neutral800}" Offset="0" />
+                    <GradientStop Color="{DynamicResource Neutral800}" Offset="0" />
                     <GradientStop Color="#3A3D49" Offset="1" />
                 </LinearGradientBrush>
             </Setter>
@@ -65,7 +65,7 @@
             <Setter Property="MaxFramesPerSecond" Value="20" />
         </Style>
         <Style Selector="Border.FriendCard Border.NightShade">
-            <Setter Property="Background" Value="{StaticResource Neutral950}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral950}" />
             <Setter Property="Opacity" Value="0.38" />
             <Setter Property="IsHitTestVisible" Value="False" />
             <Setter Property="Transitions">
@@ -121,12 +121,12 @@
         <Style Selector="Border.FriendCard TextBlock.FriendName">
             <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
         <Style Selector="Border.FriendCard:pointerover TextBlock.FriendName, Border.FriendCard.Online TextBlock.FriendName">
-            <Setter Property="Foreground" Value="{StaticResource Neutral50}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
         </Style>
 
         <!-- The "more" dots: only while hovered, to say the card opens a menu -->
@@ -144,20 +144,20 @@
 
         <!-- STATUS DOT AND FRIEND CODE -->
         <Style Selector="Border.FriendCard Ellipse.StatusDot">
-            <Setter Property="Fill" Value="{StaticResource Neutral600}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral600}" />
         </Style>
         <Style Selector="Border.FriendCard.Online Ellipse.StatusDot">
-            <Setter Property="Fill" Value="{StaticResource Brand300}" />
+            <Setter Property="Fill" Value="{DynamicResource Brand300}" />
         </Style>
         <Style Selector="Border.FriendCard.Pending Ellipse.StatusDot">
             <Setter Property="Fill" Value="{StaticResource Warning400}" />
             <Setter Property="ToolTip.Tip" Value="Waiting for them to add you back" />
         </Style>
         <Style Selector="Border.FriendCard TextBlock.FriendCode">
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         </Style>
         <Style Selector="Border.FriendCard:pointerover TextBlock.FriendCode, Border.FriendCard.Online TextBlock.FriendCode">
-            <Setter Property="Foreground" Value="{StaticResource Neutral300}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
         </Style>
 
         <Style Selector="TextBlock.Status">
@@ -168,10 +168,10 @@
 
         <!-- HEADER -->
         <Style Selector="Ellipse#OnlineDot">
-            <Setter Property="Fill" Value="{StaticResource Neutral600}" />
+            <Setter Property="Fill" Value="{DynamicResource Neutral600}" />
         </Style>
         <Style Selector="StackPanel.AnyOnline Ellipse#OnlineDot">
-            <Setter Property="Fill" Value="{StaticResource Brand300}" />
+            <Setter Property="Fill" Value="{DynamicResource Brand300}" />
         </Style>
     </UserControl.Styles>
 
@@ -181,12 +181,6 @@
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Bottom" />
-
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                     Spacing="6">
             <TextBlock Text="{loc:T page_title.friends}" Classes="PageTitleText" />
@@ -205,17 +199,17 @@
                 <StackPanel Grid.Column="0" x:Name="CountLine" Orientation="Horizontal" Spacing="8"
                             VerticalAlignment="Center">
                     <Ellipse x:Name="OnlineDot" Width="8" Height="8" VerticalAlignment="Center" />
-                    <TextBlock FontSize="14" Foreground="{StaticResource Neutral400}" VerticalAlignment="Center"
+                    <TextBlock FontSize="14" Foreground="{DynamicResource Neutral400}" VerticalAlignment="Center"
                                TextWrapping="NoWrap">
-                        <Run Text="{Binding OnlineCount}" FontWeight="SemiBold" Foreground="{StaticResource Neutral50}" />
+                        <Run Text="{Binding OnlineCount}" FontWeight="SemiBold" Foreground="{DynamicResource Neutral50}" />
                         <Run Text=" of " />
-                        <Run Text="{Binding FriendCount}" FontWeight="SemiBold" Foreground="{StaticResource Neutral200}" />
+                        <Run Text="{Binding FriendCount}" FontWeight="SemiBold" Foreground="{DynamicResource Neutral200}" />
                         <Run Text=" online" />
                     </TextBlock>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <TextBlock Text="{loc:T attribute.sort_by}" FontSize="13" Foreground="{StaticResource Neutral500}"
+                    <TextBlock Text="{loc:T attribute.sort_by}" FontSize="13" Foreground="{DynamicResource Neutral500}"
                                VerticalAlignment="Center" TextWrapping="NoWrap" />
                     <components:Dropdown Variant="Borderless" FontSize="13" MinWidth="0" VerticalAlignment="Center"
                                          ItemsSource="{Binding SortOptions}" SelectedIndex="{Binding SortIndex, Mode=TwoWay}" />
@@ -273,7 +267,7 @@
                                                                     Margin="0,-26,0,0"
                                                                     Mii="{Binding Mii}"
                                                                     LoadingColor="Transparent"
-                                                                    FallBackColor="{StaticResource Neutral600}"
+                                                                    FallBackColor="{DynamicResource Neutral600}"
                                                                     ImageVariant="{x:Static miiVars:MiiImageVariants.FriendsSideProfileLive}" />
 
                                         <Border Classes="NightShade" />
@@ -310,7 +304,7 @@
                                                        VerticalAlignment="Center" />
                                             <PathIcon Grid.Column="2" Classes="MoreHint" Data="{StaticResource ContextDots}"
                                                       Width="10" Height="12" Margin="6,0,0,0" VerticalAlignment="Center"
-                                                      Foreground="{StaticResource Neutral500}" />
+                                                      Foreground="{DynamicResource Neutral500}" />
                                         </Grid>
 
                                         <Grid ColumnDefinitions="*,Auto">
@@ -322,9 +316,9 @@
                                                         ToolTip.Tip="{loc:T attribute.vr_full}"
                                                         ToolTip.Placement="Top" ToolTip.ShowDelay="20">
                                                 <TextBlock Classes="Status" Text="{Binding Vr}" FontWeight="SemiBold"
-                                                           Foreground="{StaticResource Neutral200}" />
+                                                           Foreground="{DynamicResource Neutral200}" />
                                                 <TextBlock Classes="Status" Text="{loc:T attribute.vr_abbreviation}"
-                                                           FontSize="11" Foreground="{StaticResource Neutral500}" />
+                                                           FontSize="11" Foreground="{DynamicResource Neutral500}" />
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -334,7 +328,7 @@
                                 <Border.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{loc:T action.view_room}" IsVisible="{Binding IsOnline}"
-                                                  FontWeight="SemiBold" Foreground="{StaticResource Brand300}"
+                                                  FontWeight="SemiBold" Foreground="{DynamicResource Brand300}"
                                                   Click="ViewRoom_OnClick" />
                                         <Separator IsVisible="{Binding IsOnline}" />
                                         <MenuItem Header="{loc:T action.copy_friend_code}" Click="CopyFriendCode_OnClick" />

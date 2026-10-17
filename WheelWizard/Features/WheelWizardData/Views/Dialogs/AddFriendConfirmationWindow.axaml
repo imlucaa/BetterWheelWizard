@@ -19,7 +19,7 @@
 
         <Grid Grid.Row="1" Margin="0,16,0,10" ColumnDefinitions="Auto,*">
             <Border Grid.Column="0" Width="96" Height="96" CornerRadius="999999"
-                    ClipToBounds="True" Background="{StaticResource Neutral950}" Margin="0,0,16,0">
+                    ClipToBounds="True" Background="{DynamicResource Neutral950}" Margin="0,0,16,0">
                 <miiImages:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                          Mii="{Binding FriendMii}"
                                          LoadingColor="{DynamicResource Neutral600}"

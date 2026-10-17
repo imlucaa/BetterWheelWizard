@@ -222,6 +222,30 @@ public class SettingsManager : ISettingsManager, IDisposable
         SAVED_WINDOW_SCALE = RegisterWhWz("WindowScale", 1.0, SettingValues.IsValidWindowScale);
         RR_REGION = RegisterWhWz("RR_Region", MarioKartWiiEnums.Regions.None);
         WW_LANGUAGE = RegisterWhWz("WW_Language", "en", value => SettingValues.WhWzLanguages.ContainsKey(value));
+        LAUNCHER_THEME_COLOR = RegisterWhWz("LauncherThemeColor", "#249AF3", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_TEXT_COLOR = RegisterWhWz("LauncherTextColor", "#F1F3F5", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BODY_TEXT_COLOR = RegisterWhWz("LauncherBodyTextColor", "#D7D9E0", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BACKGROUND_COLOR = RegisterWhWz("LauncherBackgroundColor", "#101216", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BACKGROUND_FILE = RegisterWhWz(
+            "LauncherBackgroundFile",
+            "",
+            value => string.IsNullOrEmpty(value) || value == _fileSystem.Path.GetFileName(value)
+        );
+        LAUNCHER_BACKGROUND_STRETCH = RegisterWhWz(
+            "LauncherBackgroundStretch",
+            "UniformToFill",
+            value => value is "None" or "Fill" or "Uniform" or "UniformToFill"
+        );
+        LAUNCHER_BACKGROUND_OPACITY = RegisterWhWz("LauncherBackgroundOpacity", 0.42, value => value is >= 0.0 and <= 1.0);
+        LAUNCHER_SURFACE_OPACITY = RegisterWhWz("LauncherSurfaceOpacity", 0.92, value => value is >= 0.0 and <= 1.0);
+        LAUNCHER_MINIMAL_HOME_ARTWORK = RegisterWhWz("LauncherMinimalHomeArtwork", false);
+        LAUNCHER_HIDE_HOME_TITLE = RegisterWhWz("LauncherHideHomeTitle", false);
+        LAUNCHER_CLEAN_SIDEBAR = RegisterWhWz("LauncherCleanSidebar", false);
+        LAUNCHER_FONT = RegisterWhWz(
+            "LauncherFont",
+            "",
+            value => string.IsNullOrEmpty(value) || value == _fileSystem.Path.GetFileName(value)
+        );
         #endregion
 
         #region Dolphin settings
@@ -328,6 +352,18 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<double> SAVED_WINDOW_SCALE { get; }
     public Setting<MarioKartWiiEnums.Regions> RR_REGION { get; }
     public Setting<string> WW_LANGUAGE { get; }
+    public Setting<string> LAUNCHER_THEME_COLOR { get; }
+    public Setting<string> LAUNCHER_TEXT_COLOR { get; }
+    public Setting<string> LAUNCHER_BODY_TEXT_COLOR { get; }
+    public Setting<string> LAUNCHER_BACKGROUND_COLOR { get; }
+    public Setting<string> LAUNCHER_BACKGROUND_FILE { get; }
+    public Setting<string> LAUNCHER_BACKGROUND_STRETCH { get; }
+    public Setting<double> LAUNCHER_BACKGROUND_OPACITY { get; }
+    public Setting<double> LAUNCHER_SURFACE_OPACITY { get; }
+    public Setting<bool> LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
+    public Setting<bool> LAUNCHER_HIDE_HOME_TITLE { get; }
+    public Setting<bool> LAUNCHER_CLEAN_SIDEBAR { get; }
+    public Setting<string> LAUNCHER_FONT { get; }
 
     public Setting<string> NAND_ROOT_PATH { get; }
     public Setting<string> LOAD_PATH { get; }

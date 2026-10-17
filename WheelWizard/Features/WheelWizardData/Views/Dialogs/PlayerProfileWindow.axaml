@@ -32,9 +32,9 @@
             <StackPanel Spacing="12" Margin="0,8,0,4">
                 <Grid ColumnDefinitions="Auto,*">
                     <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
-                            Background="{StaticResource Neutral950}" Width="84" Height="84" Margin="0,0,14,0">
+                            Background="{DynamicResource Neutral950}" Width="84" Height="84" Margin="0,0,14,0">
                         <miiImages:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                 LoadingColor="{StaticResource Neutral600}"
+                                                 LoadingColor="{DynamicResource Neutral600}"
                                                  Mii="{Binding DisplayMii}"
                                                  FallBackColor="{DynamicResource Neutral600}"
                                                  ImageVariant="{x:Static miiVars:MiiImageVariants.OnlinePlayerSmall}" />

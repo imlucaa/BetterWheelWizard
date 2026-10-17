@@ -15,8 +15,8 @@
     <UserControl.Styles>
         <!-- THE LICENSE: one card, photo on the left, the card face on the right -->
         <Style Selector="Border.License">
-            <Setter Property="Background" Value="{StaticResource Neutral900}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Neutral900}" />
+            <Setter Property="Background" Value="{DynamicResource Neutral900}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral900}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="12" />
             <Setter Property="ClipToBounds" Value="True" />
@@ -27,7 +27,7 @@
             </Setter>
         </Style>
         <Style Selector="Border.License.Online">
-            <Setter Property="BorderBrush" Value="{StaticResource Brand600}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand600}" />
         </Style>
 
 
@@ -35,12 +35,12 @@
         <Style Selector="TextBlock.StatValue">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral200}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBlock.StatLabel">
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
     </UserControl.Styles>
@@ -51,10 +51,6 @@
             <!-- This is the total height as the (Title + infoSection) - (padding) -->
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="{StaticResource BackgroundLineColor}" Height="1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <Border Grid.Row="1" Background="{StaticResource BackgroundLineColor}" Height="1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <TextBlock Grid.Row="0" Text="{loc:T page_title.my_profiles}" HorizontalAlignment="Left"
                    VerticalAlignment="Bottom"
                    Classes="PageTitleText" />
@@ -106,8 +102,8 @@
                         <Panel Grid.Column="0" ClipToBounds="True">
                             <Panel.Background>
                                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                    <GradientStop Color="{StaticResource Neutral800}" Offset="0" />
-                                    <GradientStop Color="#3A3D49" Offset="1" />
+                                    <GradientStop Color="{DynamicResource Neutral800}" Offset="0" />
+                                    <GradientStop Color="{DynamicResource Neutral700}" Offset="1" />
                                 </LinearGradientBrush>
                             </Panel.Background>
 
@@ -144,7 +140,7 @@
                                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                         Mii="{Binding PhotoMii}"
                                                         LoadingColor="Transparent"
-                                                        FallBackColor="{StaticResource Neutral600}"
+                                                        FallBackColor="{DynamicResource Neutral600}"
                                                         Performance="{x:Static miiAnimations:MiiPerformances.ProfileWindow}"
                                                         MaxFramesPerSecond="60"
                                                         ImageVariant="{x:Static miiVars:MiiImageVariants.CurrentUserWindowLive}"
@@ -152,9 +148,9 @@
 
                             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,10"
                                         Orientation="Horizontal" Spacing="5" IsVisible="{Binding IsOnline}">
-                                <Ellipse Width="7" Height="7" Fill="{StaticResource Brand300}" VerticalAlignment="Center" />
+                                <Ellipse Width="7" Height="7" Fill="{DynamicResource Brand300}" VerticalAlignment="Center" />
                                 <TextBlock Text="{loc:T attribute.status_online}" FontSize="12"
-                                           Foreground="{StaticResource Brand200}" VerticalAlignment="Center" />
+                                           Foreground="{DynamicResource Brand200}" VerticalAlignment="Center" />
                             </StackPanel>
 
                             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="7" Spacing="6">
@@ -178,7 +174,7 @@
                             <Grid Grid.Row="0" ColumnDefinitions="*,Auto" HorizontalAlignment="Left">
                                 <SelectableTextBlock Grid.Column="0" Text="{Binding PlayerName}"
                                                      FontSize="20" FontWeight="Bold"
-                                                     Foreground="{StaticResource Neutral50}"
+                                                     Foreground="{DynamicResource Neutral50}"
                                                      TextTrimming="CharacterEllipsis"
                                                      VerticalAlignment="Center" />
                                 <components:ActionButton Grid.Column="1" VerticalAlignment="Center" Margin="8,1,0,0"
@@ -192,7 +188,7 @@
                                         IsVisible="{Binding HasFriendCode}">
                                 <SelectableTextBlock Text="{Binding CurrentFriendCode}" FontSize="13"
                                                      LetterSpacing="0.6"
-                                                     Foreground="{StaticResource Neutral400}"
+                                                     Foreground="{DynamicResource Neutral400}"
                                                      VerticalAlignment="Center" />
                                 <components:ActionButton VerticalAlignment="Center"
                                                        IconData="{StaticResource Copy}"
@@ -204,9 +200,9 @@
                                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Left"
                                             Background="Transparent" ToolTip.Tip="{loc:T attribute.vr_full}">
                                     <SelectableTextBlock Text="{Binding Vr}" FontSize="30" FontWeight="Bold"
-                                                         Foreground="{StaticResource Neutral50}" VerticalAlignment="Bottom" />
+                                                         Foreground="{DynamicResource Neutral50}" VerticalAlignment="Bottom" />
                                     <TextBlock Text="{loc:T attribute.vr_abbreviation}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{StaticResource Neutral500}" VerticalAlignment="Bottom"
+                                               Foreground="{DynamicResource Neutral500}" VerticalAlignment="Bottom"
                                                Margin="0,0,0,6" />
                                 </StackPanel>
 
@@ -214,9 +210,9 @@
                                             HorizontalAlignment="Left" IsVisible="False"
                                             Background="Transparent" ToolTip.Tip="{loc:T attribute.br_full}">
                                     <SelectableTextBlock Text="{Binding Br}" FontSize="30" FontWeight="Bold"
-                                                         Foreground="{StaticResource Neutral50}" VerticalAlignment="Bottom" />
+                                                         Foreground="{DynamicResource Neutral50}" VerticalAlignment="Bottom" />
                                     <TextBlock Text="{loc:T attribute.br_abbreviation}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{StaticResource Neutral500}" VerticalAlignment="Bottom"
+                                               Foreground="{DynamicResource Neutral500}" VerticalAlignment="Bottom"
                                                Margin="0,0,0,6" />
                                 </StackPanel>
                             </Grid>

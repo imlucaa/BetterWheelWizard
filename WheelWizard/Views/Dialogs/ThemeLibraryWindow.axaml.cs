@@ -2,10 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
-using WheelWizard.Views.Popups.Base;
+using WheelWizard.Views.Components;
+using WheelWizard.Views.Dialogs.Base;
 using Button = WheelWizard.Views.Components.Button;
 
-namespace WheelWizard.Views.Popups.Generic;
+namespace WheelWizard.Views.Dialogs;
 
 public partial class ThemeLibraryWindow : PopupContent
 {
@@ -25,6 +26,9 @@ public partial class ThemeLibraryWindow : PopupContent
                 Text = themeNames[index],
                 IconData = icon,
                 Variant = Button.ButtonsVariantType.Default,
+                Tone = ActionButtonTone.Brand,
+                ButtonSize = Button.ButtonsSizeType.Regular,
+                MinHeight = 42,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
             };

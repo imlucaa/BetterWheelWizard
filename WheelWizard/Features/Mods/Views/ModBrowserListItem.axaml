@@ -3,7 +3,7 @@
         xmlns:components="using:WheelWizard.Views.Components"
         xmlns:mods="clr-namespace:WheelWizard.Mods.Views">
     <Design.PreviewWith>
-        <StackPanel Spacing="6" Background="{StaticResource Neutral950}">
+        <StackPanel Spacing="6" Background="{DynamicResource Neutral950}">
             <mods:ModBrowserListItem Width="294" Height="89"
                                            ModTitle="My Title"
                                            ModAuthor="Me"/>
@@ -38,7 +38,7 @@
                         <Border Grid.Column="1" Grid.Row="0" CornerRadius="99999"
                                 x:Name="PART_SelectedBlur" IsVisible="False"
                                 Opacity="0.25" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                Background="{StaticResource Brand200}"
+                                Background="{DynamicResource Brand200}"
                                 Height="150" Width="70" Effect="blur(150)">
                             <Border.Styles>
                                 <Style Selector="Border">
@@ -94,9 +94,9 @@
 
                         <Border Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 x:Name="PART_OverlayBorder" CornerRadius="5" BorderThickness="1" IsVisible="False"
-                                Background="Transparent" BorderBrush="{StaticResource Brand300}">
+                                Background="Transparent" BorderBrush="{DynamicResource Brand300}">
                             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="3"
-                                    Background="{StaticResource Brand200}" Opacity="0.1"/>
+                                    Background="{DynamicResource Brand200}" Opacity="0.1"/>
                         </Border>
 
                         <!-- Loading Icon -->

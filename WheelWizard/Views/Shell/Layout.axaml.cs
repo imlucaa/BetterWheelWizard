@@ -18,6 +18,7 @@ using WheelWizard.Settings.Types;
 using WheelWizard.Settings.Views;
 using WheelWizard.Shared.MessageTranslations;
 using WheelWizard.Shared.Polling;
+using WheelWizard.Themes;
 using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell.Controls;
 using WheelWizard.Views.Shell.Navigation;
@@ -75,6 +76,7 @@ public partial class Layout : BaseWindow, IPollingListener
     private ISettingsManager SettingsService { get; }
 
     private ISettingsSignalBus SettingsSignalBus { get; }
+    private ILauncherBackgroundService LauncherBackgroundService { get; }
 
     private IModManager ModManagerService { get; }
 
@@ -86,6 +88,7 @@ public partial class Layout : BaseWindow, IPollingListener
         IGameLicenseSingletonService gameLicenseService,
         ISettingsManager settingsService,
         ISettingsSignalBus settingsSignalBus,
+        ILauncherBackgroundService launcherBackgroundService,
         IModManager modManagerService,
         IAutoUpdaterSingletonService autoUpdater
     )
@@ -97,8 +100,12 @@ public partial class Layout : BaseWindow, IPollingListener
         GameLicenseService = gameLicenseService;
         SettingsService = settingsService;
         SettingsSignalBus = settingsSignalBus;
+        LauncherBackgroundService = launcherBackgroundService;
         ModManagerService = modManagerService;
         InitializeComponent();
+        _ = LauncherBackground.LoadAsync(LauncherBackgroundService.Current);
+        LauncherBackgroundService.Changed += OnLauncherBackgroundChanged;
+        Closed += (_, _) => LauncherBackgroundService.Changed -= OnLauncherBackgroundChanged;
         CompleteGrid.SizeChanged += (_, e) =>
         {
             if (ContentArea.Content is SettingsPage settingsPage)
@@ -116,6 +123,7 @@ public partial class Layout : BaseWindow, IPollingListener
 
         ClampSavedWindowScaleToCurrentScreen();
         OnSettingChanged(SettingsService.SAVED_WINDOW_SCALE);
+        ApplyLauncherAppearance();
         _settingsSignalSubscription = SettingsSignalBus.Subscribe(OnSettingSignal);
         UpdateTestingButtonVisibility();
 
@@ -131,6 +139,9 @@ public partial class Layout : BaseWindow, IPollingListener
         if (SettingsService.SIDEBAR_COLLAPSED.Get())
             _ = SetSidebarCollapsedAsync(true, animate: false);
     }
+
+    private void OnLauncherBackgroundChanged(LauncherBackgroundState state) =>
+        Dispatcher.UIThread.Post(async () => await LauncherBackground.LoadAsync(state));
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
@@ -240,6 +251,45 @@ public partial class Layout : BaseWindow, IPollingListener
 
         if (setting == SettingsService.TESTING_MODE_ENABLED)
             UpdateTestingButtonVisibility();
+
+        if (
+            setting == SettingsService.LAUNCHER_SURFACE_OPACITY
+            || setting == SettingsService.LAUNCHER_CLEAN_SIDEBAR
+            || setting == SettingsService.LAUNCHER_BACKGROUND_FILE
+        )
+            ApplyLauncherAppearance();
+    }
+
+    private void ApplyLauncherAppearance()
+    {
+        // Surface colors carry the configured alpha so cards, the sidebar, and the
+        // content surface all reveal the custom image consistently. Applying the
+        // opacity again here would square the requested value on this one surface.
+        ContentBackground.Opacity = 1;
+        // The rounded top-left corner of the content panel exposes whatever sits behind it. With a custom image
+        // that is the raw, undimmed image (a bright sliver at the top of the sidebar edge), so square it off.
+        var hasCustomBackground = !string.IsNullOrWhiteSpace(SettingsService.LAUNCHER_BACKGROUND_FILE.Get());
+        ContentBackground.CornerRadius = hasCustomBackground ? new CornerRadius(0) : new CornerRadius(6, 0, 0, 0);
+        // Never fade the complete sidebar: doing so also fades the required footer
+        // controls (especially the settings gear) into dark custom themes.
+        SidebarGrid.Opacity = 1.0;
+        var application = Application.Current!;
+        var contentBrush = (IBrush)application.FindResource("LauncherSurfaceBrush")!;
+        var sidebarBrush = (IBrush)application.FindResource("LauncherSidebarBrush")!;
+        // Home artwork visibility must not change the shell exposure. Only panel
+        // opacity controls these surfaces; HomePage owns the wheel/trails setting.
+        TopChromeSurface.Background = contentBrush;
+        ContentBackground.Background = contentBrush;
+        SidebarPageSurface.Background = sidebarBrush;
+        var cleanSidebar = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
+        CompleteGrid.Classes.Set("CleanSidebar", cleanSidebar);
+        SidebarProfileBlock.Background = cleanSidebar ? Brushes.Transparent : (IBrush)Application.Current!.FindResource("SidebarBoxBrush")!;
+        SidebarProfileBlock.BorderBrush = cleanSidebar ? Brushes.Transparent : GetResourceBrush("Neutral600");
+        // Footer utility glyphs remain unboxed in both sidebar modes. Their own
+        // foreground colors provide contrast without theme-colored circles.
+        LiveStatusBorder.Background = Brushes.Transparent;
+        SidebarInfoButton.Background = Brushes.Transparent;
+        SidebarSettingsButton.Background = Brushes.Transparent;
     }
 
     private void ClampSavedWindowScaleToCurrentScreen()
@@ -515,15 +565,19 @@ public partial class Layout : BaseWindow, IPollingListener
 
     private void SidebarProfileBlock_OnPointerEntered(object? sender, PointerEventArgs e)
     {
-        SidebarProfileBlock.Background = GetResourceBrush("Neutral800");
-        SidebarProfileBlock.BorderBrush = GetResourceBrush("Brand400");
-        SidebarProfileHoverEffect.IsVisible = true;
+        var cleanSidebar = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
+        SidebarProfileBlock.Background = cleanSidebar
+            ? Brushes.Transparent
+            : (IBrush)Application.Current!.FindResource("SidebarBoxHoverBrush")!;
+        SidebarProfileBlock.BorderBrush = cleanSidebar ? Brushes.Transparent : GetResourceBrush("Neutral600");
+        SidebarProfileHoverEffect.IsVisible = false;
     }
 
     private void SidebarProfileBlock_OnPointerExited(object? sender, PointerEventArgs e)
     {
-        SidebarProfileBlock.Background = Brushes.Transparent;
-        SidebarProfileBlock.BorderBrush = GetResourceBrush("Neutral600");
+        var cleanSidebar = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
+        SidebarProfileBlock.Background = cleanSidebar ? Brushes.Transparent : (IBrush)Application.Current!.FindResource("SidebarBoxBrush")!;
+        SidebarProfileBlock.BorderBrush = cleanSidebar ? Brushes.Transparent : GetResourceBrush("Neutral600");
         SidebarProfileHoverEffect.IsVisible = false;
     }
 

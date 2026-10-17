@@ -13,13 +13,13 @@
     <UserControl.Styles>
         <Style Selector="TextBlock.SummaryText">
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <!-- A smaller checkbox than the default one. -->
         <Style Selector="components|ToggleCheckBox.Small">
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral400}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
         </Style>
         <Style Selector="components|ToggleCheckBox.Small /template/ Border#PART_Indicator">
             <Setter Property="Width" Value="16" />
@@ -29,11 +29,18 @@
         </Style>
         <Style Selector="TextBlock.AxisText">
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Neutral500}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral500}" />
         </Style>
     </UserControl.Styles>
 
-    <StackPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType=community:VrHistoryGraph}}">
+    <Border x:Name="HistorySurface"
+            Background="{DynamicResource Neutral900}"
+            BorderBrush="{DynamicResource Neutral800}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12"
+            DataContext="{Binding RelativeSource={RelativeSource AncestorType=community:VrHistoryGraph}}">
+    <StackPanel>
         <!-- HEADER: summary above the right-aligned graph controls. -->
         <Grid RowDefinitions="Auto,Auto">
             <StackPanel HorizontalAlignment="Left" Spacing="2">
@@ -46,11 +53,11 @@
                     <TextBlock Classes="SummaryText" Text="{Binding StartingVr, StringFormat='{}{0:N0}'}"
                                ToolTip.Tip="{loc:T attribute.start_vr}" />
                     <PathIcon Data="{StaticResource ArrowRight}" Width="9" Height="9"
-                              Foreground="{StaticResource Neutral600}" VerticalAlignment="Center" />
+                              Foreground="{DynamicResource Neutral600}" VerticalAlignment="Center" />
                     <TextBlock Classes="SummaryText" Text="{Binding EndingVr, StringFormat='{}{0:N0}'}"
                                ToolTip.Tip="{loc:T attribute.end_vr}" />
                     <TextBlock Classes="SummaryText" FontWeight="SemiBold" Margin="4,0,0,0"
-                               Foreground="{StaticResource Brand400}"
+                               Foreground="{DynamicResource Brand400}"
                                IsVisible="{Binding IsTotalChangeGain}"
                                Text="{Binding TotalChangeText}"
                                ToolTip.Tip="{loc:T attribute.net_change}" />
@@ -85,11 +92,11 @@
                            Text="{Binding GraphMinVrText}" Margin="0,0,8,-6" VerticalAlignment="Bottom" />
 
                 <Grid Grid.Row="0" Grid.Column="1">
-                    <Border Background="{StaticResource Neutral900}" Height="1" VerticalAlignment="Top" />
-                    <Border Background="{StaticResource Neutral900}" Height="1" VerticalAlignment="Center" />
-                    <Border Background="{StaticResource Neutral900}" Height="1" VerticalAlignment="Bottom" />
-                    <community:VrGraphAreaFill Points="{Binding GraphPoints}" Color="{StaticResource Brand400}" />
-                    <Path Data="{Binding GraphPath}" Stroke="{StaticResource Brand400}" StrokeThickness="2"
+                    <Border Background="{DynamicResource Neutral900}" Height="1" VerticalAlignment="Top" />
+                    <Border Background="{DynamicResource Neutral900}" Height="1" VerticalAlignment="Center" />
+                    <Border Background="{DynamicResource Neutral900}" Height="1" VerticalAlignment="Bottom" />
+                    <community:VrGraphAreaFill Points="{Binding GraphPoints}" Color="{DynamicResource Brand400}" />
+                    <Path Data="{Binding GraphPath}" Stroke="{DynamicResource Brand400}" StrokeThickness="2"
                           StrokeLineCap="Round" StrokeJoin="Round" Stretch="Fill" />
                 </Grid>
 
@@ -113,25 +120,26 @@
             <StackPanel IsVisible="{Binding HasError}" Spacing="4"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
                 <PathIcon Data="{StaticResource Chart}" Width="80" Height="80" Margin="0,0,0,6"
-                          Foreground="{StaticResource Neutral800}" />
+                          Foreground="{DynamicResource Neutral800}" />
                 <TextBlock Text="{loc:T empty_content.no_vr_history_title}" FontSize="14" FontWeight="Bold"
-                           Foreground="{StaticResource Neutral400}" HorizontalAlignment="Center" />
+                           Foreground="{DynamicResource Neutral400}" HorizontalAlignment="Center" />
                 <TextBlock Text="{Binding ErrorMessage}" Classes="TinyText" MaxWidth="280"
-                           Foreground="{StaticResource Neutral500}"
+                           Foreground="{DynamicResource Neutral500}"
                            TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
             </StackPanel>
 
             <StackPanel IsVisible="{Binding ShowNoDataState}" Spacing="4"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
                 <PathIcon Data="{StaticResource Chart}" Width="80" Height="80" Margin="0,0,0,6"
-                          Foreground="{StaticResource Neutral800}" />
+                          Foreground="{DynamicResource Neutral800}" />
                 <TextBlock Text="{loc:T empty_content.no_vr_history_title}" FontSize="14" FontWeight="Bold"
-                           Foreground="{StaticResource Neutral400}" HorizontalAlignment="Center" />
+                           Foreground="{DynamicResource Neutral400}" HorizontalAlignment="Center" />
                 <TextBlock Text="{Binding EmptyStateText}" Classes="TinyText" MaxWidth="280"
-                           Foreground="{StaticResource Neutral500}"
+                           Foreground="{DynamicResource Neutral500}"
                            TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
             </StackPanel>
         </Grid>
 
     </StackPanel>
+    </Border>
 </UserControl>

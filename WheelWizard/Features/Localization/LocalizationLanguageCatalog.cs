@@ -20,6 +20,9 @@ public static class LocalizationLanguageCatalog
             new("ru", "value.language.russian"),
             new("ko", "value.language.korean"),
             new("tr", "value.language.turkish"),
+            new("ar", "value.language.arabic"),
+            new("nb", "value.language.norwegian"),
+            new("zh", "value.language.chinese"),
         ];
 
     public static LanguageInfo? Find(string languageCode)

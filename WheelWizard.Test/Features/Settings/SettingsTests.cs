@@ -134,6 +134,28 @@ public class SettingsManagerTests
     }
 
     [Theory]
+    [InlineData(0.0)]
+    [InlineData(0.25)]
+    [InlineData(1.0)]
+    public void LauncherSurfaceOpacity_AcceptsFullSliderRange(double opacity)
+    {
+        using var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.True(manager.Set(manager.LAUNCHER_SURFACE_OPACITY, opacity, skipSave: true));
+        Assert.Equal(opacity, manager.LAUNCHER_SURFACE_OPACITY.Get());
+    }
+
+    [Theory]
+    [InlineData(-0.01)]
+    [InlineData(1.01)]
+    public void LauncherSurfaceOpacity_RejectsValuesOutsideSliderRange(double opacity)
+    {
+        using var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.False(manager.Set(manager.LAUNCHER_SURFACE_OPACITY, opacity, skipSave: true));
+    }
+
+    [Theory]
     [InlineData(0.49)]
     [InlineData(2.01)]
     public void SavedWindowScale_RejectsValuesOutsideBounds(double scale)
@@ -303,6 +325,16 @@ public class SettingsSignalBusTests
 [Collection("SettingsFeature")]
 public class SettingsLocalizationServiceTests
 {
+    [Fact]
+    public void LanguageCatalog_IncludesEveryBundledBetterWheelWizardLanguage()
+    {
+        var languageCodes = SettingValues.WhWzLanguages.Keys;
+
+        Assert.Contains("ar", languageCodes);
+        Assert.Contains("nb", languageCodes);
+        Assert.Contains("zh", languageCodes);
+    }
+
     [Fact]
     public void LanguageDisplayNames_UseAppliedYamlLanguage()
     {

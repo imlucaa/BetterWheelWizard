@@ -1,5 +1,8 @@
+using System.IO.Abstractions;
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Fonts;
+using WheelWizard.ApplicationData;
 using WheelWizard.Settings;
 
 namespace WheelWizard.Themes;
@@ -9,8 +12,13 @@ public interface ILauncherThemeService
     void Initialize();
 }
 
-public sealed class LauncherThemeService(ISettingsManager settingsManager, ISettingsSignalBus settingsSignalBus) : ILauncherThemeService
+public sealed class LauncherThemeService(
+    ISettingsManager settingsManager,
+    ISettingsSignalBus settingsSignalBus,
+    IApplicationDataLocation applicationData
+) : ILauncherThemeService
 {
+    private static readonly Dictionary<string, Uri> RegisteredFontCollections = new(StringComparer.OrdinalIgnoreCase);
     private static readonly string[] AccentResourceKeys =
     [
         "Primary50",
@@ -25,6 +33,23 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         "Primary900",
         "Primary950",
     ];
+
+    private static readonly string[] BrandResourceKeys =
+    [
+        "Brand50",
+        "Brand100",
+        "Brand200",
+        "Brand300",
+        "Brand400",
+        "Brand500",
+        "Brand600",
+        "Brand700",
+        "Brand800",
+        "Brand900",
+        "Brand950",
+    ];
+
+    public static IReadOnlyList<string> ThemeAccentResourceKeys => [.. AccentResourceKeys, .. BrandResourceKeys];
 
     private static readonly string[] SurfaceResourceKeys = ["Neutral600", "Neutral700", "Neutral800", "Neutral900", "Neutral950"];
     private static readonly string[] TextResourceKeys = ["Neutral50", "Neutral100", "Neutral200", "Neutral300", "Neutral400", "Neutral500"];
@@ -51,11 +76,39 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         var backgroundColor = Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_BACKGROUND_COLOR));
         var accentScale = CreateAccentScale(themeColor);
         for (var i = 0; i < AccentResourceKeys.Length; i++)
+        {
             resources[AccentResourceKeys[i]] = accentScale[i];
+            resources[BrandResourceKeys[i]] = accentScale[i];
+        }
 
-        var surfaceScale = CreateSurfaceScale(backgroundColor);
+        // Panel opacity is useful with both an image and the solid launcher base.
+        // Do not silently discard the user's value when no image is selected.
+        var surfaceOpacity = settingsManager.LAUNCHER_SURFACE_OPACITY.Get();
+        var surfaceScale = CreateSurfaceScale(backgroundColor).Select(color => ApplyOpacity(color, surfaceOpacity)).ToArray();
         for (var i = 0; i < SurfaceResourceKeys.Length; i++)
             resources[SurfaceResourceKeys[i]] = surfaceScale[i];
+        // Explicit brushes avoid Avalonia converting a dynamic Color resource to an
+        // opaque brush when it is assigned to a Control.Background property.
+        resources["LauncherSurfaceBrush"] = new SolidColorBrush(surfaceScale[^1]);
+        resources["LauncherPanelBrush"] = new SolidColorBrush(surfaceScale[3]);
+        // Clean sidebar controls presentation only. Panel opacity remains the
+        // single source of truth for both content and sidebar transparency.
+        resources["LauncherSidebarBrush"] = new SolidColorBrush(ApplyOpacity(backgroundColor, surfaceOpacity));
+        // The root window must remain opaque when no custom image is selected. The
+        // image control is layered above this fallback and below launcher panels.
+        resources["LauncherBaseBrush"] = new SolidColorBrush(Color.FromRgb(backgroundColor.R, backgroundColor.G, backgroundColor.B));
+        // Popup chrome must stay opaque and readable. Launcher panel opacity is
+        // only for the main window over its custom background image.
+        var opaqueSurfaceScale = CreateSurfaceScale(backgroundColor);
+        resources["PopupBackgroundBrush"] = new SolidColorBrush(backgroundColor);
+        resources["PopupSurfaceBrush"] = new SolidColorBrush(opaqueSurfaceScale[3]);
+        resources["PopupBorderBrush"] = new SolidColorBrush(opaqueSurfaceScale[1]);
+        resources["LauncherReadableSurfaceBrush"] = new SolidColorBrush(CreateReadableSurface(backgroundColor, surfaceOpacity));
+        resources["SidebarBoxBrush"] = new SolidColorBrush(CreateSidebarBoxSurface(backgroundColor, surfaceOpacity, false));
+        resources["SidebarBoxHoverBrush"] = new SolidColorBrush(CreateSidebarBoxSurface(backgroundColor, surfaceOpacity, true));
+
+        var accentText = CreateAccentText(themeColor);
+        resources["LauncherAccentTextBrush"] = new SolidColorBrush(accentText);
 
         var readableTextColor = CreateReadableText(textColor, surfaceScale[^1]);
         var textScale = CreateTextScale(readableTextColor, surfaceScale[^1]);
@@ -68,6 +121,8 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         resources["TitleTextHoverColor"] = new SolidColorBrush(textScale[0]);
         resources["FormFieldLabelColor"] = new SolidColorBrush(textScale[0]);
         resources["LauncherBrandColor"] = new SolidColorBrush(brandColor);
+        resources["LauncherFooterIconBrush"] = new SolidColorBrush(CreateReadableText(Colors.White, backgroundColor));
+        resources["DefaultFont"] = ResolveFont(settingsManager.LAUNCHER_FONT.Get(), applicationData.DirectoryPath);
     }
 
     private void OnSettingChanged(SettingChangedSignal signal)
@@ -77,11 +132,14 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
             || signal.Setting == settingsManager.LAUNCHER_TEXT_COLOR
             || signal.Setting == settingsManager.LAUNCHER_BODY_TEXT_COLOR
             || signal.Setting == settingsManager.LAUNCHER_BACKGROUND_COLOR
+            || signal.Setting == settingsManager.LAUNCHER_BACKGROUND_FILE
+            || signal.Setting == settingsManager.LAUNCHER_SURFACE_OPACITY
+            || signal.Setting == settingsManager.LAUNCHER_FONT
         )
             ApplyTheme();
     }
 
-    internal static IReadOnlyList<Color> CreateAccentScale(Color color)
+    public static IReadOnlyList<Color> CreateAccentScale(Color color)
     {
         var accent = color;
         return
@@ -114,7 +172,22 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         ];
     }
 
-    internal static Color CreateReadableText(Color color, Color background)
+    public static Color CreateReadableSurface(Color background, double panelOpacity)
+    {
+        // Readability-sensitive cards follow panel opacity while retaining the old
+        // launcher's subtle 35% tint at zero. Use the same neutral shade as default
+        // buttons so controls and cards form one muted, translucent surface family.
+        var effectiveOpacity = 0.35 + Math.Clamp(panelOpacity, 0, 1) * 0.65;
+        return ApplyOpacity(CreateSurfaceScale(background)[1], effectiveOpacity);
+    }
+
+    public static Color CreateSidebarBoxSurface(Color background, double panelOpacity, bool hover)
+    {
+        var scale = CreateSurfaceScale(background);
+        return ApplyOpacity(scale[hover ? 2 : 3], panelOpacity);
+    }
+
+    public static Color CreateReadableText(Color color, Color background)
     {
         if (ContrastRatio(color, background) >= 4.5)
             return color;
@@ -129,9 +202,14 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         return target;
     }
 
-    internal static bool HasReadableContrast(Color color, Color background) => ContrastRatio(color, background) >= 4.5;
+    // Text on an accent-filled control (Save, Play, ...). Mixing white toward black until it just passes the
+    // contrast check produces a washed-out gray on light accents, so use crisp white when it reads well on the
+    // accent (3.5:1, the usual bar for bold button labels) and crisp black otherwise.
+    public static Color CreateAccentText(Color accent) => ContrastRatio(Colors.White, accent) >= 3.5 ? Colors.White : Colors.Black;
 
-    internal static IReadOnlyList<Color> CreateTextScale(Color color, Color background) =>
+    public static bool HasReadableContrast(Color color, Color background) => ContrastRatio(color, background) >= 4.5;
+
+    public static IReadOnlyList<Color> CreateTextScale(Color color, Color background) =>
         [
             Mix(color, Colors.White, 0.18),
             Mix(color, Colors.White, 0.09),
@@ -140,6 +218,56 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
             color,
             Mix(color, background, 0.40),
         ];
+
+    public static FontFamily ResolveFont(string value, string dataDirectory)
+    {
+        try
+        {
+            if (value.Equals("Inter", StringComparison.OrdinalIgnoreCase))
+                return new FontFamily("Inter");
+            if (value.Equals("CTMKF", StringComparison.OrdinalIgnoreCase))
+                return FontFamily.Parse(
+                    "avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF, avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto"
+                );
+            if (Path.GetExtension(value).ToLowerInvariant() is ".ttf" or ".otf")
+            {
+                var path = Path.Combine(dataDirectory, "Appearance", "Fonts", Path.GetFileName(value));
+                if (File.Exists(path))
+                {
+                    using var typeface = SkiaSharp.SKTypeface.FromFile(path);
+                    if (!string.IsNullOrWhiteSpace(typeface?.FamilyName))
+                    {
+                        if (!RegisteredFontCollections.TryGetValue(path, out var key))
+                        {
+                            key = new Uri($"fonts:custom/{Guid.NewGuid():N}");
+                            FontManager.Current.AddFontCollection(new FileFontCollection(key, path));
+                            RegisteredFontCollections[path] = key;
+                        }
+                        return FontFamily.Parse(
+                            $"{key}#{typeface.FamilyName}, avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto"
+                        );
+                    }
+                }
+            }
+        }
+        catch (ArgumentException) { }
+        catch (IOException) { }
+        return FontFamily.Parse(
+            "avares://BetterWheelWizard/Resources/Fonts/Roboto-Regular.ttf#Roboto, avares://BetterWheelWizard/Resources/Fonts/ctmkf.ttf#CTMKF"
+        );
+    }
+
+    private sealed class FileFontCollection : FontCollectionBase
+    {
+        public FileFontCollection(Uri key, string path)
+        {
+            Key = key;
+            using var stream = File.OpenRead(path);
+            TryAddGlyphTypeface(stream, out _);
+        }
+
+        public override Uri Key { get; }
+    }
 
     private static double ContrastRatio(Color first, Color second)
     {
@@ -163,6 +291,9 @@ public sealed class LauncherThemeService(ISettingsManager settingsManager, ISett
         static byte Channel(byte start, byte end, double amount) => (byte)Math.Round(start + ((end - start) * amount));
         return Color.FromRgb(Channel(start.R, end.R, amount), Channel(start.G, end.G, amount), Channel(start.B, end.B, amount));
     }
+
+    public static Color ApplyOpacity(Color color, double opacity) =>
+        Color.FromArgb((byte)Math.Round(byte.MaxValue * Math.Clamp(opacity, 0, 1)), color.R, color.G, color.B);
 }
 
 public static class LauncherThemeExtensions
@@ -170,6 +301,7 @@ public static class LauncherThemeExtensions
     public static IServiceCollection AddLauncherThemes(this IServiceCollection services)
     {
         services.AddSingleton<ILauncherThemeService, LauncherThemeService>();
+        services.AddSingleton<ILauncherBackgroundService, LauncherBackgroundService>();
         return services;
     }
 }

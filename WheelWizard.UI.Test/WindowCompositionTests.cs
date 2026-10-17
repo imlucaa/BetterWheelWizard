@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -98,6 +100,108 @@ public class WindowCompositionTests
     }
 
     [AvaloniaFact]
+    public void SidebarHover_UsesNeutralTextWithoutAccentGlow()
+    {
+        var button = new SidebarRadioButton { Text = "My Miis", Width = 221 };
+        var host = new Grid
+        {
+            Width = 400,
+            Height = 100,
+            Children = { button },
+        };
+        button.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+        button.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+        var window = new Window
+        {
+            Content = host,
+            Width = 400,
+            Height = 100,
+        };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            var pseudoClasses = (IPseudoClasses)
+                typeof(StyledElement)
+                    .GetProperty("PseudoClasses", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                    .GetValue(button)!;
+            pseudoClasses.Set(":pointerover", true);
+            Dispatcher.UIThread.RunJobs();
+
+            var expectedForeground = Assert.IsType<Color>(Application.Current!.FindResource("Neutral100"));
+            var actualForeground = Assert.IsAssignableFrom<ISolidColorBrush>(button.Foreground);
+            Assert.Equal(expectedForeground, actualForeground.Color);
+            Assert.False(button.GetVisualDescendants().OfType<WheelWizard.Views.Components.HoverGlow>().Single().IsVisible);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
+    public void SettingsNavigation_TracksLiveThemeSurfaceResources()
+    {
+        var resources = Application.Current!.Resources;
+        var oldPanel = resources["LauncherPanelBrush"];
+        var themedSurface = new SolidColorBrush(Color.FromArgb(112, 42, 18, 8));
+        resources["LauncherPanelBrush"] = themedSurface;
+        var pages = Substitute.For<WheelWizard.Views.Shell.Navigation.IPageFactory>();
+        pages.Create(Arg.Any<Type>(), Arg.Any<object[]>()).Returns(_ => new UserControl());
+        var page = new WheelWizard.Settings.Views.SettingsPage(
+            Substitute.For<IPopupFactory>(),
+            Substitute.For<ISettingsManager>(),
+            new SettingsSignalBus(NullLogger<SettingsSignalBus>.Instance),
+            pages
+        );
+        var window = new Window
+        {
+            Content = page,
+            Width = 656,
+            Height = 876,
+        };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            var navigation = page.FindControl<Border>("SettingsNavigation")!;
+            Assert.Same(themedSurface, navigation.Background);
+        }
+        finally
+        {
+            window.Close();
+            resources["LauncherPanelBrush"] = oldPanel;
+        }
+    }
+
+    [AvaloniaFact]
+    public void VrHistory_UsesContinuousThemeSurface()
+    {
+        var caller = Substitute.For<IApiCaller<IRwfcApi>>();
+        using var model = new VrHistoryViewModel(caller);
+        var history = new VrHistoryGraph(model);
+        var window = new Window
+        {
+            Content = history,
+            Width = 560,
+            Height = 390,
+        };
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            var surface = history.FindControl<Border>("HistorySurface")!;
+            Assert.NotNull(surface.Background);
+            Assert.Equal(new CornerRadius(8), surface.CornerRadius);
+            Assert.Equal(new Thickness(12), surface.Padding);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact]
     public void SettingsContent_StaysStationaryWhileNavigationIsRevealed()
     {
         var pages = Substitute.For<WheelWizard.Views.Shell.Navigation.IPageFactory>();
@@ -140,6 +244,52 @@ public class WindowCompositionTests
         {
             window.Close();
         }
+    }
+
+    [AvaloniaFact]
+    public void SettingsNavigation_ExposesThePreservedBackupPage()
+    {
+        var pages = Substitute.For<WheelWizard.Views.Shell.Navigation.IPageFactory>();
+        pages.Create(Arg.Any<Type>(), Arg.Any<object[]>()).Returns(_ => new UserControl());
+        var page = new WheelWizard.Settings.Views.SettingsPage(
+            Substitute.For<IPopupFactory>(),
+            Substitute.For<ISettingsManager>(),
+            new SettingsSignalBus(NullLogger<SettingsSignalBus>.Instance),
+            pages
+        );
+
+        var navigation = page.FindControl<WheelWizard.Views.Components.SegmentedControl>("SettingPages")!;
+        var backupOption = Assert.Single(
+            navigation.Items.OfType<WheelWizard.Views.Components.SegmentOption>(),
+            option => Equals(option.Tag, nameof(WheelWizard.Settings.Views.BackupSettings))
+        );
+
+        navigation.SelectedItem = backupOption;
+
+        pages.Received().Create(typeof(WheelWizard.Settings.Views.BackupSettings), Arg.Any<object[]>());
+    }
+
+    [AvaloniaFact]
+    public void SettingsNavigation_ExposesTheLanguagePage()
+    {
+        var pages = Substitute.For<WheelWizard.Views.Shell.Navigation.IPageFactory>();
+        pages.Create(Arg.Any<Type>(), Arg.Any<object[]>()).Returns(_ => new UserControl());
+        var page = new WheelWizard.Settings.Views.SettingsPage(
+            Substitute.For<IPopupFactory>(),
+            Substitute.For<ISettingsManager>(),
+            new SettingsSignalBus(NullLogger<SettingsSignalBus>.Instance),
+            pages
+        );
+
+        var navigation = page.FindControl<WheelWizard.Views.Components.SegmentedControl>("SettingPages")!;
+        var languageOption = Assert.Single(
+            navigation.Items.OfType<WheelWizard.Views.Components.SegmentOption>(),
+            option => Equals(option.Tag, nameof(WheelWizard.Settings.Views.LanguageSettings))
+        );
+
+        navigation.SelectedItem = languageOption;
+
+        pages.Received().Create(typeof(WheelWizard.Settings.Views.LanguageSettings), Arg.Any<object[]>());
     }
 
     [AvaloniaTheory]

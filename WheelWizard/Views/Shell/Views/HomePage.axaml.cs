@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Testably.Abstractions;
 using WheelWizard.Models.Enums;
+using WheelWizard.Settings;
 using WheelWizard.Views.Components;
 using WheelWizard.Views.Shell.Controls;
 using WheelWizard.Views.Shell.ViewModels;
@@ -22,18 +23,39 @@ public partial class HomePage : UserControl
     private WheelTrailState _currentTrailState = WheelTrailState.Static_None;
     private bool _isAttached;
     private readonly TaskCompletionSource _initialContent = new();
+    private readonly ISettingsManager _settings;
+    private readonly ISettingsSignalBus _signals;
+    private IDisposable? _appearanceSubscription;
     public Task InitialContentReady => _initialContent.Task;
 
-    public HomePage(HomeViewModel model, IRandomSystem randomSystem)
+    public HomePage(HomeViewModel model, IRandomSystem randomSystem, ISettingsManager settings, ISettingsSignalBus signals)
     {
         Model = model;
         RandomSystem = randomSystem;
+        _settings = settings;
+        _signals = signals;
         InitializeComponent();
         _trails = [HomeTrail1, HomeTrail2, HomeTrail3, HomeTrail4, HomeTrail5];
         RandomSystem.Random.Shared.Shuffle(_trails);
         DataContext = Model;
         if (Model.IsDolphinVisible)
             ApplyDolphinTrailColors();
+        ApplyAppearance();
+        _appearanceSubscription = _signals.Subscribe(signal =>
+        {
+            if (
+                signal.Setting == _settings.LAUNCHER_MINIMAL_HOME_ARTWORK
+                || signal.Setting == _settings.LAUNCHER_HIDE_HOME_TITLE
+                || signal.Setting == _settings.LAUNCHER_SURFACE_OPACITY
+                || signal.Setting == _settings.ENABLE_ANIMATIONS
+            )
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    ApplyAppearance();
+                    if (signal.Setting == _settings.ENABLE_ANIMATIONS)
+                        ApplyAnimationPreference();
+                });
+        });
     }
 
     protected override async void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -59,7 +81,33 @@ public partial class HomePage : UserControl
         Model.PropertyChanged -= Model_OnPropertyChanged;
         Model.MainActionStarted -= Model_OnMainActionStarted;
         Model.Dispose();
+        _appearanceSubscription?.Dispose();
         base.OnDetachedFromVisualTree(e);
+    }
+
+    private void ApplyAppearance()
+    {
+        // The large wheel and all five trail gears form one artwork assembly.
+        // They disappear together and reveal the background by the same amount as
+        // the selected launcher panel opacity.
+        HomeArtwork.IsVisible = !_settings.LAUNCHER_MINIMAL_HOME_ARTWORK.Get();
+        HomeArtwork.Opacity = Math.Clamp(_settings.LAUNCHER_SURFACE_OPACITY.Get(), 0, 1);
+        HomeTitle.IsVisible = !_settings.LAUNCHER_HIDE_HOME_TITLE.Get();
+    }
+
+    private void ApplyAnimationPreference()
+    {
+        if (!Model.AnimationsEnabled)
+        {
+            ShowStaticWheelTrails();
+            return;
+        }
+
+        // Replay the entrance when motion is enabled while Home is open. This
+        // also resets trails that were placed in the static reduced-motion state.
+        ResetWheelTrails();
+        if (Model.Status == WheelWizardStatus.Ready && !Model.IsBusy)
+            PlayEntranceAnimation();
     }
 
     private void Model_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -104,11 +152,14 @@ public partial class HomePage : UserControl
 
     private async void PlayEntranceAnimation()
     {
-        // If the animations are disabled, it will never play the entrance animation
-        // The entrance animation is also the only one that makes the wheels visible, meaning hat if this one does not play
-        // all the other animations are all also impossible to play
+        // Disabling motion must not remove the Home decoration. The entrance
+        // animation normally reveals these controls, so reveal their final static
+        // state directly when animations are disabled.
         if (!Model.AnimationsEnabled)
+        {
+            ShowStaticWheelTrails();
             return;
+        }
 
         var allowedToRun = WaitForWheelTrailState(
             WheelTrailState.Playing_Entrance,
@@ -137,6 +188,38 @@ public partial class HomePage : UserControl
         lock (_trails)
         {
             _currentTrailState = WheelTrailState.Static_Visible;
+        }
+    }
+
+    private void ShowStaticWheelTrails()
+    {
+        lock (_trails)
+        {
+            _currentTrailState = WheelTrailState.Static_Visible;
+        }
+
+        foreach (var trail in _trails)
+        {
+            trail.Classes.Clear();
+            trail.ExtendedHeight = 0;
+            trail.WheelRotation = 0;
+            trail.IsVisible = true;
+        }
+    }
+
+    private void ResetWheelTrails()
+    {
+        lock (_trails)
+        {
+            _currentTrailState = WheelTrailState.Static_None;
+        }
+
+        foreach (var trail in _trails)
+        {
+            trail.Classes.Clear();
+            trail.ExtendedHeight = 1000;
+            trail.WheelRotation = 0;
+            trail.IsVisible = false;
         }
     }
 
@@ -189,6 +272,9 @@ public partial class HomePage : UserControl
 
     private async void PlayButton_OnPointerEntered(object? sender, PointerEventArgs e)
     {
+        if (!Model.AnimationsEnabled)
+            return;
+
         var allowedToRun = WaitForWheelTrailState(
             WheelTrailState.Playing_HoverEnter,
             c => c is WheelTrailState.Static_Visible or WheelTrailState.Playing_HoverExit,
@@ -224,6 +310,9 @@ public partial class HomePage : UserControl
 
     private async void PlayButton_OnPointerExit(object? sender, PointerEventArgs e)
     {
+        if (!Model.AnimationsEnabled)
+            return;
+
         var allowedToRun = WaitForWheelTrailState(
             WheelTrailState.Playing_HoverExit,
             c => c is WheelTrailState.Static_Hover or WheelTrailState.Playing_HoverEnter,

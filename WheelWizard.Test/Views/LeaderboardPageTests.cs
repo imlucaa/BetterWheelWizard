@@ -1,5 +1,5 @@
 using WheelWizard.RrRooms;
-using WheelWizard.Views.Pages;
+using WheelWizard.WheelWizardData.Views;
 
 namespace WheelWizard.Test.Views;
 

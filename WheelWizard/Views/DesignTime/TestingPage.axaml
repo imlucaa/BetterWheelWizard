@@ -27,8 +27,8 @@
         </Style>
 
         <Style Selector="Border#StatusPill.ready">
-            <Setter Property="Background" Value="{StaticResource Brand950}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brand500}" />
+            <Setter Property="Background" Value="{DynamicResource Brand950}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brand500}" />
         </Style>
 
         <Style Selector="Border#StatusPill.warning">
@@ -46,7 +46,7 @@
         </Style>
 
         <Style Selector="Border#StatusPill.ready PathIcon#StatusIcon">
-            <Setter Property="Foreground" Value="{StaticResource Brand300}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
         </Style>
 
         <Style Selector="Border#StatusPill.warning PathIcon#StatusIcon">
@@ -73,13 +73,13 @@
                 <TextBlock Text="Testing Mode" Classes="PageTitleText" />
                 <Border VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,0,0"
                         Width="22" Height="22"
-                        Background="{StaticResource Brand950}"
-                        BorderBrush="{StaticResource Brand700}"
+                        Background="{DynamicResource Brand950}"
+                        BorderBrush="{DynamicResource Brand700}"
                         BorderThickness="1"
                         CornerRadius="999">
                     <PathIcon Data="{StaticResource StarIcon}"
                               Width="12" Height="12"
-                              Foreground="{StaticResource Brand300}"
+                              Foreground="{DynamicResource Brand300}"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center" />
                 </Border>
@@ -104,8 +104,8 @@
                     BoxShadow="0 16 36 0 #28000000" Margin="0,14,0,10">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="{StaticResource Neutral900}" Offset="0" />
-                        <GradientStop Color="{StaticResource Brand950}" Offset="0.58" />
+                        <GradientStop Color="{DynamicResource Neutral900}" Offset="0" />
+                        <GradientStop Color="{DynamicResource Brand950}" Offset="0.58" />
                         <GradientStop Color="{StaticResource Black}" Offset="1" />
                     </LinearGradientBrush>
                 </Border.Background>
@@ -118,16 +118,16 @@
                     <PathIcon Data="{StaticResource WheelIcon}" Width="210" Height="210"
                               Opacity="0.045" Margin="0,0,-66,-64"
                               VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                              Foreground="{StaticResource Brand200}" />
+                              Foreground="{DynamicResource Brand200}" />
 
                     <Grid RowDefinitions="Auto,*,Auto" Margin="24">
                         <Grid ColumnDefinitions="Auto,14,*" RowDefinitions="Auto,Auto">
                             <Border Grid.RowSpan="2" Width="46" Height="46" CornerRadius="999"
-                                    Background="{StaticResource Neutral800}"
-                                    BorderBrush="{StaticResource Brand700}"
+                                    Background="{DynamicResource Neutral800}"
+                                    BorderBrush="{DynamicResource Brand700}"
                                     BorderThickness="1">
                                 <PathIcon Data="{StaticResource Code}" Width="21" Height="21"
-                                          Foreground="{StaticResource Brand300}" />
+                                          Foreground="{DynamicResource Brand300}" />
                             </Border>
 
                             <TextBlock Grid.Column="2" Text="Retro Rewind"

@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:loc="clr-namespace:WheelWizard.Localization"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Settings.Views.LanguageSettings">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <components:FormFieldLabel Text="{loc:T section.language}" Margin="0,10,0,4" />
+            <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="64">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3"
+                                HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <components:FormFieldLabel Text="{loc:T option.wh_wz_language}" />
+                        <SelectableTextBlock Classes="TinyText"
+                                             Text="{loc:T helper_text.wh_wz_language}"
+                                             TextAlignment="Left" TextWrapping="Wrap" />
+                        <SelectableTextBlock x:Name="TranslationsPercentageText" Classes="TinyText"
+                                             TextAlignment="Left" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <components:Dropdown Grid.Column="1" x:Name="WhWzLanguageDropdown" Search="True"
+                                         HorizontalAlignment="Right" VerticalAlignment="Center" ZIndex="2" />
+                </Grid>
+            </Border>
+            <Border Classes="SettingsBottomSpacer" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

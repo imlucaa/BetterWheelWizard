@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using WheelWizard.Models.RRInfo;
 using WheelWizard.RrRooms;
 using WheelWizard.Shared.Polling;
+using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell.Navigation;
 using WheelWizard.WheelWizardData;
 
@@ -205,7 +206,7 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         ApplyFilters();
     }
 
-    internal static int? ParseVrFilter(string? text) =>
+    public static int? ParseVrFilter(string? text) =>
         int.TryParse(text, NumberStyles.Integer | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out var value) && value >= 0
             ? value
             : null;

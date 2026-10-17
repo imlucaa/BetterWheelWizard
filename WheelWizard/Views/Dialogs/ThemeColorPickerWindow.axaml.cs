@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using WheelWizard.Views.Popups.Base;
+using WheelWizard.Views.Dialogs.Base;
 
-namespace WheelWizard.Views.Popups.Generic;
+namespace WheelWizard.Views.Dialogs;
 
 public partial class ThemeColorPickerWindow : PopupContent
 {

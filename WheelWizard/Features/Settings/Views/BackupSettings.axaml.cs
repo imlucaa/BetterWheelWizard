@@ -4,10 +4,10 @@ using Avalonia.Interactivity;
 using WheelWizard.CustomDistributions;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.Features.Backups;
-using WheelWizard.Views.Storage;
+using WheelWizard.Shared.Desktop.Storage;
 using WheelWizard.WiiManagement;
 
-namespace WheelWizard.Views.Pages.Settings;
+namespace WheelWizard.Settings.Views;
 
 public partial class BackupSettings : UserControl
 {
