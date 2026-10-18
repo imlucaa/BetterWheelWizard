@@ -260,9 +260,10 @@ public sealed class DiscordPresenceService(
         }
 
         // View Player opens your page on the leaderboard; View Room opens the room list, and only while you are in one.
-        var buttons = settings.Get<bool>(settings.DISCORD_BUTTONS);
-        var playerUrl = buttons ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode) : null;
-        var roomUrl = buttons && live is { InRoom: true } ? RoomsUrl : null;
+        var playerUrl = settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
+            ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode)
+            : null;
+        var roomUrl = settings.Get<bool>(settings.DISCORD_ROOM_BUTTON) && live is { InRoom: true } ? RoomsUrl : null;
 
         var activity = new DiscordActivity(
             details,

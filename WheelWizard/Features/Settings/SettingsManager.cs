@@ -214,7 +214,8 @@ public class SettingsManager : ISettingsManager, IDisposable
         LAUNCH_RR_ON_STARTUP = RegisterWhWz("LaunchRrOnStartup", false);
         DISCORD_PRESENCE_ENABLED = RegisterWhWz("DiscordPresenceEnabled", false);
         DISCORD_LIVE_INFO = RegisterWhWz("DiscordLiveInfo", true);
-        DISCORD_BUTTONS = RegisterWhWz("DiscordButtons", true);
+        DISCORD_PLAYER_BUTTON = RegisterWhWz("DiscordPlayerButton", true);
+        DISCORD_ROOM_BUTTON = RegisterWhWz("DiscordRoomButton", true);
         DISCORD_APP_ID = RegisterWhWz("DiscordAppId", "");
         DISCORD_LARGE_IMAGE = RegisterWhWz("DiscordLargeImage", "");
         DISCORD_LARGE_TEXT = RegisterWhWz("DiscordLargeText", "");
@@ -352,7 +353,8 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<bool> LAUNCH_RR_ON_STARTUP { get; }
     public Setting<bool> DISCORD_PRESENCE_ENABLED { get; }
     public Setting<bool> DISCORD_LIVE_INFO { get; }
-    public Setting<bool> DISCORD_BUTTONS { get; }
+    public Setting<bool> DISCORD_PLAYER_BUTTON { get; }
+    public Setting<bool> DISCORD_ROOM_BUTTON { get; }
     public Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     public Setting<string> DISCORD_APP_ID { get; }
     public Setting<string> DISCORD_LARGE_IMAGE { get; }

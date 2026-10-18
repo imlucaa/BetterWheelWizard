@@ -42,7 +42,8 @@ public interface ISettingsProperties
     Setting<bool> LAUNCH_RR_ON_STARTUP { get; }
     Setting<bool> DISCORD_PRESENCE_ENABLED { get; }
     Setting<bool> DISCORD_LIVE_INFO { get; }
-    Setting<bool> DISCORD_BUTTONS { get; }
+    Setting<bool> DISCORD_PLAYER_BUTTON { get; }
+    Setting<bool> DISCORD_ROOM_BUTTON { get; }
     Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     Setting<string> DISCORD_APP_ID { get; }
     Setting<string> DISCORD_LARGE_IMAGE { get; }

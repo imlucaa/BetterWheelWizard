@@ -41,12 +41,24 @@
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="48">
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
-                            <components:FormFieldLabel Text="Buttons" />
+                            <components:FormFieldLabel Text="View Player button" />
                             <TextBlock Classes="TinyText" TextWrapping="Wrap"
-                                       Text="Add View Player and View Room buttons." />
+                                       Text="Opens your page on the rwfc.net leaderboard." />
                         </StackPanel>
-                        <components:ToggleCheckBox Grid.Column="1" x:Name="ButtonsToggle" Variant="Switch"
-                                                   VerticalAlignment="Center" Click="Buttons_OnClick" />
+                        <components:ToggleCheckBox Grid.Column="1" x:Name="PlayerButtonToggle" Variant="Switch"
+                                                   VerticalAlignment="Center" Click="PlayerButton_OnClick" />
+                    </Grid>
+                </Border>
+
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
+                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="View Room button" />
+                            <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                                       Text="While you are in a room, opens the rwfc.net room list." />
+                        </StackPanel>
+                        <components:ToggleCheckBox Grid.Column="1" x:Name="RoomButtonToggle" Variant="Switch"
+                                                   VerticalAlignment="Center" Click="RoomButton_OnClick" />
                     </Grid>
                 </Border>
 

@@ -26,7 +26,8 @@ public partial class DiscordSettings : UserControl
     {
         EnabledToggle.IsChecked = _settings.Get<bool>(_settings.DISCORD_PRESENCE_ENABLED);
         LiveInfoToggle.IsChecked = _settings.Get<bool>(_settings.DISCORD_LIVE_INFO);
-        ButtonsToggle.IsChecked = _settings.Get<bool>(_settings.DISCORD_BUTTONS);
+        PlayerButtonToggle.IsChecked = _settings.Get<bool>(_settings.DISCORD_PLAYER_BUTTON);
+        RoomButtonToggle.IsChecked = _settings.Get<bool>(_settings.DISCORD_ROOM_BUTTON);
         SetupButton.Text = HasSetup ? "Change setup" : "Run setup";
 
         if (!HasSetup)
@@ -64,8 +65,11 @@ public partial class DiscordSettings : UserControl
         ResultText.Text = enabled ? "On. Restart Dolphin, then start the game." : "Off.";
     }
 
-    private void Buttons_OnClick(object? sender, RoutedEventArgs e) =>
-        SettingsEditing.Set(_settings, _settings.DISCORD_BUTTONS, ButtonsToggle.IsChecked == true);
+    private void PlayerButton_OnClick(object? sender, RoutedEventArgs e) =>
+        SettingsEditing.Set(_settings, _settings.DISCORD_PLAYER_BUTTON, PlayerButtonToggle.IsChecked == true);
+
+    private void RoomButton_OnClick(object? sender, RoutedEventArgs e) =>
+        SettingsEditing.Set(_settings, _settings.DISCORD_ROOM_BUTTON, RoomButtonToggle.IsChecked == true);
 
     private void LiveInfo_OnClick(object? sender, RoutedEventArgs e) =>
         SettingsEditing.Set(_settings, _settings.DISCORD_LIVE_INFO, LiveInfoToggle.IsChecked == true);
