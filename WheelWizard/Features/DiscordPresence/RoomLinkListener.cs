@@ -66,7 +66,16 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
             {
                 var context = await listener.GetContextAsync();
                 var path = context.Request.Url?.AbsolutePath ?? "";
-                var roomId = path.StartsWith("/room/", StringComparison.Ordinal) ? Uri.UnescapeDataString(path[6..]) : "";
+
+                // Browsers also ask for /favicon.ico and the like; those must not open anything.
+                if (!path.StartsWith("/room/", StringComparison.Ordinal))
+                {
+                    context.Response.StatusCode = 404;
+                    context.Response.Close();
+                    continue;
+                }
+
+                var roomId = Uri.UnescapeDataString(path[6..]);
 
                 var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
 
