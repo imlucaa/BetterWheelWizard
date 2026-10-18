@@ -277,7 +277,7 @@ public sealed class DiscordPresenceService(
             settings.Get<bool>(settings.DISCORD_ROOM_BUTTON)
             && live is { InRoom: true, RoomId: { } roomId }
             && RoomLinkListener.IsValidRoomId(roomId)
-                ? RoomLinkListener.BuildUrl(roomId)
+                ? RoomLinkListener.BuildUrl(roomId, live.PlayerUrl?.Split('/').Last())
                 : null;
 
         var activity = new DiscordActivity(

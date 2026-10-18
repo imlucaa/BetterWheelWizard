@@ -6,6 +6,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WheelWizard.Models.RRInfo;
 using WheelWizard.RrRooms;
 using WheelWizard.Views.Shell.Navigation;
 
@@ -27,11 +28,12 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
 
     private HttpListener? _listener;
 
-    /// <summary>
-    /// The link on the Discord button. The page tells Wheel Wizard on the viewer's PC to open the room (see
-    /// <see cref="Port"/>), or sends them to the project's GitHub page when Wheel Wizard is not there.
-    /// </summary>
-    public static string BuildUrl(string roomId) => $"https://imlucaa.github.io/BetterWheelWizard/room/?id={Uri.EscapeDataString(roomId)}";
+    /// <summary>The link on the Discord button; the friend code lets the room be found if its id has changed.</summary>
+    public static string BuildUrl(string roomId, string? friendCode = null)
+    {
+        var url = $"http://127.0.0.1:{Port}/room/{Uri.EscapeDataString(roomId)}";
+        return string.IsNullOrEmpty(friendCode) ? url : $"{url}?fc={Uri.EscapeDataString(friendCode)}";
+    }
 
     public static bool IsValidRoomId(string id) =>
         id.Length is > 0 and <= 64 && id.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-');
@@ -73,8 +75,9 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 context.Response.Close();
 
                 var id = IsValidRoomId(roomId) ? roomId : null;
+                var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
                 // A room made since the last refresh is not in the launcher's list yet, so fetch it fresh first.
-                if (id != null && rooms.CurrentRooms.All(r => r.Id != id))
+                if (id != null && FindRoom(id, friendCode) == null)
                 {
                     try
                     {
@@ -86,7 +89,7 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                     }
                 }
 
-                await Dispatcher.UIThread.InvokeAsync(() => OpenRoom(id));
+                await Dispatcher.UIThread.InvokeAsync(() => OpenRoom(id, friendCode));
             }
             catch (Exception exception) when (!listener.IsListening)
             {
@@ -99,7 +102,18 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
         }
     }
 
-    private void OpenRoom(string? roomId)
+    // The room by its id, or failing that the room the player with this friend code is in.
+    private RrRoom? FindRoom(string? roomId, string friendCode) =>
+        rooms.CurrentRooms.FirstOrDefault(r => r.Id == roomId)
+        ?? (
+            friendCode.Length == 0
+                ? null
+                : rooms.CurrentRooms.FirstOrDefault(r =>
+                    r.Players.Any(p => new string((p.FriendCode ?? "").Where(char.IsAsciiDigit).ToArray()) == friendCode)
+                )
+        );
+
+    private void OpenRoom(string? roomId, string friendCode)
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window })
         {
@@ -110,7 +124,7 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
         }
 
         var navigation = services.GetRequiredService<INavigationService>();
-        var room = roomId == null ? null : rooms.CurrentRooms.FirstOrDefault(r => r.Id == roomId);
+        var room = FindRoom(roomId, friendCode);
         logger.LogInformation("Room link {RoomId}: {Found} of {Count} rooms known", roomId, room != null, rooms.CurrentRooms.Count);
         if (room != null)
             navigation.NavigateTo<WheelWizard.RrRooms.Views.RoomDetailsPage>(room);
