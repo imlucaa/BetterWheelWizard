@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Opening room</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #1b1b1f; color: #eee; text-align: center; padding-top: 80px; }
+  a { color: #7ab7ff; }
+</style>
+</head>
+<body>
+<h2 id="title">Opening the room in Wheel Wizard…</h2>
+<p id="note">You can close this tab once it opens.</p>
+<script>
+  // Wheel Wizard listens on this PC. If it answers, it opens the room itself; if not, it is not installed or not
+  // running, so send the visitor to the project page instead.
+  var repo = "https://github.com/imlucaa/BetterWheelWizard";
+  var id = (new URLSearchParams(location.search).get("id") || "").replace(/[^A-Za-z0-9_-]/g, "");
+  var url = "http://127.0.0.1:47831/room/" + encodeURIComponent(id);
+
+  function notInstalled() {
+    document.getElementById("title").textContent = "Wheel Wizard was not found";
+    document.getElementById("note").innerHTML = 'Taking you to <a href="' + repo + '">BetterWheelWizard on GitHub</a>…';
+    setTimeout(function () { location.replace(repo); }, 1200);
+  }
+
+  if (!id) {
+    notInstalled();
+  } else {
+    var timer = setTimeout(notInstalled, 4000);
+    fetch(url, { mode: "no-cors" }).then(function () { clearTimeout(timer); }, function () { clearTimeout(timer); notInstalled(); });
+  }
+</script>
+</body>
+</html>
