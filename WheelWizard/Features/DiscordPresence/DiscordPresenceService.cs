@@ -36,6 +36,7 @@ public sealed class DiscordPresenceService(
     private int? _lastSection;
     private bool _started;
     private DiscordActivity? _lastSent;
+    private int? _lastGoodSection;
     private DateTime _lastSentAt = DateTime.MinValue;
 
     // Resent now and then even when nothing changed: it notices a connection Discord dropped (for example while
@@ -213,6 +214,14 @@ public sealed class DiscordPresenceService(
         else if (dolphinId is { } processId && useLive)
         {
             section = _memory.ReadSectionId(processId);
+            // The screen cannot be read for a moment while the game switches menus or sits idle. The game is still
+            // there, so keep the last screen (or a plain menu) instead of dropping the status back to Dolphin's.
+            if (section is { } readId)
+                _lastGoodSection = readId;
+            else if (_memory.GameFound)
+                section = _lastGoodSection ?? -1;
+            else
+                _lastGoodSection = null;
             if (section is { } id && RetroRewindSections.IsOnline(id))
                 await RefreshRoomsAsync(cancellationToken);
             live = BuildLiveInfo(section, _memory.ReadLicenseIndex(processId));

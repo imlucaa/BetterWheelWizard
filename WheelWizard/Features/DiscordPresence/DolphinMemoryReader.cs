@@ -69,6 +69,16 @@ public sealed class DolphinMemoryReader : IDisposable
         }
     }
 
+    /// <summary>True while Mario Kart Wii is found in Dolphin, even when the screen cannot be read for a moment.</summary>
+    public bool GameFound
+    {
+        get
+        {
+            lock (_gate)
+                return _handle != 0 && _mem1 != 0 && _mem2 != 0;
+        }
+    }
+
     public int? ReadSectionId(int processId)
     {
         lock (_gate)
