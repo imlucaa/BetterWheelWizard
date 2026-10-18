@@ -68,6 +68,8 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 var path = context.Request.Url?.AbsolutePath ?? "";
                 var roomId = path.StartsWith("/room/", StringComparison.Ordinal) ? Uri.UnescapeDataString(path[6..]) : "";
 
+                var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
+
                 var bytes = Encoding.UTF8.GetBytes(string.Concat(Page));
                 context.Response.ContentType = "text/html; charset=utf-8";
                 context.Response.ContentLength64 = bytes.Length;
@@ -75,7 +77,6 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 context.Response.Close();
 
                 var id = IsValidRoomId(roomId) ? roomId : null;
-                var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
                 // A room made since the last refresh is not in the launcher's list yet, so fetch it fresh first.
                 if (id != null && FindRoom(id, friendCode) == null)
                 {
