@@ -51,7 +51,9 @@ No. The game files stay untouched, so online play works as normal. BetterWheelWi
 <p align="center">
   <img src="docs/screenshots/rooms.png" width="230" alt="Rooms" />
   <img src="docs/screenshots/backup.png" width="230" alt="Backup" />
-  <img src="docs/screenshots/discord-rpc.png" width="300" alt="Discord RPC" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/discord-rpc.png" width="400" alt="Discord RPC" />
 </p>
 
 ## Build from source
