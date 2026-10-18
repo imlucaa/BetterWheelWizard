@@ -19,6 +19,27 @@ All builds are standalone single files. No installer or separate .NET installati
 - Mii downloader and editor
 - Custom themes and backgrounds
 - Save and rating backups
+- Discord status with your own image
+
+## FAQ
+
+### How do I show Retro Rewind on my Discord profile with my own image?
+
+1. Open [discord.com/developers/applications](https://discord.com/developers/applications), click **New Application** and name it **Retro Rewind**.
+2. Under **Rich Presence > Art Assets**, upload a square image and give it a name, for example `my_image`. Save, then wait a few minutes.
+3. In BetterWheelWizard open **Settings > Discord RPC** and press **Run setup**.
+4. Paste your **Application ID** (from General Information), pick your image, and press **Finish**.
+5. Restart Dolphin and start the game.
+
+Use the **Check setup** button if the image does not show. A new image can take up to 20 minutes to appear.
+
+### Why does it only show for some people?
+
+The View Player and View Room buttons are only shown to other people looking at your profile, not to you. View Room opens the room in Wheel Wizard, so it only works for people who have it open.
+
+### Does it change the Retro Rewind pack?
+
+No. The game files stay untouched, so online play works as normal. BetterWheelWizard reads the game screen from Dolphin and sends the status to Discord itself.
 
 ## Screenshots
 

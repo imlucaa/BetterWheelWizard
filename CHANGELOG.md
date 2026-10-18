@@ -6,6 +6,19 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.6.5] - 2026-10-18
+
+### Added
+
+- Discord RPC tab: show Retro Rewind on your Discord profile with your own image, the current screen, track, players, VR and BR. A short setup guide walks you through it.
+- "View Player" and "View Room" buttons on your Discord profile, each with its own switch. View Room opens the room in Wheel Wizard for people who have it open.
+- Color picker now works, and any hex color is used exactly as typed.
+
+### Changed
+
+- The "Mods found" question no longer appears when you start the game.
+- Panels at partial opacity no longer show a black line.
+
 ## [2.6.4] - 2026-10-17
 
 ### Changed

@@ -45,7 +45,7 @@
                 <ComboBox x:Name="ImagePicker" PlaceholderText="Pick one of your images" HorizontalAlignment="Stretch"
                           IsVisible="False" SelectionChanged="ImagePicker_OnSelectionChanged" />
                 <TextBlock x:Name="ImageListText" Classes="TinyText" TextWrapping="Wrap" />
-                <components:InputField x:Name="ImageKeyBox" PlaceholderText="Image name, for example rr_logo" MinWidth="0" />
+                <components:InputField x:Name="ImageKeyBox" PlaceholderText="Image name, for example my_image" MinWidth="0" />
                 <TextBlock Classes="TinyText" Text="A new image can take up to 20 minutes to show." />
             </StackPanel>
 

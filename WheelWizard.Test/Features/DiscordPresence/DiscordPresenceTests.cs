@@ -43,7 +43,7 @@ public class DiscordPresenceTests
         Assert.Equal(expected, RetroRewindSections.IsOnlineRace(sectionId));
 
     [Theory]
-    [InlineData("1561280163868704799", true)]
+    [InlineData("123456789012345678", true)]
     [InlineData("123456789012345", true)]
     [InlineData("12345678901234", false)]
     [InlineData("123456789012345678901", false)]
