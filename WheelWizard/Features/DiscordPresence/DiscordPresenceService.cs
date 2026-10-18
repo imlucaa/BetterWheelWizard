@@ -269,9 +269,12 @@ public sealed class DiscordPresenceService(
         }
 
         // View Player opens your page on the leaderboard; View Room opens the room list, and only while you are in one.
-        var playerUrl = settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
-            ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode)
-            : null;
+        // Offline play has no leaderboard page yet, so View Player waits until you are online on a license.
+        var online = section is { } onlineId && RetroRewindSections.IsOnline(onlineId) || live is { InRoom: true };
+        var playerUrl =
+            online && settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
+                ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode)
+                : null;
         var roomUrl = settings.Get<bool>(settings.DISCORD_ROOM_BUTTON) && live is { InRoom: true } ? RoomsUrl : null;
 
         var activity = new DiscordActivity(
