@@ -27,7 +27,11 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
 
     private HttpListener? _listener;
 
-    public static string BuildUrl(string roomId) => $"http://127.0.0.1:{Port}/room/{Uri.EscapeDataString(roomId)}";
+    /// <summary>
+    /// The link on the Discord button. The page tells Wheel Wizard on the viewer's PC to open the room (see
+    /// <see cref="Port"/>), or sends them to the project's GitHub page when Wheel Wizard is not there.
+    /// </summary>
+    public static string BuildUrl(string roomId) => $"https://imlucaa.github.io/BetterWheelWizard/room/?id={Uri.EscapeDataString(roomId)}";
 
     public static bool IsValidRoomId(string id) =>
         id.Length is > 0 and <= 64 && id.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-');
