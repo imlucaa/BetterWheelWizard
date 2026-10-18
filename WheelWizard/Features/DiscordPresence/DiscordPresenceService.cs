@@ -50,6 +50,21 @@ public sealed class DiscordPresenceService(
     /// <summary>The name the Discord app must have, because it is the title everyone sees ("Playing Retro Rewind").</summary>
     public const string RequiredName = "Retro Rewind";
 
+    private const string RoomsUrl = "https://rwfc.net/rooms";
+
+    /// <summary>The leaderboard page for a friend code (like 1234-5678-9012), or null for anything else.</summary>
+    public static string? BuildPlayerUrl(string? friendCode)
+    {
+        var code = (friendCode ?? "").Trim();
+        var valid =
+            code.Length == 14
+            && code[4] == '-'
+            && code[9] == '-'
+            && code.Where((c, i) => i is not (4 or 9)).All(char.IsAsciiDigit)
+            && code != "0000-0000-0000";
+        return valid ? $"https://rwfc.net/player/{code}" : null;
+    }
+
     public static bool IsValidApplicationId(string value) => value.Length is >= 15 and <= 20 && value.All(char.IsAsciiDigit);
 
     /// <summary>What the launcher can currently see of Dolphin and the game, for the settings page.</summary>
@@ -244,6 +259,11 @@ public sealed class DiscordPresenceService(
             partyMax = live.PlayerCount > 0 ? Math.Max(live.PlayerCount, 12) : 0;
         }
 
+        // View Player opens your page on the leaderboard; View Room opens the room list, and only while you are in one.
+        var buttons = settings.Get<bool>(settings.DISCORD_BUTTONS);
+        var playerUrl = buttons ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode) : null;
+        var roomUrl = buttons && live is { InRoom: true } ? RoomsUrl : null;
+
         var activity = new DiscordActivity(
             details,
             state,
@@ -251,7 +271,9 @@ public sealed class DiscordPresenceService(
             settings.Get<string>(settings.DISCORD_LARGE_TEXT),
             _startedAt,
             partySize,
-            partyMax
+            partyMax,
+            playerUrl,
+            roomUrl
         );
         if (activity == _lastSent && DateTime.UtcNow - _lastSentAt < Heartbeat)
             return;
@@ -287,7 +309,7 @@ public sealed class DiscordPresenceService(
         }
     }
 
-    private sealed record LiveInfo(string Details, string State, int PlayerCount);
+    private sealed record LiveInfo(string Details, string State, int PlayerCount, string? PlayerUrl = null, bool InRoom = false);
 
     private sealed record MyRoom(string Track, int PlayerCount, int RaceNumber, int? Vr, int? Br, string? Rk);
 
@@ -307,7 +329,7 @@ public sealed class DiscordPresenceService(
             if (RetroRewindSections.IsOnline(id))
                 details += $" (VR: {Rating(room?.Vr, profile?.Vr)} BR: {Rating(room?.Br, profile?.Br)})";
 
-            return new(details, TrackFor(id, room), room?.PlayerCount ?? 0);
+            return new(details, TrackFor(id, room), room?.PlayerCount ?? 0, BuildPlayerUrl(profile?.FriendCode), room != null);
         }
 
         var fresh = FindFreshRoom(profile);
@@ -315,7 +337,13 @@ public sealed class DiscordPresenceService(
         {
             var freshMode = ModeLabel(fresh.Rk);
             var freshRating = fresh.Vr is { } freshVr ? $" (VR: {freshVr} BR: {fresh.Br?.ToString() ?? "--"})" : "";
-            return new($"{freshMode}{freshRating}", fresh.Track.Length > 0 ? fresh.Track : "In a room", fresh.PlayerCount);
+            return new(
+                $"{freshMode}{freshRating}",
+                fresh.Track.Length > 0 ? fresh.Track : "In a room",
+                fresh.PlayerCount,
+                BuildPlayerUrl(profile?.FriendCode),
+                true
+            );
         }
 
         var (cachedRoom, me) = FindCachedRoom(profile);
@@ -325,7 +353,7 @@ public sealed class DiscordPresenceService(
         var mode = string.IsNullOrWhiteSpace(cachedRoom.GameModeAbbrev) ? "Online" : $"Online {cachedRoom.GameModeAbbrev}";
         var rating = me?.Vr is { } vr ? $" (VR: {vr} BR: {me.Br?.ToString() ?? "--"})" : "";
         var track = string.IsNullOrWhiteSpace(cachedRoom.TrackName) ? "In a room" : cachedRoom.TrackName;
-        return new($"{mode}{rating}", track, cachedRoom.PlayerCount);
+        return new($"{mode}{rating}", track, cachedRoom.PlayerCount, BuildPlayerUrl(profile?.FriendCode), true);
     }
 
     /// <summary>

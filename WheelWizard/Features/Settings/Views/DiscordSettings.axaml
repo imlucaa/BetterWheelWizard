@@ -38,6 +38,18 @@
                     </Grid>
                 </Border>
 
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
+                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Buttons" />
+                            <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                                       Text="Add View Player and View Room buttons." />
+                        </StackPanel>
+                        <components:ToggleCheckBox Grid.Column="1" x:Name="ButtonsToggle" Variant="Switch"
+                                                   VerticalAlignment="Center" Click="Buttons_OnClick" />
+                    </Grid>
+                </Border>
+
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
                     <StackPanel Spacing="4" Margin="0,6">
                         <components:FormFieldLabel Text="Your setup" />

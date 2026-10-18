@@ -54,4 +54,50 @@ public class DiscordPresenceTests
 
     [Fact]
     public void RequiredName_IsRetroRewind() => Assert.Equal("Retro Rewind", DiscordPresenceService.RequiredName);
+
+    [Theory]
+    [InlineData("5073-9912-7254", "https://rwfc.net/player/5073-9912-7254")]
+    [InlineData(" 0050-0070-1000 ", "https://rwfc.net/player/0050-0070-1000")]
+    [InlineData("0000-0000-0000", null)]
+    [InlineData("507399127254", null)]
+    [InlineData("5073-9912-72x4", null)]
+    [InlineData("", null)]
+    [InlineData(null, null)]
+    public void BuildPlayerUrl_OnlyAcceptsFriendCodes(string? friendCode, string? expected) =>
+        Assert.Equal(expected, DiscordPresenceService.BuildPlayerUrl(friendCode));
+
+    [Fact]
+    public void Activity_WithoutLinks_HasNoButtons() => Assert.Empty(new DiscordActivity("a", "b", "key", "", 1).Buttons);
+
+    [Fact]
+    public void Activity_WithBothLinks_HasViewPlayerThenViewRoom()
+    {
+        var activity = new DiscordActivity(
+            "a",
+            "b",
+            "key",
+            "",
+            1,
+            0,
+            0,
+            "https://rwfc.net/player/5073-9912-7254",
+            "https://rwfc.net/rooms"
+        );
+
+        Assert.Equal(
+            [
+                new DiscordButton("View Player", "https://rwfc.net/player/5073-9912-7254"),
+                new DiscordButton("View Room", "https://rwfc.net/rooms"),
+            ],
+            activity.Buttons
+        );
+    }
+
+    [Fact]
+    public void Activity_WithOnlyAPlayerLink_HasJustViewPlayer()
+    {
+        var activity = new DiscordActivity("a", "b", "key", "", 1, 0, 0, "https://rwfc.net/player/5073-9912-7254");
+
+        Assert.Equal("View Player", Assert.Single(activity.Buttons).Label);
+    }
 }

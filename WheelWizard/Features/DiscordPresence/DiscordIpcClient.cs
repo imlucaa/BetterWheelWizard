@@ -126,9 +126,25 @@ public sealed record DiscordActivity(
     string? LargeImageText,
     long StartUnixSeconds,
     int PartySize = 0,
-    int PartyMax = 0
+    int PartyMax = 0,
+    string? PlayerUrl = null,
+    string? RoomUrl = null
 )
 {
+    /// <summary>The buttons shown under the status: View Player when there is a player page, View Room when in a room.</summary>
+    public IReadOnlyList<DiscordButton> Buttons
+    {
+        get
+        {
+            var buttons = new List<DiscordButton>();
+            if (!string.IsNullOrWhiteSpace(PlayerUrl))
+                buttons.Add(new("View Player", PlayerUrl));
+            if (!string.IsNullOrWhiteSpace(RoomUrl))
+                buttons.Add(new("View Room", RoomUrl));
+            return buttons;
+        }
+    }
+
     internal object ToPayload()
     {
         var assets = new Dictionary<string, string>();
@@ -146,6 +162,12 @@ public sealed record DiscordActivity(
             payload["assets"] = assets;
         if (PartySize > 0 && PartyMax >= PartySize)
             payload["party"] = new { size = new[] { PartySize, PartyMax } };
+
+        // Discord shows up to two buttons, and only to other people looking at the profile.
+        if (Buttons.Count > 0)
+            payload["buttons"] = Buttons.Select(button => new { label = button.Label, url = button.Url }).ToList();
         return payload;
     }
 }
+
+public sealed record DiscordButton(string Label, string Url);
