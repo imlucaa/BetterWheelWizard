@@ -55,6 +55,29 @@ public partial class DiscordSetupWindow : PopupContent
 
     private void Cancel_OnClick(object? sender, RoutedEventArgs e) => Close();
 
+    private async void RefreshImages_OnClick(object? sender, RoutedEventArgs e) => await LoadImagesAsync();
+
+    private void ImagePicker_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (ImagePicker.SelectedItem is string name)
+            ImageKeyBox.Text = name;
+    }
+
+    /// <summary>Shows the images already uploaded to the app, so any of them can be picked by name.</summary>
+    private async Task LoadImagesAsync()
+    {
+        if (!DiscordPresenceService.IsValidApplicationId(AppId))
+            return;
+
+        ImageListText.Text = "Looking for your images…";
+        var names = await DiscordPresenceService.GetImageNamesAsync(AppId);
+        ImagePicker.SelectedItem = null;
+        ImagePicker.ItemsSource = names;
+        ImagePicker.IsVisible = names.Count > 0;
+        ImageListText.Text =
+            names.Count > 0 ? "Pick one, or type another name below." : "No images found yet. Upload one, then press Refresh list.";
+    }
+
     private void Back_OnClick(object? sender, RoutedEventArgs e)
     {
         if (_step > 1)
@@ -133,6 +156,8 @@ public partial class DiscordSetupWindow : PopupContent
             _steps[i].IsVisible = i == _step - 1;
 
         StepCounter.Text = $"Step {_step} of {LastStep}";
+        if (_step == 3)
+            _ = LoadImagesAsync();
         BackButton.IsVisible = _step > 1;
         NextButton.Text = _step == LastStep ? "Finish" : "Next";
         if (_step == LastStep)

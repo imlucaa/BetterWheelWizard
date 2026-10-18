@@ -63,6 +63,26 @@ public sealed class DiscordPresenceService(
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
 
+    /// <summary>The names of the images uploaded to a Discord application (empty when none or it could not be read).</summary>
+    public static async Task<IReadOnlyList<string>> GetImageNamesAsync(string applicationId)
+    {
+        try
+        {
+            var json = await Http.GetStringAsync($"https://discord.com/api/v9/oauth2/applications/{applicationId}/assets");
+            using var document = System.Text.Json.JsonDocument.Parse(json);
+            return document
+                .RootElement.EnumerateArray()
+                .Select(asset => asset.GetProperty("name").GetString() ?? "")
+                .Where(name => name.Length > 0)
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            return [];
+        }
+    }
+
     /// <summary>The name of a Discord application, or null when it could not be looked up.</summary>
     public static async Task<string?> GetApplicationNameAsync(string applicationId)
     {

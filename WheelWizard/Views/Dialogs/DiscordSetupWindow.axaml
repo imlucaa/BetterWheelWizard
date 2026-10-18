@@ -37,10 +37,15 @@
                 <TextBlock Text="Add your image" Classes="TitleText" FontSize="18"
                            Foreground="{StaticResource FormFieldLabelColor}" />
                 <TextBlock Classes="BodyText" TextWrapping="Wrap"
-                           Text="Open Art Assets, click Add Image(s), pick a square picture, and name it rr_logo. Then click Save Changes." />
-                <components:Button Text="Open Art Assets" Variant="Default" HorizontalAlignment="Left"
-                                   Click="OpenAssets_OnClick" />
-                <components:InputField x:Name="ImageKeyBox" PlaceholderText="Image name (rr_logo)" MinWidth="0" />
+                           Text="Open Art Assets, click Add Image(s), pick a square picture, and give it any name you like (no spaces). Click Save Changes, then type the same name below." />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <components:Button Text="Open Art Assets" Variant="Default" Click="OpenAssets_OnClick" />
+                    <components:Button Text="Refresh list" Variant="Default" Click="RefreshImages_OnClick" />
+                </StackPanel>
+                <ComboBox x:Name="ImagePicker" PlaceholderText="Pick one of your images" HorizontalAlignment="Stretch"
+                          IsVisible="False" SelectionChanged="ImagePicker_OnSelectionChanged" />
+                <TextBlock x:Name="ImageListText" Classes="TinyText" TextWrapping="Wrap" />
+                <components:InputField x:Name="ImageKeyBox" PlaceholderText="Image name, for example rr_logo" MinWidth="0" />
                 <TextBlock Classes="TinyText" Text="A new image can take up to 20 minutes to show." />
             </StackPanel>
 
