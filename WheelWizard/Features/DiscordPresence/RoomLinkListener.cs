@@ -69,6 +69,19 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 context.Response.Close();
 
                 var id = IsValidRoomId(roomId) ? roomId : null;
+                // A room made since the last refresh is not in the launcher's list yet, so fetch it fresh first.
+                if (id != null && rooms.CurrentRooms.All(r => r.Id != id))
+                {
+                    try
+                    {
+                        await rooms.RefreshNowAsync();
+                    }
+                    catch (Exception exception)
+                    {
+                        logger.LogDebug(exception, "Could not refresh rooms for a room link");
+                    }
+                }
+
                 await Dispatcher.UIThread.InvokeAsync(() => OpenRoom(id));
             }
             catch (Exception exception) when (!listener.IsListening)
@@ -77,7 +90,7 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
             }
             catch (Exception exception)
             {
-                logger.LogDebug(exception, "Could not open a room link");
+                logger.LogWarning(exception, "Could not open a room link");
             }
         }
     }
@@ -94,6 +107,7 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
 
         var navigation = services.GetRequiredService<INavigationService>();
         var room = roomId == null ? null : rooms.CurrentRooms.FirstOrDefault(r => r.Id == roomId);
+        logger.LogInformation("Room link {RoomId}: {Found} of {Count} rooms known", roomId, room != null, rooms.CurrentRooms.Count);
         if (room != null)
             navigation.NavigateTo<WheelWizard.RrRooms.Views.RoomDetailsPage>(room);
         else

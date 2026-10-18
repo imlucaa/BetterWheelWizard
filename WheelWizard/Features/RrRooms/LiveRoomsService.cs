@@ -43,6 +43,9 @@ public class LiveRoomsService : ObservablePollingService
         _presence = presence;
     }
 
+    /// <summary>Fetches the room list right now, for callers that need a room created since the last refresh.</summary>
+    public Task RefreshNowAsync(CancellationToken cancellationToken = default) => ExecuteTaskAsync(cancellationToken);
+
     protected override async Task ExecuteTaskAsync(CancellationToken cancellationToken)
     {
         var roomsTask = _roomsService.GetRoomsAsync();
