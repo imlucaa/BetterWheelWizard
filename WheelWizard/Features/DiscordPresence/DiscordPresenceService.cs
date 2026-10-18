@@ -69,7 +69,7 @@ public sealed class DiscordPresenceService(
         try
         {
             var json = await Http.GetStringAsync(
-                $"https://discord.com/api/v9/oauth2/applications/{applicationId}/assets?nocache={DateTime.UtcNow.Ticks}"
+                $"https://discord.com/api/v9/oauth2/applications/{applicationId}/assets?cb={DateTime.UtcNow.Ticks}"
             );
             using var document = System.Text.Json.JsonDocument.Parse(json);
             return document
@@ -91,7 +91,7 @@ public sealed class DiscordPresenceService(
         try
         {
             var json = await Http.GetStringAsync(
-                $"https://discord.com/api/v9/oauth2/applications/{applicationId}/rpc?nocache={DateTime.UtcNow.Ticks}"
+                $"https://discord.com/api/v9/oauth2/applications/{applicationId}/rpc?cb={DateTime.UtcNow.Ticks}"
             );
             using var document = System.Text.Json.JsonDocument.Parse(json);
             return document.RootElement.GetProperty("name").GetString();
@@ -118,7 +118,7 @@ public sealed class DiscordPresenceService(
         try
         {
             var json = await Http.GetStringAsync(
-                $"https://discord.com/api/v9/oauth2/applications/{clientId}/assets?nocache={DateTime.UtcNow.Ticks}"
+                $"https://discord.com/api/v9/oauth2/applications/{clientId}/assets?cb={DateTime.UtcNow.Ticks}"
             );
             using var document = System.Text.Json.JsonDocument.Parse(json);
             var names = document.RootElement.EnumerateArray().Select(asset => asset.GetProperty("name").GetString() ?? "").ToList();
