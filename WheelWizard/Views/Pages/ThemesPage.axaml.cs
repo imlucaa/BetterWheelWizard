@@ -597,16 +597,8 @@ public partial class ThemesPage : UserControl
         if (!LauncherThemeService.IsValidHexColor(textColor) || !LauncherThemeService.IsValidHexColor(backgroundColor))
             return;
 
-        var selected = Color.Parse(textColor);
-        var effective = LauncherThemeService.CreateReadableText(selected, Color.Parse(backgroundColor));
-        EffectiveTextColorPreview.Background = new SolidColorBrush(effective);
-        if (effective == selected)
-            return;
-        TextContrastMessage.Text = t(
-            "theme.contrast_warning",
-            new { color = textColor, effective = $"#{effective.R:X2}{effective.G:X2}{effective.B:X2}" }
-        );
-        TextContrastNotice.IsVisible = true;
+        // Any color is used exactly as typed, however dark or light it is.
+        EffectiveTextColorPreview.Background = new SolidColorBrush(Color.Parse(textColor));
     }
 
     private async void AccentColor_OnClick(object? sender, RoutedEventArgs e) =>

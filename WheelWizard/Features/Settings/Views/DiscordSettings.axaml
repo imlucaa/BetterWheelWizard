@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Settings.Views.DiscordSettings">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,15,0,0">
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                <components:FormFieldLabel Text="Discord RPC" VerticalAlignment="Center" />
+                <components:Button Grid.Column="1" x:Name="SetupButton" Text="Run setup" ButtonSize="Compact"
+                                   Variant="Default" Click="Setup_OnClick" />
+            </Grid>
+
+            <StackPanel Spacing="4">
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
+                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Show status" />
+                            <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                                       Text="Show Retro Rewind on your Discord profile." />
+                        </StackPanel>
+                        <components:ToggleCheckBox Grid.Column="1" x:Name="EnabledToggle" Variant="Switch"
+                                                   VerticalAlignment="Center" Click="Enabled_OnClick" />
+                    </Grid>
+                </Border>
+
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
+                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Live game info" />
+                            <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                                       Text="Show the menu, track and players." />
+                        </StackPanel>
+                        <components:ToggleCheckBox Grid.Column="1" x:Name="LiveInfoToggle" Variant="Switch"
+                                                   VerticalAlignment="Center" Click="LiveInfo_OnClick" />
+                    </Grid>
+                </Border>
+
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
+                    <StackPanel Spacing="4" Margin="0,6">
+                        <components:FormFieldLabel Text="Your setup" />
+                        <TextBlock x:Name="SummaryText" Classes="TinyText" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0" RowDefinitions="Auto,Auto" RowSpacing="8">
+                <TextBlock x:Name="CheckText" Classes="TinyText" TextWrapping="Wrap" VerticalAlignment="Center"
+                           Margin="4,0,12,0" IsVisible="False" />
+                <components:Button Grid.Column="1" Text="Check setup" Click="Check_OnClick" />
+                <TextBlock Grid.Row="1" x:Name="ResultText" Classes="TinyText" TextWrapping="Wrap"
+                           VerticalAlignment="Center" Margin="4,0,12,0" IsVisible="False" />
+            </Grid>
+            <Border Classes="SettingsBottomSpacer" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

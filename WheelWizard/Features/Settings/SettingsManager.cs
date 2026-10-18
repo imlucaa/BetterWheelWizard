@@ -212,6 +212,13 @@ public class SettingsManager : ISettingsManager, IDisposable
         FORCE_WIIMOTE = RegisterWhWz("ForceWiimote", false);
         LAUNCH_WITH_DOLPHIN = RegisterWhWz("LaunchWithDolphin", false);
         LAUNCH_RR_ON_STARTUP = RegisterWhWz("LaunchRrOnStartup", false);
+        DISCORD_PRESENCE_ENABLED = RegisterWhWz("DiscordPresenceEnabled", false);
+        DISCORD_LIVE_INFO = RegisterWhWz("DiscordLiveInfo", true);
+        DISCORD_APP_ID = RegisterWhWz("DiscordAppId", "");
+        DISCORD_LARGE_IMAGE = RegisterWhWz("DiscordLargeImage", "");
+        DISCORD_LARGE_TEXT = RegisterWhWz("DiscordLargeText", "");
+        DISCORD_DETAILS = RegisterWhWz("DiscordDetails", "Playing Retro Rewind");
+        DISCORD_STATE = RegisterWhWz("DiscordState", "");
         PREFERS_MODS_ROW_VIEW = RegisterWhWz("PrefersModsRowView", true);
         USE_PATCHES_SYSTEM = RegisterWhWz("UsePatchesSystem", false);
         FOCUSED_USER = RegisterWhWz("FavoriteUser", 0, value => value >= 0 && value < 4);
@@ -271,6 +278,8 @@ public class SettingsManager : ISettingsManager, IDisposable
         // Readonly settings
         // #todo: (#377) validate blank mac settings and guide recovery before mii creation; add a regression test.
         MACADDRESS = RegisterDolphin(("Dolphin.ini", "General", "WirelessMac"), "02:01:02:03:04:05");
+        // Dolphin refuses the pack's Discord presence requests while this is off, so only the launcher's shows.
+        DOLPHIN_DISCORD_PRESENCE = RegisterDolphin(("Dolphin.ini", "General", "UseDiscordPresence"), true);
         #endregion
 
         #region Recomp settings
@@ -340,6 +349,14 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<bool> FORCE_WIIMOTE { get; }
     public Setting<bool> LAUNCH_WITH_DOLPHIN { get; }
     public Setting<bool> LAUNCH_RR_ON_STARTUP { get; }
+    public Setting<bool> DISCORD_PRESENCE_ENABLED { get; }
+    public Setting<bool> DISCORD_LIVE_INFO { get; }
+    public Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
+    public Setting<string> DISCORD_APP_ID { get; }
+    public Setting<string> DISCORD_LARGE_IMAGE { get; }
+    public Setting<string> DISCORD_LARGE_TEXT { get; }
+    public Setting<string> DISCORD_DETAILS { get; }
+    public Setting<string> DISCORD_STATE { get; }
     public Setting<bool> ENABLE_RECOMP { get; }
     public Setting<bool> RECOMP_USE_DOLPHIN_DATA { get; }
     public Setting<bool> RECOMP_COPY_DOLPHIN_NAND { get; }

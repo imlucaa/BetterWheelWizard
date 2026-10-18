@@ -1,3 +1,4 @@
+using WheelWizard.DiscordPresence;
 using WheelWizard.RrRooms;
 using WheelWizard.WheelWizardData;
 
@@ -8,11 +9,13 @@ public interface IApplicationLiveUpdates
     void Start();
 }
 
-public sealed class ApplicationLiveUpdates(LiveStatusService status, LiveRoomsService rooms) : IApplicationLiveUpdates
+public sealed class ApplicationLiveUpdates(LiveStatusService status, LiveRoomsService rooms, DiscordPresenceService discord)
+    : IApplicationLiveUpdates
 {
     public void Start()
     {
         status.Start();
         rooms.Start();
+        discord.Start();
     }
 }

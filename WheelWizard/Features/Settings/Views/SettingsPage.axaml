@@ -37,6 +37,8 @@
                                Text="{loc:T category.language}" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="OtherSettings"
                                Text="{loc:T category.other}" />
+                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="DiscordSettings"
+                               Text="Discord RPC" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="BackupSettings"
                                Text="{loc:T category.backup}" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="AppInfo"

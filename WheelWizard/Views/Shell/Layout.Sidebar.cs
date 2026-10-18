@@ -51,6 +51,7 @@ public partial class Layout
         if (change.Property == SidebarWidthProperty && CompleteGrid != null)
         {
             CompleteGrid.ColumnDefinitions[0].Width = new GridLength(SidebarWidth);
+            UpdateSeamlessSurface();
             // Follow the animated width so the portrait does not jump when labels are hidden.
             var collapsedProgress = Math.Clamp((221 - SidebarWidth) / (221 - 64), 0, 1);
             SidebarMii.Margin = new Thickness(-7 - 10 * collapsedProgress, 0, 0, 1);

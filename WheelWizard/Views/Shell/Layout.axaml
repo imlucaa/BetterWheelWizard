@@ -26,6 +26,9 @@
         <Grid x:Name="WindowFrame" RowDefinitions="30,*"
            Background="{DynamicResource LauncherBaseBrush}">
         <themes:LauncherBackgroundImage x:Name="LauncherBackground" Grid.RowSpan="2" />
+        <!-- One see-through surface under the title bar and both columns, so no seam shows between them.
+             Its brush has a hard color stop at the sidebar edge (see Layout.axaml.cs). -->
+        <Border x:Name="SeamlessSurface" Grid.RowSpan="2" IsHitTestVisible="False" />
         <Border x:Name="TopChromeSurface" Grid.Row="0" Background="{DynamicResource LauncherSurfaceBrush}"
                 WindowDecorationProperties.ElementRole="TitleBar"
                 PointerPressed="TopBar_PointerPressed">
@@ -34,7 +37,7 @@
     <Grid Grid.Row="1" ColumnDefinitions="221,*" RowDefinitions="0,17,18,96,*,80" x:Name="CompleteGrid"
           Background="Transparent">
 
-        <Border x:Name="ContentBackground" Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" Margin="-1,0,0,0"
+        <Border x:Name="ContentBackground" Grid.Column="1" Grid.Row="1" Grid.RowSpan="5"
                  CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
                  Background="{DynamicResource LauncherSurfaceBrush}" />
         <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" ClipToBounds="True">

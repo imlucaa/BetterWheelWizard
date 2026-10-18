@@ -110,7 +110,8 @@ public sealed class LauncherThemeService(
         var accentText = CreateAccentText(themeColor);
         resources["LauncherAccentTextBrush"] = new SolidColorBrush(accentText);
 
-        var readableTextColor = CreateReadableText(textColor, surfaceScale[^1]);
+        // The chosen text color is used exactly as picked, whether or not it contrasts with the background.
+        var readableTextColor = textColor;
         var textScale = CreateTextScale(readableTextColor, surfaceScale[^1]);
         for (var i = 0; i < TextResourceKeys.Length; i++)
             resources[TextResourceKeys[i]] = textScale[i];
@@ -120,6 +121,16 @@ public sealed class LauncherThemeService(
         resources["TitleIconColor"] = new SolidColorBrush(textScale[2]);
         resources["TitleTextHoverColor"] = new SolidColorBrush(textScale[0]);
         resources["FormFieldLabelColor"] = new SolidColorBrush(textScale[0]);
+
+        // The default scroll bar is a dark gray that reads as a black line over translucent panels.
+        // A soft tint of the text color stays visible on any panel opacity and follows the theme.
+        resources["ScrollBarThumbFill"] = new SolidColorBrush(ApplyOpacity(textScale[2], 0.3));
+        resources["ScrollBarThumbFillPointerOver"] = new SolidColorBrush(ApplyOpacity(textScale[2], 0.5));
+        resources["ScrollBarThumbFillPressed"] = new SolidColorBrush(ApplyOpacity(textScale[2], 0.65));
+        resources["ScrollBarTrackFill"] = Brushes.Transparent;
+        resources["ScrollBarTrackFillPointerOver"] = Brushes.Transparent;
+        resources["ScrollBarTrackStroke"] = Brushes.Transparent;
+        resources["ScrollBarTrackStrokePointerOver"] = Brushes.Transparent;
         resources["LauncherBrandColor"] = new SolidColorBrush(brandColor);
         resources["LauncherFooterIconBrush"] = new SolidColorBrush(CreateReadableText(Colors.White, backgroundColor));
         resources["DefaultFont"] = ResolveFont(settingsManager.LAUNCHER_FONT.Get(), applicationData.DirectoryPath);

@@ -1,0 +1,64 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="360"
+                   x:Class="WheelWizard.Views.Dialogs.DiscordSetupWindow">
+    <Grid Width="400" RowDefinitions="Auto,*,Auto" RowSpacing="14" Margin="0,4,0,0">
+        <TextBlock x:Name="StepCounter" Grid.Row="0" Classes="TinyText" />
+
+        <Grid Grid.Row="1" MinHeight="190">
+            <!-- 1: make the app -->
+            <StackPanel x:Name="Step1" Spacing="10">
+                <TextBlock Text="Make a Discord app" Classes="TitleText" FontSize="18"
+                           Foreground="{StaticResource FormFieldLabelColor}" />
+                <TextBlock Classes="BodyText" TextWrapping="Wrap"
+                           Text="Open the Developer Portal, click New Application, and name it Retro Rewind." />
+                <components:Button Text="Open Developer Portal" Variant="Primary" HorizontalAlignment="Left"
+                                   Click="OpenPortal_OnClick" />
+                <TextBlock Classes="TinyText" Text="Already have one? Press Next." />
+            </StackPanel>
+
+            <!-- 2: application id -->
+            <StackPanel x:Name="Step2" Spacing="10" IsVisible="False">
+                <TextBlock Text="Paste the Application ID" Classes="TitleText" FontSize="18"
+                           Foreground="{StaticResource FormFieldLabelColor}" />
+                <TextBlock Classes="BodyText" TextWrapping="Wrap"
+                           Text="Copy it from General Information and paste it here." />
+                <components:Button Text="Open General Information" Variant="Default" HorizontalAlignment="Left"
+                                   Click="OpenInformation_OnClick" />
+                <components:InputField x:Name="AppIdBox" PlaceholderText="Application ID" MinWidth="0" />
+            </StackPanel>
+
+            <!-- 3: image -->
+            <StackPanel x:Name="Step3" Spacing="10" IsVisible="False">
+                <TextBlock Text="Add your image" Classes="TitleText" FontSize="18"
+                           Foreground="{StaticResource FormFieldLabelColor}" />
+                <TextBlock Classes="BodyText" TextWrapping="Wrap"
+                           Text="Open Art Assets, click Add Image(s), pick a square picture, and name it rr_logo. Then click Save Changes." />
+                <components:Button Text="Open Art Assets" Variant="Default" HorizontalAlignment="Left"
+                                   Click="OpenAssets_OnClick" />
+                <components:InputField x:Name="ImageKeyBox" PlaceholderText="Image name (rr_logo)" MinWidth="0" />
+                <TextBlock Classes="TinyText" Text="A new image can take up to 20 minutes to show." />
+            </StackPanel>
+
+            <!-- 4: finish -->
+            <StackPanel x:Name="Step4" Spacing="10" IsVisible="False">
+                <TextBlock Text="Done" Classes="TitleText" FontSize="18"
+                           Foreground="{StaticResource FormFieldLabelColor}" />
+                <TextBlock x:Name="SummaryText" Classes="BodyText" TextWrapping="Wrap" />
+                <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                           Text="Finish turns your status on. Restart Dolphin, then start the game." />
+                <TextBlock x:Name="ImageCheckText" Classes="TinyText" TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+            <components:Button x:Name="BackButton" Text="Back" Variant="Default" Click="Back_OnClick" />
+            <components:Button Grid.Column="2" Text="Cancel" Variant="Default" Click="Cancel_OnClick" />
+            <components:Button x:Name="NextButton" Grid.Column="3" Text="Next" Variant="Primary" Click="Next_OnClick" />
+        </Grid>
+    </Grid>
+</base:PopupContent>

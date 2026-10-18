@@ -106,8 +106,10 @@ public partial class Layout : BaseWindow, IPollingListener
         _ = LauncherBackground.LoadAsync(LauncherBackgroundService.Current);
         LauncherBackgroundService.Changed += OnLauncherBackgroundChanged;
         Closed += (_, _) => LauncherBackgroundService.Changed -= OnLauncherBackgroundChanged;
+        WindowFrame.SizeChanged += (_, _) => UpdateSeamlessSurface();
         CompleteGrid.SizeChanged += (_, e) =>
         {
+            UpdateSeamlessSurface();
             if (ContentArea.Content is SettingsPage settingsPage)
                 settingsPage.UpdateLayoutWidth(e.NewSize.Width - 64 - ContentArea.Margin.Left - ContentArea.Margin.Right);
         };
@@ -245,6 +247,7 @@ public partial class Layout : BaseWindow, IPollingListener
             var marginXCorrection = ((scaleFactor * WindowWidth) - WindowWidth) / 2f;
             var marginYCorrection = ((scaleFactor * contentHeight) - contentHeight) / 2f;
             CompleteGrid.Margin = new(marginXCorrection, marginYCorrection);
+            Avalonia.Threading.Dispatcher.UIThread.Post(UpdateSeamlessSurface, Avalonia.Threading.DispatcherPriority.Loaded);
             //ExtendClientAreaToDecorationsHint = scaleFactor <= 1.2f;
             return;
         }
@@ -278,9 +281,12 @@ public partial class Layout : BaseWindow, IPollingListener
         var sidebarBrush = (IBrush)application.FindResource("LauncherSidebarBrush")!;
         // Home artwork visibility must not change the shell exposure. Only panel
         // opacity controls these surfaces; HomePage owns the wheel/trails setting.
-        TopChromeSurface.Background = contentBrush;
-        ContentBackground.Background = contentBrush;
-        SidebarPageSurface.Background = sidebarBrush;
+        TopChromeSurface.Background = Brushes.Transparent;
+        // The sidebar and content surfaces are drawn as one surface (see UpdateSeamlessSurface). Two adjacent
+        // see-through panels leave a dark seam where they meet on a fractional pixel.
+        ContentBackground.Background = Brushes.Transparent;
+        SidebarPageSurface.Background = Brushes.Transparent;
+        UpdateSeamlessSurface();
         var cleanSidebar = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
         CompleteGrid.Classes.Set("CleanSidebar", cleanSidebar);
         SidebarProfileBlock.Background = cleanSidebar ? Brushes.Transparent : (IBrush)Application.Current!.FindResource("SidebarBoxBrush")!;
@@ -290,6 +296,42 @@ public partial class Layout : BaseWindow, IPollingListener
         LiveStatusBorder.Background = Brushes.Transparent;
         SidebarInfoButton.Background = Brushes.Transparent;
         SidebarSettingsButton.Background = Brushes.Transparent;
+    }
+
+    /// <summary>
+    /// One brush with a hard color stop at the sidebar edge, drawn under the title bar and both columns, so there is
+    /// no gap or overlap between the see-through surfaces. The sidebar edge is measured on screen because the content
+    /// grid is scaled.
+    /// </summary>
+    private void UpdateSeamlessSurface()
+    {
+        var width = WindowFrame.Bounds.Width;
+        var application = Application.Current;
+        if (width <= 0 || application == null)
+            return;
+        if (
+            application.FindResource("LauncherSidebarBrush") is not ISolidColorBrush sidebar
+            || application.FindResource("LauncherSurfaceBrush") is not ISolidColorBrush content
+        )
+            return;
+
+        var edge = CompleteGrid.TranslatePoint(new Point(SidebarWidth, 0), WindowFrame);
+        if (edge is null)
+            return;
+
+        var split = Math.Clamp(edge.Value.X / width, 0, 1);
+        SeamlessSurface.Background = new LinearGradientBrush
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
+            GradientStops =
+            [
+                new GradientStop(sidebar.Color, 0),
+                new GradientStop(sidebar.Color, split),
+                new GradientStop(content.Color, split),
+                new GradientStop(content.Color, 1),
+            ],
+        };
     }
 
     private void ClampSavedWindowScaleToCurrentScreen()

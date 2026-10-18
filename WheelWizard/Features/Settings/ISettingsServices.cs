@@ -40,6 +40,14 @@ public interface ISettingsProperties
     Setting<bool> FORCE_WIIMOTE { get; }
     Setting<bool> LAUNCH_WITH_DOLPHIN { get; }
     Setting<bool> LAUNCH_RR_ON_STARTUP { get; }
+    Setting<bool> DISCORD_PRESENCE_ENABLED { get; }
+    Setting<bool> DISCORD_LIVE_INFO { get; }
+    Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
+    Setting<string> DISCORD_APP_ID { get; }
+    Setting<string> DISCORD_LARGE_IMAGE { get; }
+    Setting<string> DISCORD_LARGE_TEXT { get; }
+    Setting<string> DISCORD_DETAILS { get; }
+    Setting<string> DISCORD_STATE { get; }
     Setting<bool> ENABLE_RECOMP { get; }
     Setting<bool> RECOMP_USE_DOLPHIN_DATA { get; }
     Setting<bool> RECOMP_COPY_DOLPHIN_NAND { get; }

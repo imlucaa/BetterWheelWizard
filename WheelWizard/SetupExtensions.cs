@@ -53,6 +53,7 @@ public static class SetupExtensions
         services.AddCustomDistributionService();
         services.AddArchives();
         services.AddSingleton<GameDataBackupService>();
+        services.AddSingleton<WheelWizard.DiscordPresence.DiscordPresenceService>();
         services.AddPatches();
         services.AddMods();
         services.AddRecomp();

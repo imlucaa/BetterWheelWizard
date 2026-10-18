@@ -21,11 +21,12 @@ public class RetroRewindLaunchServiceTests
     {
         var fixture = new Fixture();
         fixture.Mods.ShouldAskToClearTargetFolder(patches).Returns(true);
-        fixture.Prompts.ConfirmPatchCleanupAsync().Returns(true);
 
         Assert.True((await fixture.Service.LaunchAsync(beta)).IsSuccess);
 
-        await fixture.Mods.Received(1).PrepareModsForLaunch(patches, true, Arg.Any<IProgress<ModOperationProgress>>());
+        await fixture.Mods.Received(1).PrepareModsForLaunch(patches, false, Arg.Any<IProgress<ModOperationProgress>>());
+        // Leftover patches never trigger the old "Mods found" prompt.
+        await fixture.Prompts.DidNotReceive().ConfirmPatchCleanupAsync();
         fixture.Descriptor.Received(1).GenerateLaunchJson(xml);
         fixture.Remotes.Received(1).SetVirtualRemoteEnabled("/dolphin/Config", false);
         await fixture.Dolphin.Received(1).PreflightDolphinVersionAsync();

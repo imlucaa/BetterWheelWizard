@@ -25,7 +25,8 @@ public class RecompLauncher(
         try
         {
             var target = distributionPaths.PatchesFolderPath;
-            var clear = modsLaunchService.ShouldAskToClearTargetFolder(target) && await launchPrompts.ConfirmPatchCleanupAsync();
+            // Never asks about leftover patches; the Patches folder is used as it is.
+            var clear = false;
             var modsResult = await modPresentation.RunAsync(
                 (progress, _) => modsLaunchService.PrepareModsForLaunch(target, clear, progress)
             );

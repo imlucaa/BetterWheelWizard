@@ -52,11 +52,8 @@ public sealed class RetroRewindLaunchService(
             if (settings.Get<bool>(settings.FORCE_WIIMOTE))
                 remotes.SetVirtualRemoteEnabled(dolphinPaths.ConfigFolderPath, false);
             var targetFolderPath = (beta ? paths.BetaPatchesFolderPath : paths.PatchesFolderPath);
+            // Launching with whatever is already in the Patches folder never asks; the old "Mods found" prompt is gone.
             var clearTargetFolder = false;
-            if (mods.ShouldAskToClearTargetFolder(targetFolderPath))
-            {
-                clearTargetFolder = await prompts.ConfirmPatchCleanupAsync();
-            }
 
             var modsLaunchResult = await modPresentation.RunAsync(
                 (progress, _) => mods.PrepareModsForLaunch(targetFolderPath, clearTargetFolder, progress)
