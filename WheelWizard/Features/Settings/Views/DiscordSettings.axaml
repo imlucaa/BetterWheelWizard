@@ -55,7 +55,7 @@
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components:FormFieldLabel Text="View Room button" />
                             <TextBlock Classes="TinyText" TextWrapping="Wrap"
-                                       Text="While you are in a room, opens the rwfc.net room list." />
+                                       Text="While you are in a room, opens it in Wheel Wizard (needs Wheel Wizard open)." />
                         </StackPanel>
                         <components:ToggleCheckBox Grid.Column="1" x:Name="RoomButtonToggle" Variant="Switch"
                                                    VerticalAlignment="Center" Click="RoomButton_OnClick" />

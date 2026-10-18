@@ -54,6 +54,7 @@ public static class SetupExtensions
         services.AddArchives();
         services.AddSingleton<GameDataBackupService>();
         services.AddSingleton<WheelWizard.DiscordPresence.DiscordPresenceService>();
+        services.AddSingleton<WheelWizard.DiscordPresence.RoomLinkListener>();
         services.AddPatches();
         services.AddMods();
         services.AddRecomp();

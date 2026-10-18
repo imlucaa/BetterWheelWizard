@@ -51,8 +51,6 @@ public sealed class DiscordPresenceService(
     /// <summary>The name the Discord app must have, because it is the title everyone sees ("Playing Retro Rewind").</summary>
     public const string RequiredName = "Retro Rewind";
 
-    private const string RoomsUrl = "https://rwfc.net/rooms";
-
     /// <summary>The leaderboard page for a friend code (like 1234-5678-9012), or null for anything else.</summary>
     public static string? BuildPlayerUrl(string? friendCode)
     {
@@ -275,7 +273,12 @@ public sealed class DiscordPresenceService(
             online && settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
                 ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode)
                 : null;
-        var roomUrl = settings.Get<bool>(settings.DISCORD_ROOM_BUTTON) && live is { InRoom: true } ? RoomsUrl : null;
+        var roomUrl =
+            settings.Get<bool>(settings.DISCORD_ROOM_BUTTON)
+            && live is { InRoom: true, RoomId: { } roomId }
+            && RoomLinkListener.IsValidRoomId(roomId)
+                ? RoomLinkListener.BuildUrl(roomId)
+                : null;
 
         var activity = new DiscordActivity(
             details,
@@ -322,9 +325,16 @@ public sealed class DiscordPresenceService(
         }
     }
 
-    private sealed record LiveInfo(string Details, string State, int PlayerCount, string? PlayerUrl = null, bool InRoom = false);
+    private sealed record LiveInfo(
+        string Details,
+        string State,
+        int PlayerCount,
+        string? PlayerUrl = null,
+        bool InRoom = false,
+        string? RoomId = null
+    );
 
-    private sealed record MyRoom(string Track, int PlayerCount, int RaceNumber, int? Vr, int? Br, string? Rk);
+    private sealed record MyRoom(string Id, string Track, int PlayerCount, int RaceNumber, int? Vr, int? Br, string? Rk);
 
     /// <summary>
     /// The screen comes from the game itself (same wording as the pack's presence); the online room list adds the
@@ -342,7 +352,7 @@ public sealed class DiscordPresenceService(
             if (RetroRewindSections.IsOnline(id))
                 details += $" (VR: {Rating(room?.Vr, profile?.Vr)} BR: {Rating(room?.Br, profile?.Br)})";
 
-            return new(details, TrackFor(id, room), room?.PlayerCount ?? 0, BuildPlayerUrl(profile?.FriendCode), room != null);
+            return new(details, TrackFor(id, room), room?.PlayerCount ?? 0, BuildPlayerUrl(profile?.FriendCode), room != null, room?.Id);
         }
 
         var fresh = FindFreshRoom(profile);
@@ -355,7 +365,8 @@ public sealed class DiscordPresenceService(
                 fresh.Track.Length > 0 ? fresh.Track : "In a room",
                 fresh.PlayerCount,
                 BuildPlayerUrl(profile?.FriendCode),
-                true
+                true,
+                fresh.Id
             );
         }
 
@@ -366,7 +377,7 @@ public sealed class DiscordPresenceService(
         var mode = string.IsNullOrWhiteSpace(cachedRoom.GameModeAbbrev) ? "Online" : $"Online {cachedRoom.GameModeAbbrev}";
         var rating = me?.Vr is { } vr ? $" (VR: {vr} BR: {me.Br?.ToString() ?? "--"})" : "";
         var track = string.IsNullOrWhiteSpace(cachedRoom.TrackName) ? "In a room" : cachedRoom.TrackName;
-        return new($"{mode}{rating}", track, cachedRoom.PlayerCount, BuildPlayerUrl(profile?.FriendCode), true);
+        return new($"{mode}{rating}", track, cachedRoom.PlayerCount, BuildPlayerUrl(profile?.FriendCode), true, cachedRoom.Id);
     }
 
     /// <summary>
@@ -437,7 +448,7 @@ public sealed class DiscordPresenceService(
         {
             var me = room.Players.FirstOrDefault(player => Digits(player.FriendCode) == myCode);
             if (me != null)
-                return new(room.Race?.TrackName ?? "", room.Players.Count, room.Race?.Num ?? 0, me.Vr, me.Br, room.Rk);
+                return new(room.Id, room.Race?.TrackName ?? "", room.Players.Count, room.Race?.Num ?? 0, me.Vr, me.Br, room.Rk);
         }
 
         return null;
