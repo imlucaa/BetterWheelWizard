@@ -618,7 +618,7 @@ public class WindowCompositionTests
             Dispatcher.UIThread.RunJobs();
             var title = content.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "Profile layout test");
             var titleSize = title.Bounds.Size;
-            Assert.Equal(20, title.FontSize);
+            Assert.Equal(26, title.FontSize);
             Assert.Equal(initialWidth, popup.ClientSize.Width);
             AssertInsideWindow(title, popup);
 
@@ -649,7 +649,7 @@ public class WindowCompositionTests
             Assert.False(history.IsLoading);
             Assert.Equal(initialWidth, popup.ClientSize.Width);
             Assert.Equal(titleSize, title.Bounds.Size);
-            Assert.Equal(20, title.FontSize);
+            Assert.Equal(26, title.FontSize);
             AssertInsideWindow(title, popup);
             AssertInsideWindow(content.GetVisualDescendants().OfType<ScrollViewer>().First(), popup);
             Assert.Null(popup.FindControl<Grid>("CompleteGrid")!.RenderTransform);

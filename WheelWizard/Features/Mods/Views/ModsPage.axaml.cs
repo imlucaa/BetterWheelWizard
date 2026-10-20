@@ -92,6 +92,8 @@ public partial class ModsPage : UserControl, INotifyPropertyChanged
     private bool _viewInitialized;
     private const double DragThreshold = 5.0;
 
+    private IModPresetStore Presets { get; }
+
     public ModsPage(
         IPopupFactory popups,
         Func<int, ModPreviewViewModel> createPreview,
@@ -99,7 +101,8 @@ public partial class ModsPage : UserControl, INotifyPropertyChanged
         IFilePickerService filePicker,
         ISettingsManager settingsService,
         IModPatchConversionService modPatchConversionService,
-        IModManager modManagerService
+        IModManager modManagerService,
+        IModPresetStore presetStore
     )
     {
         Popups = popups;
@@ -109,6 +112,7 @@ public partial class ModsPage : UserControl, INotifyPropertyChanged
         SettingsService = settingsService;
         ModPatchConversionService = modPatchConversionService;
         ModManagerService = modManagerService;
+        Presets = presetStore;
         InitializeComponent();
         GridViewOption.IconData = GridViewOption.IconData!.GetWidenedGeometry(
             new Pen(Brushes.White, 2, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round)
@@ -352,6 +356,80 @@ public partial class ModsPage : UserControl, INotifyPropertyChanged
         if (sender is MenuItem { DataContext: ModListItem item })
             return item;
         return ModsListBox.SelectedItem as ModListItem;
+    }
+
+    private async void Presets_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var presets = Presets.Load();
+        var options = presets
+            .Select(entry => new ChoiceOption(entry.Key, entry.Value.Count == 1 ? "1 patch" : $"{entry.Value.Count} patches"))
+            .Append(new ChoiceOption("Save the current setup…", "", Highlight: true))
+            .ToList();
+        if (presets.Count > 0)
+            options.Add(new ChoiceOption("Delete a preset…", ""));
+
+        var picked = await Popups
+            .CreateChoiceList("Presets", "Patch presets", "Switch to a saved set of enabled patches, or save the current one.", options)
+            .AwaitAnswer();
+        if (picked is not { } index)
+            return;
+
+        if (index < presets.Count)
+        {
+            var name = presets.Keys.ElementAt(index);
+            await ApplyPresetAsync(name, presets[name]);
+        }
+        else if (index == presets.Count)
+            await SavePresetAsync();
+        else
+            await DeletePresetAsync(presets);
+    }
+
+    private async Task SavePresetAsync()
+    {
+        var name = await new TextInputWindow()
+            .SetMainText("Save the current setup")
+            .SetPlaceholderText("Preset name")
+            .SetValidation((_, text) => string.IsNullOrWhiteSpace(text) ? Fail("Give the preset a name.") : Ok())
+            .ShowDialog();
+        if (string.IsNullOrWhiteSpace(name))
+            return;
+
+        var result = Presets.Save(name, ModManagerService.Mods.Where(mod => mod.IsEnabled).Select(mod => mod.Title));
+        if (result.IsFailure)
+            MessageTranslationHelper.ShowMessage(result.Error);
+        else
+            ViewUtils.ShowSnackbar($"Saved preset {name.Trim()}.");
+    }
+
+    private async Task ApplyPresetAsync(string name, IReadOnlyList<string> titles)
+    {
+        var result = await ModManagerService.ApplyEnabledAsync(titles.ToHashSet(StringComparer.Ordinal));
+        if (result.IsFailure)
+        {
+            MessageTranslationHelper.ShowMessage(result.Error);
+            return;
+        }
+
+        var missing = titles.Count(title => ModManagerService.Mods.All(mod => mod.Title != title));
+        ViewUtils.ShowSnackbar(missing == 0 ? $"Applied {name}." : $"Applied {name}. {missing} saved patch(es) are not installed anymore.");
+    }
+
+    private async Task DeletePresetAsync(IReadOnlyDictionary<string, IReadOnlyList<string>> presets)
+    {
+        var options = presets.Select(entry => new ChoiceOption(entry.Key, "")).ToList();
+        var picked = await Popups
+            .CreateChoiceList("Delete a preset", "Delete a preset", "The patches themselves are not touched.", options)
+            .AwaitAnswer();
+        if (picked is not { } index)
+            return;
+
+        var name = presets.Keys.ElementAt(index);
+        var result = Presets.Delete(name);
+        if (result.IsFailure)
+            MessageTranslationHelper.ShowMessage(result.Error);
+        else
+            ViewUtils.ShowSnackbar($"Deleted preset {name}.");
     }
 
     private async void ToggleButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

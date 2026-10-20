@@ -54,7 +54,16 @@ public static class SetupExtensions
         services.AddArchives();
         services.AddSingleton<GameDataBackupService>();
         services.AddSingleton<WheelWizard.DiscordPresence.DiscordPresenceService>();
+        services.AddSingleton<WheelWizard.StreamOverlay.OverlayLive>();
+        services.AddSingleton<WheelWizard.StreamOverlay.OverlayBackground>();
         services.AddSingleton<WheelWizard.DiscordPresence.RoomLinkListener>();
+        services.AddSingleton<WheelWizard.RrRooms.FriendRoomNotifier>();
+        services.AddSingleton<WheelWizard.WiiManagement.GameLicense.SessionStatsTracker>();
+        services.AddSingleton<WheelWizard.WiiManagement.GameLicense.ISessionStats>(provider =>
+            provider.GetRequiredService<WheelWizard.WiiManagement.GameLicense.SessionStatsTracker>()
+        );
+        services.AddSingleton<WheelWizard.AutoUpdating.UpdateAutoChecker>();
+        services.AddSingleton<WheelWizard.Ghosts.GhostImporter>();
         services.AddPatches();
         services.AddMods();
         services.AddRecomp();

@@ -1,12 +1,16 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Media;
 using WheelWizard.Themes;
 using WheelWizard.Views.Dialogs.Base;
 using WheelWizard.Views.Pages;
+using WheelWizard.Views.Shell.Controls;
 
 namespace WheelWizard.Views.Dialogs;
 
+/// <summary>
+/// A copy of the launcher that has its own theme resources, so it uses the launcher's real controls and brushes and shows
+/// exactly what the chosen colors look like without changing the real launcher.
+/// </summary>
 public partial class PreviewHomeWindow : PopupContent
 {
     public bool IsOpen { get; private set; } = true;
@@ -16,41 +20,40 @@ public partial class PreviewHomeWindow : PopupContent
         LauncherThemeFile theme,
         LauncherBackgroundState background,
         double surfaceOpacity,
-        bool transparentLayout,
+        bool minimalHomeArtwork,
         bool hideHomeTitle
     )
         : base(true, false, true, "Launcher preview")
     {
         InitializeComponent();
-        UpdatePreview(theme, background, surfaceOpacity, transparentLayout, hideHomeTitle);
+        foreach (var tab in PreviewTabs.Children.OfType<SidebarRadioButton>())
+            tab.NavigationRequested += (_, _) => ShowPage((string?)tab.Tag ?? "Home");
+        UpdatePreview(theme, background, surfaceOpacity, minimalHomeArtwork, hideHomeTitle);
     }
 
     public async void UpdatePreview(
         LauncherThemeFile theme,
         LauncherBackgroundState background,
         double surfaceOpacity,
-        bool transparentLayout,
+        bool minimalHomeArtwork,
         bool hideHomeTitle
     )
     {
         if (!IsOpen)
             return;
+
         _hideHomeTitle = hideHomeTitle;
+        LauncherThemeService.ApplyTo(
+            PreviewRoot.Resources,
+            Color.Parse(theme.Accent),
+            Color.Parse(theme.Branding),
+            Color.Parse(theme.Text),
+            Color.Parse(theme.Background),
+            surfaceOpacity,
+            font: null
+        );
+        HomeArtwork.IsVisible = !minimalHomeArtwork;
         PreviewPageTitle.IsVisible = PreviewPageTitle.Text != "Home" || !_hideHomeTitle;
-        var accent = Color.Parse(theme.Accent);
-        var brand = Color.Parse(theme.Branding);
-        var text = Color.Parse(theme.Text);
-        var pageBackground = Color.Parse(theme.Background);
-        var surfaceColor = Mix(pageBackground, RelativeLuminance(pageBackground) > 0.45 ? Colors.Black : Colors.White, 0.09);
-        var surfaceBrush = new SolidColorBrush(WithOpacity(surfaceColor, surfaceOpacity));
-        Resources["PreviewAccentBrush"] = new SolidColorBrush(accent);
-        Resources["PreviewBrandBrush"] = new SolidColorBrush(brand);
-        Resources["PreviewTextBrush"] = new SolidColorBrush(text);
-        Resources["PreviewCardBrush"] = surfaceBrush;
-        PreviewBase.Background = new SolidColorBrush(pageBackground);
-        PreviewTopSurface.Background = transparentLayout ? Brushes.Transparent : surfaceBrush;
-        PreviewSidebarSurface.Background = transparentLayout ? Brushes.Transparent : surfaceBrush;
-        PreviewPageSurface.Background = transparentLayout ? Brushes.Transparent : surfaceBrush;
         try
         {
             await PreviewBackground.LoadAsync(background);
@@ -61,17 +64,12 @@ public partial class PreviewHomeWindow : PopupContent
         }
     }
 
-    private void PreviewTab_OnClick(object? sender, RoutedEventArgs e)
+    private void ShowPage(string page)
     {
-        if (sender is not Button { Tag: string page })
-            return;
         PreviewPageTitle.Text = page;
         PreviewPageTitle.IsVisible = page != "Home" || !_hideHomeTitle;
-        PreviewPageSubtitle.Text =
-            page == "Themes" ? "Choose, create, and share launcher colors" : $"Preview the {page.ToLowerInvariant()} page";
-        HomePreview.IsVisible = page == "Home";
-        ThemesPreview.IsVisible = page == "Themes";
-        ListPreview.IsVisible = page is not ("Home" or "Themes");
+        HomePage.IsVisible = page == "Home";
+        ListPage.IsVisible = page != "Home";
         ListItemOne.Text = page == "Rooms" ? "Worldwide room" : $"Example {page.ToLowerInvariant()} item";
         ListItemTwo.Text = page == "Leaderboard" ? "2. Another Player" : "Another item";
     }
@@ -81,16 +79,4 @@ public partial class PreviewHomeWindow : PopupContent
         IsOpen = false;
         PreviewBackground.Dispose();
     }
-
-    private static Color WithOpacity(Color color, double opacity) =>
-        Color.FromArgb((byte)Math.Round(255 * Math.Clamp(opacity, 0, 1)), color.R, color.G, color.B);
-
-    private static Color Mix(Color start, Color end, double amount) =>
-        Color.FromRgb(
-            (byte)Math.Round(start.R + ((end.R - start.R) * amount)),
-            (byte)Math.Round(start.G + ((end.G - start.G) * amount)),
-            (byte)Math.Round(start.B + ((end.B - start.B) * amount))
-        );
-
-    private static double RelativeLuminance(Color color) => (0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B) / 255;
 }

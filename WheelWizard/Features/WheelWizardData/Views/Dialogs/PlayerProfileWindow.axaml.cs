@@ -44,6 +44,11 @@ public partial class PlayerProfileWindow : PopupContent, INotifyPropertyChanged
             OnPropertyChanged(nameof(Vr24HoursText));
             OnPropertyChanged(nameof(VrWeekText));
             OnPropertyChanged(nameof(VrMonthText));
+            OnPropertyChanged(nameof(RankText));
+            OnPropertyChanged(nameof(VrText));
+            OnPropertyChanged(nameof(Vr24Brush));
+            OnPropertyChanged(nameof(VrWeekBrush));
+            OnPropertyChanged(nameof(VrMonthBrush));
         }
     }
 
@@ -75,6 +80,21 @@ public partial class PlayerProfileWindow : PopupContent, INotifyPropertyChanged
     public string VrWeekText => Profile?.VrStats == null ? "--" : FormatSignedValue(Profile.VrStats.LastWeek);
 
     public string VrMonthText => Profile?.VrStats == null ? "--" : FormatSignedValue(Profile.VrStats.LastMonth);
+
+    public string RankText => Profile?.Rank > 0 ? $"#{Profile.Rank:N0}" : "—";
+
+    public string VrText => Profile == null ? "--" : Profile.Vr.ToString("N0");
+
+    public Avalonia.Media.IBrush Vr24Brush => GainBrush(Profile?.VrStats?.Last24Hours);
+
+    public Avalonia.Media.IBrush VrWeekBrush => GainBrush(Profile?.VrStats?.LastWeek);
+
+    public Avalonia.Media.IBrush VrMonthBrush => GainBrush(Profile?.VrStats?.LastMonth);
+
+    private static Avalonia.Media.IBrush GainBrush(int? value) =>
+        value > 0 ? Avalonia.Media.Brushes.MediumSeaGreen
+        : value < 0 ? Avalonia.Media.Brushes.IndianRed
+        : Avalonia.Media.Brushes.Gray;
 
     public Mii? DisplayMii
     {

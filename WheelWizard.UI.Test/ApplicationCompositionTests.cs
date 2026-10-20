@@ -158,6 +158,7 @@ public class ApplicationCompositionTests
                 navigation.NavigateTo(page);
                 original.UpdateLayout();
                 Assert.IsType(page, navigation.CurrentPage);
+                AssertHeaderHasNoOverlap(Assert.IsAssignableFrom<Control>(navigation.CurrentPage), original);
                 if (page == typeof(LeaderboardPage))
                 {
                     Assert.Equal(sidebarBounds, sidebar.Bounds);
@@ -234,4 +235,45 @@ public class ApplicationCompositionTests
         public Task<OperationResult<TResult>> CallApiAsync<TResult>(Expression<Func<TApi, Task<TResult>>> apiCall) =>
             Task.FromResult((OperationResult<TResult>)new OperationError { Message = "Offline UI test" });
     }
+
+    /// <summary>
+    /// The top of a page holds its title and action buttons. In the fixed-size window those must never sit on top of each
+    /// other (as My Miis once did next to an open sidebar) or run past the window edge.
+    /// </summary>
+    private static void AssertHeaderHasNoOverlap(Control page, Window window)
+    {
+        var top = page.TranslatePoint(default, window)!.Value.Y;
+        var items = page.GetVisualDescendants()
+            .OfType<Control>()
+            .Where(c => c.IsEffectivelyVisible && c.Bounds.Width > 0 && c.Bounds.Height > 0)
+            .Where(c => c is TextBlock { Text.Length: > 0 } or Avalonia.Controls.Button or ActionButton or Dropdown)
+            .Select(c => (Control: c, Rect: new Rect(c.TranslatePoint(default, window)!.Value, c.Bounds.Size)))
+            .Where(i => i.Rect.Y < top + 90 && i.Rect.Bottom > top)
+            .ToList();
+        var problems = new List<string>();
+        foreach (var (control, rect) in items)
+        {
+            if (rect.Right > window.Bounds.Width + 1)
+                problems.Add($"{Describe(control)} runs past the window edge ({rect.Right:0} > {window.Bounds.Width:0})");
+        }
+
+        for (var i = 0; i < items.Count; i++)
+        {
+            for (var j = i + 1; j < items.Count; j++)
+            {
+                var (a, ra) = items[i];
+                var (b, rb) = items[j];
+                if (a.IsVisualAncestorOf(b) || b.IsVisualAncestorOf(a))
+                    continue;
+                var overlap = ra.Intersect(rb);
+                if (overlap.Width > 2 && overlap.Height > 2)
+                    problems.Add($"{Describe(a)} overlaps {Describe(b)} by {overlap.Width:0}x{overlap.Height:0}");
+            }
+        }
+
+        Assert.True(problems.Count == 0, $"{page.GetType().Name}: " + string.Join("; ", problems));
+    }
+
+    private static string Describe(Control control) =>
+        control is TextBlock text ? $"text '{text.Text}'" : $"{control.GetType().Name} '{control.Name}'";
 }

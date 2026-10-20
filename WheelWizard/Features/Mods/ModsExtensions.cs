@@ -7,6 +7,7 @@ public static class ModsExtensions
         services.AddSingleton<IModPaths, ModPaths>();
         services.AddSingleton<IModInstallationService, ModInstallationService>();
         services.AddSingleton<IModManager, ModManager>();
+        services.AddSingleton<IModPresetStore, ModPresetStore>();
         services.AddSingleton<IModsLaunchService, ModsLaunchService>();
         return services;
     }

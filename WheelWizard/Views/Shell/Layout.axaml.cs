@@ -120,6 +120,7 @@ public partial class Layout : BaseWindow, IPollingListener
         Navigation.PageChanged += Navigation_OnPageChanged;
         foreach (var button in SidePanelButtons.Children.OfType<SidebarRadioButton>())
             button.NavigationRequested += (_, pageType) => NavigateFromSidebar(pageType);
+        InitializePins();
         SidebarCurrentUserProfile.ProfileRequested += (_, _) => NavigateFromSidebar(typeof(UserProfilePage));
         UpdateSidebarProfile();
 
@@ -198,6 +199,7 @@ public partial class Layout : BaseWindow, IPollingListener
         VersionTagBorder.IsHitTestVisible = available;
         VersionTagBorder.Focusable = available;
         VersionUpdateIcon.IsVisible = available;
+        SidebarUpdateDot.IsVisible = available;
     }
 
     private async void VersionTag_OnClick(object? sender, RoutedEventArgs e) => await _autoUpdater.ShowAvailableUpdateAsync();
@@ -205,6 +207,7 @@ public partial class Layout : BaseWindow, IPollingListener
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         UpdateModsButtonText();
+        RebuildPins();
         UpdateMadeByText();
         UpdatePlayerAndRoomCount();
         UpdateLiveAlert();
@@ -235,6 +238,11 @@ public partial class Layout : BaseWindow, IPollingListener
     private void OnSettingChanged(Setting setting)
     {
         // Note that this method will also be called whenever the setting changes
+        if (setting == SettingsService.SIDEBAR_LAYOUT)
+            ArrangeSidebar();
+        if (setting == SettingsService.ENABLE_RECOMP)
+            RebuildPins();
+
         if (setting == SettingsService.WINDOW_SCALE || setting == SettingsService.SAVED_WINDOW_SCALE)
         {
             var scaleFactor = GetUsableWindowScale(SettingsService.WINDOW_SCALE.Value);
@@ -427,6 +435,8 @@ public partial class Layout : BaseWindow, IPollingListener
             if (button.PageType == typeof(MiiListPage) && page is MiiEditorPage)
                 button.IsChecked = true;
         }
+
+        UpdatePinSelection(page);
     }
 
     public void OnUpdate(ObservablePollingService sender)

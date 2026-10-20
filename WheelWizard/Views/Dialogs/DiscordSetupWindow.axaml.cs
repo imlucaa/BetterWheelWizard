@@ -175,6 +175,8 @@ public partial class DiscordSetupWindow : PopupContent
         _settings.Set(_settings.DISCORD_PRESENCE_ENABLED, true);
         // Dolphin ignores the game's own presence while its Discord setting is off, so only this one shows.
         _settings.Set(_settings.DOLPHIN_DISCORD_PRESENCE, false);
+        if (_settings.IsRecompModeActive())
+            _settings.Set(_settings.RECOMP_DISCORD_PRESENCE, false);
 
         NextButton.IsEnabled = false;
         ImageCheckText.Text = "Saved. Checking your image…";

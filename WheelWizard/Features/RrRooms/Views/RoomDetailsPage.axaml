@@ -11,7 +11,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="{StaticResource TopRowSize}" />
-            <RowDefinition Height="100" />
+            <RowDefinition Height="Auto" MinHeight="100" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -32,29 +32,32 @@
                                     VerticalAlignment="Top" HorizontalAlignment="Left"
                                     FontSize="16" Click="GoBackClick"  Tone="Secondary" Variant="Link" Padding="0" MinHeight="0"/>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="*,*" Margin="10,0">
-            <StackPanel
-                Grid.Column="0">
-                <components:FormFieldLabel Text="{loc:T attribute.id}" Margin="0,0,2,0" />
-                <SelectableTextBlock Text="{Binding Room.Id}" Classes="BodyText" />
-            </StackPanel>
-
-            <StackPanel Grid.Column="1">
-                <components:FormFieldLabel Text="{loc:T attribute.time_online}" Margin="0,0,2,0" />
-                <SelectableTextBlock Text="{Binding Room.TimeOnline}" Classes="BodyText" />
-            </StackPanel>
-
-            <StackPanel Grid.Column="0" Grid.Row="1">
-                <components:FormFieldLabel Text="{loc:T attribute.type}" Margin="0,0,2,0" />
-                <SelectableTextBlock Text="{Binding Room.GameMode}" Classes="BodyText" />
-            </StackPanel>
-
-
-            <StackPanel Grid.Column="1" Grid.Row="1">
-                <components:FormFieldLabel Text="{loc:T attribute.average_room_vr}" Margin="0,0,2,0" />
-                <components:StatusBadge Text="{Binding Room.AverageVr}" HorizontalAlignment="Left" />
-            </StackPanel>
-        </Grid>
+        <UniformGrid Grid.Row="1" Columns="2" Margin="7,6,7,10" VerticalAlignment="Center">
+            <Border Background="{DynamicResource Neutral900}" CornerRadius="12" Padding="12,9" Margin="3">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:T attribute.type}" Classes="TinyText" />
+                    <SelectableTextBlock Text="{Binding Room.GameMode}" FontSize="15" FontWeight="SemiBold" />
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource Neutral900}" CornerRadius="12" Padding="12,9" Margin="3">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:T attribute.average_room_vr}" Classes="TinyText" />
+                    <TextBlock Text="{Binding Room.AverageVr}" FontSize="15" FontWeight="SemiBold" />
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource Neutral900}" CornerRadius="12" Padding="12,9" Margin="3">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:T attribute.time_online}" Classes="TinyText" />
+                    <SelectableTextBlock Text="{Binding Room.TimeOnline}" FontSize="15" FontWeight="SemiBold" />
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource Neutral900}" CornerRadius="12" Padding="12,9" Margin="3">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:T attribute.id}" Classes="TinyText" />
+                    <SelectableTextBlock Text="{Binding Room.Id}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
 
         <Grid Grid.Row="2" RowDefinitions="*, 16*" Margin="10,0">
             <Grid Grid.Row="0">

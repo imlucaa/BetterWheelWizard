@@ -35,14 +35,14 @@ public sealed class DiscordIpcClient : IDisposable
     public Task SetActivityAsync(DiscordActivity activity, CancellationToken cancellationToken) =>
         SendActivityAsync(activity, cancellationToken);
 
-    public Task ClearActivityAsync(CancellationToken cancellationToken) => SendActivityAsync(null, cancellationToken);
+    public Task ClearActivityAsync(CancellationToken cancellationToken, int? pid = null) => SendActivityAsync(null, cancellationToken, pid);
 
-    private async Task SendActivityAsync(DiscordActivity? activity, CancellationToken cancellationToken)
+    private async Task SendActivityAsync(DiscordActivity? activity, CancellationToken cancellationToken, int? pid = null)
     {
         var payload = new
         {
             cmd = "SET_ACTIVITY",
-            args = new { pid = Environment.ProcessId, activity = activity?.ToPayload() },
+            args = new { pid = pid ?? Environment.ProcessId, activity = activity?.ToPayload() },
             nonce = Guid.NewGuid().ToString(),
         };
         await SendAsync(OpFrame, JsonSerializer.Serialize(payload), cancellationToken);

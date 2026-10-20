@@ -10,6 +10,9 @@
              x:DataType="mods:ModsPage"
          xmlns:mods="clr-namespace:WheelWizard.Mods.Views">
     <UserControl.Styles>
+        <Style Selector="TextBlock.Dim">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
         <Style Selector="components|SplitButton.PatchesTranslucentSearch /template/ components|ActionButton">
             <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource LauncherPanelBrush}" />
@@ -28,30 +31,27 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Vertical" VerticalAlignment="Bottom">
-            <components:ToggleCheckBox Variant="Switch" x:Name="EnableAllCheckbox"
-                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,6,0,0" IsVisible="{Binding HasMods}"
-                      Click="ToggleButton_OnIsCheckedChanged" Content="{loc:T action.enable_all}" />
-
-        <StackPanel Orientation="Horizontal" Spacing="8"
-                    HorizontalAlignment="Left" VerticalAlignment="Bottom">
-            <TextBlock Text="{Binding StoragePageTitle}" Classes="PageTitleText" />
-            <components:StatusBadge Height="24" Padding="8,3" Text="0" x:Name="ListItemCount"
-                                 VerticalAlignment="Center" />
-        </StackPanel>
-        </StackPanel>
-
-        <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,12"
-                    Orientation="Vertical" x:Name="TopBarButtons" Spacing="3">
-                        <components:SplitButton Classes="PatchesTranslucentSearch" Text="{loc:T action.browse}" IconData="{StaticResource Search}" Tone="Secondary" Height="40" Click="BrowseMod_Click" IsVisible="{Binding HasMods}">
-                <components:SplitButton.Flyout>
-                    <MenuFlyout>
-                        <components:SplitButtonItem Header="{loc:T action.browse}" IconData="{StaticResource Search}" Click="BrowseMod_Click" />
-                        <components:SplitButtonItem Header="{loc:T action.import}" IconData="{StaticResource FileImport}" Click="ImportMod_Click" />
-                    </MenuFlyout>
-                </components:SplitButton.Flyout>
-            </components:SplitButton>
-        </StackPanel>
+        <!-- Title with the count on the left; enable-all and browse on the right -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom" Margin="0,0,10,10">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+                <TextBlock Text="{Binding StoragePageTitle}" Classes="PageTitleText" />
+                <components:StatusBadge Height="24" Padding="8,3" Text="0" x:Name="ListItemCount"
+                                        VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Bottom"
+                        x:Name="TopBarButtons">
+                <components:SplitButton Classes="PatchesTranslucentSearch" Text="{loc:T action.browse}"
+                                        IconData="{StaticResource Search}" Tone="Secondary" Height="40"
+                                        Click="BrowseMod_Click" IsVisible="{Binding HasMods}">
+                    <components:SplitButton.Flyout>
+                        <MenuFlyout>
+                            <components:SplitButtonItem Header="{loc:T action.browse}" IconData="{StaticResource Search}" Click="BrowseMod_Click" />
+                            <components:SplitButtonItem Header="{loc:T action.import}" IconData="{StaticResource FileImport}" Click="ImportMod_Click" />
+                        </MenuFlyout>
+                    </components:SplitButton.Flyout>
+                </components:SplitButton>
+            </StackPanel>
+        </Grid>
 
         <!-- Empty Mods Message -->
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="PageWithoutMods"
@@ -71,11 +71,21 @@
 
         <Grid Grid.Row="1" x:Name="PageWithMods" RowDefinitions="Auto,*" IsVisible="{Binding HasMods}">
 
+            <!-- Enable all: its own row, so a long translation can never crowd the title or the Browse button -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="13,2,12,0" IsVisible="{Binding HasMods}">
+                <components:ToggleCheckBox Variant="Switch" x:Name="EnableAllCheckbox"
+                                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Click="ToggleButton_OnIsCheckedChanged" Content="{loc:T action.enable_all}" />
+                <components:Button Grid.Column="1" x:Name="PresetsButton" Text="Presets" ButtonSize="Compact"
+                                   Variant="Default" Click="Presets_OnClick"
+                                   ToolTip.Tip="Save or switch between sets of enabled patches" />
+            </Grid>
+
             <!-- Mods List (Blocks / arrow mode) -->
             <ListBox Grid.Row="1" x:Name="ModsListBox" ItemsSource="{Binding Mods}" Margin="10,5" Padding="0,0,0,68">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Classes="BoxItemBackground" Height="50">
+                        <Border Classes="BoxItemBackground" Height="56" CornerRadius="12">
                             <Border.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{loc:T action.rename}" Click="RenameMod_Click" />
@@ -90,6 +100,9 @@
                                 </ContextMenu>
                             </Border.ContextMenu>
                             <Grid>
+                                <Border Width="3" CornerRadius="2" HorizontalAlignment="Left" Margin="0,14"
+                                        Background="{DynamicResource Primary400}" IsHitTestVisible="False"
+                                        IsVisible="{Binding Mod.IsEnabled}" />
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="30" />
                                     <ColumnDefinition Width="50" />
@@ -107,7 +120,7 @@
                                 <components:ToggleCheckBox Grid.Column="1" IsChecked="{Binding Mod.IsEnabled, Mode=TwoWay}"
                                           Variant="Switch" Margin="0,5"
                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Mod.Title}" FontSize="14"
+                                <TextBlock Text="{Binding Mod.Title}" FontSize="14" FontWeight="SemiBold" Classes.Dim="{Binding !Mod.IsEnabled}"
                                            Foreground="{DynamicResource Neutral100}"
                                            Grid.Column="2" VerticalAlignment="Center" Margin="10,0,8,0"
                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />

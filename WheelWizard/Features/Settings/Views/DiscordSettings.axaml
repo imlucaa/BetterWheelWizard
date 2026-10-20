@@ -9,24 +9,17 @@
         <StackPanel Margin="0,15,0,0">
             <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
                 <components:FormFieldLabel Text="Discord RPC" VerticalAlignment="Center" />
-                <components:Button Grid.Column="1" x:Name="SetupButton" Text="Run setup" ButtonSize="Compact"
-                                   Variant="Default" Click="Setup_OnClick" />
+                <components:SegmentedControl Grid.Column="1" x:Name="ModeToggle" Variant="Light" HasBorder="False"
+                                             SelectionChanged="Mode_OnChanged">
+                    <components:SegmentOption Text="Off" Padding="14,6" />
+                    <components:SegmentOption Text="Default" Padding="14,6" />
+                    <components:SegmentOption Text="Custom" Padding="14,6" />
+                </components:SegmentedControl>
             </Grid>
+            <TextBlock x:Name="ModeNote" Classes="TinyText" TextWrapping="Wrap" Margin="2,0,0,10" />
 
             <StackPanel Spacing="4">
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
-                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
-                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
-                            <components:FormFieldLabel Text="Show status" />
-                            <TextBlock Classes="TinyText" TextWrapping="Wrap"
-                                       Text="Show Retro Rewind on your Discord profile." />
-                        </StackPanel>
-                        <components:ToggleCheckBox Grid.Column="1" x:Name="EnabledToggle" Variant="Switch"
-                                                   VerticalAlignment="Center" Click="Enabled_OnClick" />
-                    </Grid>
-                </Border>
-
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                <Border x:Name="LiveRow" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="48">
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components:FormFieldLabel Text="Live game info" />
@@ -38,7 +31,7 @@
                     </Grid>
                 </Border>
 
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                <Border x:Name="PlayerRow" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="48">
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components:FormFieldLabel Text="View Player button" />
@@ -50,7 +43,7 @@
                     </Grid>
                 </Border>
 
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                <Border x:Name="RoomRow" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="48">
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components:FormFieldLabel Text="View Room button" />
@@ -62,18 +55,25 @@
                     </Grid>
                 </Border>
 
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
-                    <StackPanel Spacing="4" Margin="0,6">
-                        <components:FormFieldLabel Text="Your setup" />
-                        <TextBlock x:Name="SummaryText" Classes="TinyText" TextWrapping="Wrap" />
-                    </StackPanel>
+                <Border x:Name="SetupBlock" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48">
+                        <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Your setup" />
+                            <TextBlock x:Name="SummaryText" Classes="TinyText" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <components:Button Grid.Column="1" x:Name="SetupButton" Text="Change" ButtonSize="Compact"
+                                           VerticalAlignment="Center" Click="Setup_OnClick" />
+                    </Grid>
                 </Border>
             </StackPanel>
 
             <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0" RowDefinitions="Auto,Auto" RowSpacing="8">
                 <TextBlock x:Name="CheckText" Classes="TinyText" TextWrapping="Wrap" VerticalAlignment="Center"
                            Margin="4,0,12,0" IsVisible="False" />
-                <components:Button Grid.Column="1" Text="Check setup" Click="Check_OnClick" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <components:Button x:Name="PreviewButton" Text="Preview" Click="Preview_OnClick" />
+                    <components:Button x:Name="CheckButton" Text="Check setup" Click="Check_OnClick" />
+                </StackPanel>
                 <TextBlock Grid.Row="1" x:Name="ResultText" Classes="TinyText" TextWrapping="Wrap"
                            VerticalAlignment="Center" Margin="4,0,12,0" IsVisible="False" />
             </Grid>

@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -17,12 +17,15 @@ public sealed class DolphinMemoryReader : IDisposable
     private const long Mem1Size = 0x2000000;
     private const long Mem2Size = 0x4000000;
 
-    // SectionMgr::sInstance per game region, from rr-pulsar's symbols.txt and versions.txt (K is not listed there).
+    // SectionMgr::sInstance per game region, from rr-pulsar's symbols.txt and versions.txt. Korea comes from the version
+    // table of the Pulsar Pack Creator, which gives one offset for this whole part of memory (P minus 0x119C0) rather than
+    // one per address like Europe and Japan, so it is checked against the game when read (see ReadSectionIdUnlocked).
     private static readonly Dictionary<char, uint> SectionMgrAddress = new()
     {
         ['P'] = 0x809C1E38,
         ['E'] = 0x809BD508,
         ['J'] = 0x809C0E98,
+        ['K'] = 0x809B0478,
     };
 
     // RKSYS::Mgr::sInstance per region, translated with the same version table.
@@ -31,6 +34,7 @@ public sealed class DolphinMemoryReader : IDisposable
         ['P'] = 0x809BD748,
         ['E'] = 0x809B8F88,
         ['J'] = 0x809BC7A8,
+        ['K'] = 0x809ABD88,
     };
 
     private int _processId;
@@ -45,11 +49,11 @@ public sealed class DolphinMemoryReader : IDisposable
 
     /// <summary>The current section id, or null when it cannot be read (not Mario Kart Wii yet, or unsupported).</summary>
     /// <summary>Which of the four save licenses is selected in the game (0 to 3), or null when it cannot be read.</summary>
-    public int? ReadLicenseIndex(int processId)
+    public int? ReadLicenseIndex(int processId, bool recomp = false)
     {
         lock (_gate)
         {
-            if (!IsSupported || !Attach(processId))
+            if (!IsSupported || !Attach(processId, recomp))
                 return null;
 
             try
@@ -69,6 +73,56 @@ public sealed class DolphinMemoryReader : IDisposable
         }
     }
 
+    // Retro Rewind keeps the name of the track in a small block of its own: the letters "PULL", a version, a track id
+    // and then the name as plain text. Found by scanning Dolphin's memory; it stays at the same address between tracks.
+    private const uint TrackBlockAddress = 0x804F22E0;
+    private const int TrackBlockSize = 12 + 64;
+
+    /// <summary>The name of the track the pack has loaded (for example "3DS Toad Circuit"), or null when it is not there.</summary>
+    public string? ReadTrackName(int processId, bool recomp = false)
+    {
+        lock (_gate)
+        {
+            if (!IsSupported || !Attach(processId, recomp))
+                return null;
+
+            try
+            {
+                var block = new byte[TrackBlockSize];
+                for (var offset = 0; offset < TrackBlockSize; offset += 4)
+                {
+                    if (ReadUInt32(TrackBlockAddress + (uint)offset) is not { } word)
+                        return null;
+                    BinaryPrimitives.WriteUInt32BigEndian(block.AsSpan(offset, 4), word);
+                }
+
+                return TrackNameFromBlock(block);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+    }
+
+    /// <summary>Reads the track name out of the pack's block, or null when the block is not the pack's or holds no name.</summary>
+    public static string? TrackNameFromBlock(ReadOnlySpan<byte> block)
+    {
+        if (block.Length < 13 || !block[..4].SequenceEqual("PULL"u8))
+            return null;
+
+        var text = block[12..];
+        var end = text.IndexOf((byte)0);
+        if (end >= 0)
+            text = text[..end];
+        // A real name is short, printable text; anything else is leftover data, not a track.
+        if (text.Length == 0 || text.Length >= 64 || text.ToArray().Any(value => value is < 32 or > 126))
+            return null;
+
+        var name = System.Text.Encoding.ASCII.GetString(text).Trim();
+        return name.Length == 0 ? null : name;
+    }
+
     /// <summary>True while Mario Kart Wii is found in Dolphin, even when the screen cannot be read for a moment.</summary>
     public bool GameFound
     {
@@ -79,20 +133,20 @@ public sealed class DolphinMemoryReader : IDisposable
         }
     }
 
-    public int? ReadSectionId(int processId)
+    public int? ReadSectionId(int processId, bool recomp = false)
     {
         lock (_gate)
-            return ReadSectionIdUnlocked(processId);
+            return ReadSectionIdUnlocked(processId, recomp);
     }
 
-    private int? ReadSectionIdUnlocked(int processId)
+    private int? ReadSectionIdUnlocked(int processId, bool recomp)
     {
         if (!IsSupported)
             return null;
 
         try
         {
-            if (!Attach(processId))
+            if (!Attach(processId, recomp))
                 return null;
 
             var manager = ReadUInt32(SectionMgrAddress[_region]);
@@ -103,7 +157,9 @@ public sealed class DolphinMemoryReader : IDisposable
             if (section is null || !IsMainMemory(section.Value))
                 return null;
 
-            return (int?)ReadUInt32(section.Value + 0);
+            // Real section ids are small. A larger value means the address is wrong for this game version, so it is
+            // treated as unreadable rather than shown as a made-up screen.
+            return ReadUInt32(section.Value + 0) is { } id and < 256 ? (int)id : null;
         }
         catch (Exception)
         {
@@ -112,11 +168,17 @@ public sealed class DolphinMemoryReader : IDisposable
         }
     }
 
-    private bool Attach(int processId)
+    // WiiCompiled keeps the whole 4 GiB guest address space at one fixed place in its own process (a guest address is
+    // just this base plus the address), so MEM1 and MEM2 are found without searching.
+    private const long RecompGuestBase = 0x1000_0000_0000;
+
+    private bool _recomp;
+
+    private bool Attach(int processId, bool recomp)
     {
         // A stopped or restarted game leaves the remembered locations pointing at nothing, so confirm the game is
         // still there before trusting them; otherwise look for it again.
-        if (_handle != 0 && _processId == processId && _mem1 != 0 && _mem2 != 0 && StillMarioKartWii())
+        if (_handle != 0 && _processId == processId && _recomp == recomp && _mem1 != 0 && _mem2 != 0 && StillMarioKartWii())
             return true;
 
         Detach();
@@ -127,6 +189,21 @@ public sealed class DolphinMemoryReader : IDisposable
             return false;
         }
         _processId = processId;
+        _recomp = recomp;
+
+        if (recomp)
+        {
+            if (!IsMarioKartWii(RecompGuestBase + 0x80000000))
+            {
+                Detach();
+                _attachError = "WiiCompiled is open but its game memory could not be read yet.";
+                return false;
+            }
+
+            _mem1 = RecompGuestBase + 0x80000000;
+            _mem2 = RecompGuestBase + 0x90000000;
+            return true;
+        }
 
         // MEM1 is a 32 MB mapped region starting with the game id; MEM2 (64 MB) is the next such region after it.
         // The section manager lives in MEM2, so both are needed.
@@ -155,7 +232,7 @@ public sealed class DolphinMemoryReader : IDisposable
         Detach();
         _attachError =
             _mem1 == 0
-                ? "Dolphin is open but no Mario Kart Wii game memory was found. Is the game loaded, and is it a supported region (USA, Europe, Japan)?"
+                ? "Dolphin is open but no Mario Kart Wii game memory was found. Is the game loaded, and is it a supported region (USA, Europe, Japan, Korea)?"
                 : "Found the game but not its second memory block.";
         return false;
     }
@@ -172,13 +249,13 @@ public sealed class DolphinMemoryReader : IDisposable
     }
 
     /// <summary>A plain-language report of each step, for the Discord settings page.</summary>
-    public string Diagnose(int processId)
+    public string Diagnose(int processId, bool recomp = false)
     {
         lock (_gate)
-            return DiagnoseUnlocked(processId);
+            return DiagnoseUnlocked(processId, recomp);
     }
 
-    private string DiagnoseUnlocked(int processId)
+    private string DiagnoseUnlocked(int processId, bool recomp)
     {
         if (!IsSupported)
             return "Reading the game screen only works on Windows.";
@@ -186,7 +263,7 @@ public sealed class DolphinMemoryReader : IDisposable
         try
         {
             _attachError = "";
-            if (!Attach(processId))
+            if (!Attach(processId, recomp))
                 return _attachError;
 
             var manager = ReadUInt32(SectionMgrAddress[_region]);

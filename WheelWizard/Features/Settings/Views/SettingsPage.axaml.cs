@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using WheelWizard.Settings;
 using WheelWizard.Settings.Views;

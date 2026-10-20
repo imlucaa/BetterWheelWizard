@@ -10,6 +10,7 @@ using WheelWizard.Settings;
 using WheelWizard.Views.Components;
 using WheelWizard.Views.Shell.Controls;
 using WheelWizard.Views.Shell.ViewModels;
+using WheelWizard.WiiManagement.GameLicense;
 
 namespace WheelWizard.Views.Shell.Views;
 
@@ -26,11 +27,19 @@ public partial class HomePage : UserControl
     private readonly ISettingsManager _settings;
     private readonly ISettingsSignalBus _signals;
     private IDisposable? _appearanceSubscription;
+    private readonly ISessionStats? _sessionStats;
     public Task InitialContentReady => _initialContent.Task;
 
-    public HomePage(HomeViewModel model, IRandomSystem randomSystem, ISettingsManager settings, ISettingsSignalBus signals)
+    public HomePage(
+        HomeViewModel model,
+        IRandomSystem randomSystem,
+        ISettingsManager settings,
+        ISettingsSignalBus signals,
+        ISessionStats? sessionStats = null
+    )
     {
         Model = model;
+        _sessionStats = sessionStats;
         RandomSystem = randomSystem;
         _settings = settings;
         _signals = signals;
@@ -48,6 +57,7 @@ public partial class HomePage : UserControl
                 || signal.Setting == _settings.LAUNCHER_HIDE_HOME_TITLE
                 || signal.Setting == _settings.LAUNCHER_SURFACE_OPACITY
                 || signal.Setting == _settings.ENABLE_ANIMATIONS
+                || signal.Setting == _settings.SHOW_SESSION_STATS
             )
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
@@ -61,6 +71,11 @@ public partial class HomePage : UserControl
     protected override async void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        if (_sessionStats is not null)
+        {
+            _sessionStats.Changed += OnSessionStatsChanged;
+            ShowSessionStats();
+        }
         _isAttached = true;
         Model.PropertyChanged += Model_OnPropertyChanged;
         Model.MainActionStarted += Model_OnMainActionStarted;
@@ -75,8 +90,42 @@ public partial class HomePage : UserControl
         }
     }
 
+    private void ShowSessionStats()
+    {
+        var stats = _sessionStats?.Current;
+        var visible = _settings.SHOW_SESSION_STATS.Get() && stats is { HasActivity: true };
+        SessionCard.IsVisible = visible;
+        if (!visible || stats is null)
+            return;
+
+        SessionRaces.Text = stats.Races == 1 ? "1 race" : $"{stats.Races:N0} races";
+        SessionVr.Text = (stats.VrChange > 0 ? $"+{stats.VrChange:N0}" : stats.VrChange.ToString("N0")) + " VR";
+        // Gains use the launcher's accent so the card follows the theme; losses stay red and no change stays muted.
+        SessionVr.Foreground = ThemeBrush(
+            stats.VrChange > 0 ? "Brand300"
+            : stats.VrChange < 0 ? "Danger400"
+            : "Neutral400"
+        );
+    }
+
+    /// <summary>A theme color as a brush. The launcher defines these as colors, and the theme replaces them as it changes.</summary>
+    private Avalonia.Media.IBrush ThemeBrush(string key)
+    {
+        this.TryFindResource(key, ActualThemeVariant, out var found);
+        return found switch
+        {
+            Avalonia.Media.IBrush brush => brush,
+            Avalonia.Media.Color color => new Avalonia.Media.SolidColorBrush(color),
+            _ => Avalonia.Media.Brushes.White,
+        };
+    }
+
+    private void OnSessionStatsChanged() => Avalonia.Threading.Dispatcher.UIThread.Post(ShowSessionStats);
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (_sessionStats is not null)
+            _sessionStats.Changed -= OnSessionStatsChanged;
         _isAttached = false;
         Model.PropertyChanged -= Model_OnPropertyChanged;
         Model.MainActionStarted -= Model_OnMainActionStarted;

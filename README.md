@@ -1,6 +1,6 @@
 # BetterWheelWizard
 
-A community version of [WheelWizard](https://github.com/TeamWheelWizard/WheelWizard) with a cleaner interface and additional Retro Rewind tools.
+Quality-of-life upgrades for [WheelWizard](https://github.com/TeamWheelWizard/WheelWizard).
 
 ## Download
 
@@ -14,12 +14,17 @@ All builds are standalone single files. No installer or separate .NET installati
 
 ## Features
 
-- Leaderboard search
-- Live room list
-- Mii downloader and editor
-- Custom themes and backgrounds
-- Save and rating backups
-- Discord status with your own image
+- **Leaderboard**: search for any player.
+- **Rooms**: filter the room list and sort it by highest or lowest VR.
+- **Miis**: download a Mii with the player's friend code or Mii name.
+- **Themes**: make your own themes and use your own images as backgrounds.
+- **RKSYS editor**: see if a friend code is free, then claim it in game.
+- **VR overlay**: show your VR on stream with an OBS overlay.
+- **Custom Discord status**: put your own image on your Discord status instead of the default one.
+- **Ghosts**: import a ghost and the track is found for you. You can export ghosts too.
+- **Backup**: back up your save and rating files and import them later.
+- **Sidebar**: press the pen icon to add pages, reorder them, make categories, or hide what you don't use.
+- **WiiCompiled**: the Discord status and themes work there too.
 
 ## FAQ
 
@@ -43,17 +48,31 @@ No. The game files stay untouched, so online play works as normal. BetterWheelWi
 
 ## Screenshots
 
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/home.png" width="250" alt="Home" /><br /><sub><b>Home</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/leaderboard.png" width="250" alt="Leaderboard" /><br /><sub><b>Leaderboard</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/better-rooms.png" width="250" alt="Rooms" /><br /><sub><b>Rooms</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/mii-downloader.png" width="250" alt="Mii downloader" /><br /><sub><b>Mii downloader</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/custom-background.png" width="250" alt="Themes" /><br /><sub><b>Themes</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/fc-checker.png" width="250" alt="RKSYS editor" /><br /><sub><b>RKSYS editor</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/vr-overlay.png" width="250" alt="VR overlay" /><br /><sub><b>VR overlay</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/ghost.png" width="250" alt="Ghosts" /><br /><sub><b>Ghosts</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/backup.png" width="250" alt="Backup" /><br /><sub><b>Backup</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/sidebar.png" width="250" alt="Sidebar editor" /><br /><sub><b>Sidebar editor</b></sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/discord-rpc.png" width="250" alt="Discord settings" /><br /><sub><b>Discord settings</b></sub></td>
+  </tr>
+</table>
+
 <p align="center">
-  <img src="docs/screenshots/home.png" width="230" alt="Home" />
-  <img src="docs/screenshots/custom-background.png" width="230" alt="Custom background" />
-  <img src="docs/screenshots/leaderboard.png" width="230" alt="Leaderboard" />
-</p>
-<p align="center">
-  <img src="docs/screenshots/rooms.png" width="230" alt="Rooms" />
-  <img src="docs/screenshots/backup.png" width="230" alt="Backup" />
-</p>
-<p align="center">
-  <img src="docs/screenshots/discord-rpc.png" width="400" alt="Discord RPC" />
+  <img src="docs/screenshots/discord-rpc2.png" width="420" alt="Discord status" /><br />
+  <sub><b>Your own image on Discord</b></sub>
 </p>
 
 ## Build from source

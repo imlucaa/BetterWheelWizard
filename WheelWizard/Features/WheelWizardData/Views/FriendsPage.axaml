@@ -195,7 +195,7 @@
 
         <Grid Grid.Row="1" x:Name="VisibleWhenFriends" RowDefinitions="Auto,*" Margin="0,0,0,1">
             <!-- HEADER: who's around, and the order -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="6,14,6,6">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="6,14,6,6" RowSpacing="8">
                 <StackPanel Grid.Column="0" x:Name="CountLine" Orientation="Horizontal" Spacing="8"
                             VerticalAlignment="Center">
                     <Ellipse x:Name="OnlineDot" Width="8" Height="8" VerticalAlignment="Center" />
@@ -208,12 +208,15 @@
                     </TextBlock>
                 </StackPanel>
 
+
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                     <TextBlock Text="{loc:T attribute.sort_by}" FontSize="13" Foreground="{DynamicResource Neutral500}"
                                VerticalAlignment="Center" TextWrapping="NoWrap" />
                     <components:Dropdown Variant="Borderless" FontSize="13" MinWidth="0" VerticalAlignment="Center"
                                          ItemsSource="{Binding SortOptions}" SelectedIndex="{Binding SortIndex, Mode=TwoWay}" />
                 </StackPanel>
+                <components:InputField Grid.Row="1" Grid.ColumnSpan="2" Placeholder="Search friends" Variant="Bordered"
+                                       Height="34" MinHeight="34" Text="{Binding SearchText, Mode=TwoWay}" />
             </Grid>
 
             <!-- THE WALL -->
@@ -345,6 +348,9 @@
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
+
+        <TextBlock Grid.Row="1" x:Name="NoMatchText" Text="No friends match your search." Classes="TinyText"
+                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,90,0,0" IsVisible="False" />
 
         <components:EmptyPageInfo Grid.Row="1" x:Name="VisibleWhenNoFriends"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"

@@ -1,0 +1,54 @@
+<base:PopupContent xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:base="clr-namespace:WheelWizard.Views.Popups.Base"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="320"
+                   x:Class="WheelWizard.Views.Dialogs.DiscordPreviewWindow">
+    <!-- What your Discord profile shows while you play, built from the same switches as the real status. Pick any
+         image you uploaded to the application to see it in the card. -->
+    <StackPanel Width="340" Spacing="12">
+        <Border CornerRadius="14" Padding="14" Background="#1E1F22"
+                BorderBrush="{DynamicResource Neutral700}" BorderThickness="1">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Playing a game" FontSize="12" FontWeight="Bold" Foreground="#DBDEE1" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Border Width="64" Height="64" CornerRadius="10" ClipToBounds="True"
+                            Background="{DynamicResource Neutral800}">
+                        <Panel>
+                            <PathIcon x:Name="FallbackIcon" Data="{StaticResource WheelIcon}" Width="34" Height="34"
+                                      Foreground="{DynamicResource Primary400}" />
+                            <Image x:Name="PreviewImage" Stretch="UniformToFill" IsVisible="False" />
+                        </Panel>
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                        <TextBlock Text="Retro Rewind" FontWeight="Bold" Foreground="#F2F3F5" />
+                        <TextBlock x:Name="DetailsText" FontSize="12" Foreground="#DBDEE1" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="StateText" FontSize="12" Foreground="#B5BAC1" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="PartyText" FontSize="12" Foreground="#B5BAC1" />
+                        <TextBlock Text="0:42 elapsed" FontSize="12" Foreground="#23A55A" />
+                    </StackPanel>
+                </Grid>
+                <UniformGrid x:Name="ButtonsGrid" Columns="2" Margin="-3,0">
+                    <Border x:Name="PlayerButton" Margin="3" Padding="0,7" CornerRadius="8" Background="#4E5058">
+                        <TextBlock Text="View Player" HorizontalAlignment="Center" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#F2F3F5" />
+                    </Border>
+                    <Border x:Name="RoomButton" Margin="3" Padding="0,7" CornerRadius="8" Background="#4E5058">
+                        <TextBlock Text="View Room" HorizontalAlignment="Center" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#F2F3F5" />
+                    </Border>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Spacing="6">
+            <TextBlock Text="Image" Classes="TinyText" />
+            <components:Dropdown x:Name="AssetPicker" IsVisible="False" ZIndex="2" />
+            <TextBlock x:Name="AssetStatus" Classes="TinyText" Text="Loading…" />
+            <components:Button x:Name="UseButton" Text="Use this image" IsVisible="False" HorizontalAlignment="Stretch"
+                               Click="Use_OnClick" />
+        </StackPanel>
+    </StackPanel>
+</base:PopupContent>

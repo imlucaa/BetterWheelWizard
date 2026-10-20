@@ -16,7 +16,13 @@ namespace WheelWizard.DiscordPresence;
 /// Lets the "View Room" button on a Discord profile open the room inside Wheel Wizard. Discord buttons only open web
 /// links, so the button points at this small listener on the viewer's own PC, which brings the launcher to the front.
 /// </summary>
-public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService rooms, ILogger<RoomLinkListener> logger)
+public sealed class RoomLinkListener(
+    IServiceProvider services,
+    LiveRoomsService rooms,
+    WheelWizard.StreamOverlay.OverlayLive overlay,
+    WheelWizard.StreamOverlay.OverlayBackground background,
+    ILogger<RoomLinkListener> logger
+)
 {
     public const int Port = 47831;
     private static readonly string[] Page =
@@ -67,6 +73,18 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 var context = await listener.GetContextAsync();
                 var path = context.Request.Url?.AbsolutePath ?? "";
 
+                if (path.StartsWith("/rewind-overlay", StringComparison.Ordinal) || path == "/overlay/bg")
+                {
+                    await ServeOverlayFileAsync(context, path);
+                    continue;
+                }
+
+                if (path is "/overlay" or "/overlay/state")
+                {
+                    await ServeOverlayAsync(context, path);
+                    continue;
+                }
+
                 // Browsers also ask for /favicon.ico and the like; those must not open anything.
                 if (!path.StartsWith("/room/", StringComparison.Ordinal))
                 {
@@ -110,6 +128,47 @@ public sealed class RoomLinkListener(IServiceProvider services, LiveRoomsService
                 logger.LogWarning(exception, "Could not open a room link");
             }
         }
+    }
+
+    private async Task ServeOverlayFileAsync(HttpListenerContext context, string path)
+    {
+        (byte[] Bytes, string ContentType)? file;
+        if (path == "/overlay/bg")
+        {
+            file = background.Read();
+        }
+        else
+        {
+            var name = path.TrimEnd('/') == "/rewind-overlay" ? "index.html" : path["/rewind-overlay/".Length..].Replace("assets/", "");
+            file = name.Contains('/') || name.Contains("..") ? null : WheelWizard.StreamOverlay.OverlayAssets.Get(name);
+        }
+
+        if (file is not { } found)
+        {
+            context.Response.StatusCode = 404;
+            context.Response.Close();
+            return;
+        }
+
+        context.Response.ContentType = found.ContentType;
+        context.Response.Headers["Cache-Control"] = path == "/overlay/bg" ? "no-cache" : "max-age=3600";
+        context.Response.ContentLength64 = found.Bytes.Length;
+        await context.Response.OutputStream.WriteAsync(found.Bytes);
+        context.Response.Close();
+    }
+
+    private async Task ServeOverlayAsync(HttpListenerContext context, string path)
+    {
+        var state = path == "/overlay/state";
+        var body = state
+            ? System.Text.Json.JsonSerializer.Serialize(new { url = overlay.CurrentUrl() })
+            : WheelWizard.StreamOverlay.OverlayLive.Html;
+        var bytes = Encoding.UTF8.GetBytes(body);
+        context.Response.ContentType = state ? "application/json" : "text/html; charset=utf-8";
+        context.Response.Headers["Cache-Control"] = "no-store";
+        context.Response.ContentLength64 = bytes.Length;
+        await context.Response.OutputStream.WriteAsync(bytes);
+        context.Response.Close();
     }
 
     // The room by its id, or failing that the room the player with this friend code is in.

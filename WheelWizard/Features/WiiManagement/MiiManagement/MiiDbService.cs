@@ -49,6 +49,16 @@ public interface IMiiDbService
     OperationResult Remove(uint clientId);
 
     /// <summary>
+    /// Moves a Mii to the position of another Mii, so the player can reorder them.
+    /// </summary>
+    OperationResult Move(uint movingId, uint targetId);
+
+    /// <summary>
+    /// Saves the Miis in the given order.
+    /// </summary>
+    OperationResult Reorder(IReadOnlyList<uint> idOrder);
+
+    /// <summary>
     /// Whether the database exists or not.
     /// </summary>
     bool Exists();
@@ -191,6 +201,10 @@ public class MiiDbService(IMiiRepositoryService repository, TimeProvider timePro
 
         return [(byte)(miiId >> 24), (byte)(miiId >> 16), (byte)(miiId >> 8), (byte)(miiId)];
     }
+
+    public OperationResult Move(uint movingId, uint targetId) => repository.MoveBlock(movingId, targetId);
+
+    public OperationResult Reorder(IReadOnlyList<uint> idOrder) => repository.ReorderBlocks(idOrder);
 
     public OperationResult Remove(uint clientId)
     {

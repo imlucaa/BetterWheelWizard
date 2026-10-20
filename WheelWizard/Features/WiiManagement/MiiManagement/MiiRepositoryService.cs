@@ -1,4 +1,4 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.Recomp;
 using WheelWizard.Settings;
@@ -42,6 +42,17 @@ public interface IMiiRepositoryService
     /// </summary>
     /// <param name="rawMiiData"></param>
     OperationResult AddMiiToBlocks(byte[] rawMiiData);
+
+    /// <summary>
+    /// Moves the Mii with <paramref name="movingId"/> to the slot of the Mii with <paramref name="targetId"/>,
+    /// shifting the Miis in between by one slot.
+    /// </summary>
+    OperationResult MoveBlock(uint movingId, uint targetId);
+
+    /// <summary>
+    /// Rewrites the slot order so the given Miis come first, in the given order. Miis not listed keep their relative order after them.
+    /// </summary>
+    OperationResult ReorderBlocks(IReadOnlyList<uint> idOrder);
 
     /// <summary>
     /// Whether the database file exists or not.
@@ -259,6 +270,44 @@ public class MiiRepositoryServiceService(
         {
             return [];
         }
+    }
+
+    public OperationResult MoveBlock(uint movingId, uint targetId)
+    {
+        var databasePath = ResolveMiiDbFilePath();
+        if (movingId == 0 || targetId == 0)
+            return Fail("Invalid Client ID.", MessageTranslation.Error_UpdateMiiDb_InvalidClId);
+        if (movingId == targetId)
+            return Ok();
+
+        var blocks = LoadAllBlocks(databasePath);
+        var from = blocks.FindIndex(b => b.Length == MiiLength && BigEndianBinary.BufferToUint32(b, 0x18) == movingId);
+        var to = blocks.FindIndex(b => b.Length == MiiLength && BigEndianBinary.BufferToUint32(b, 0x18) == targetId);
+        if (from < 0 || to < 0)
+            return Fail("Mii not found.", MessageTranslation.Error_UpdateMiiDb_MiiNotFound);
+
+        var moving = blocks[from];
+        blocks.RemoveAt(from);
+        blocks.Insert(to, moving);
+        return SaveAllBlocks(blocks, databasePath);
+    }
+
+    public OperationResult ReorderBlocks(IReadOnlyList<uint> idOrder)
+    {
+        var databasePath = ResolveMiiDbFilePath();
+        var blocks = LoadAllBlocks(databasePath);
+
+        var used = blocks.Where(b => !b.SequenceEqual(EmptyMii)).ToList();
+        var ordered = new List<byte[]>();
+        foreach (var id in idOrder)
+        {
+            var block = used.FirstOrDefault(b => BigEndianBinary.BufferToUint32(b, 0x18) == id);
+            if (block is not null && !ordered.Contains(block))
+                ordered.Add(block);
+        }
+
+        ordered.AddRange(used.Where(b => !ordered.Contains(b)));
+        return SaveAllBlocks(ordered, databasePath);
     }
 
     public OperationResult AddMiiToBlocks(byte[]? rawMiiData)

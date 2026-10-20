@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO.Abstractions;
 using Microsoft.Extensions.Logging;
 using WheelWizard.Dolphin.Paths;
@@ -66,13 +66,50 @@ public sealed class DiscordPresenceService(
 
     public static bool IsValidApplicationId(string value) => value.Length is >= 15 and <= 20 && value.All(char.IsAsciiDigit);
 
+    // Dolphin's own Discord application: its status is posted under this id and Dolphin's process id.
+    private const string DolphinApplicationId = "455712169795780630";
+
+    // Retro Rewind's own Discord application, the one the pack posts its status under (the id is in the pack itself).
+    private const string PackApplicationId = "1471316950004006963";
+
+    /// <summary>
+    /// Dolphin only reads its "show status" setting when it starts, so a running Dolphin keeps its own status. This asks
+    /// Discord to clear that status the same way Dolphin would, so switching it off applies at once. It is best effort:
+    /// false when Dolphin is not running or Discord did not answer.
+    /// </summary>
+    public async Task<bool> ClearDolphinOwnStatusAsync()
+    {
+        var processId = FindDolphinProcessId();
+        if (processId is null)
+            return false;
+        try
+        {
+            // A status can sit under Dolphin's own application or under the pack's, depending on what is installed.
+            foreach (var applicationId in new[] { DolphinApplicationId, PackApplicationId })
+            {
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                using var client = await DiscordIpcClient.ConnectAsync(applicationId, timeout.Token);
+                await client.ClearActivityAsync(timeout.Token, processId);
+            }
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            logger.LogDebug(exception, "Could not clear Dolphin's own Discord status");
+            return false;
+        }
+    }
+
     /// <summary>What the launcher can currently see of Dolphin and the game, for the settings page.</summary>
     public string Diagnose()
     {
         var processId = FindDolphinProcessId();
         if (processId is not null)
             return _memory.Diagnose(processId.Value);
-        return IsRecompRunning() ? "WiiCompiled is running (no game screen info there)." : "Neither Dolphin nor WiiCompiled is running.";
+        return FindRecompProcessId() is { } recompId
+            ? _memory.Diagnose(recompId, recomp: true)
+            : "Neither Dolphin nor WiiCompiled is running.";
     }
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
@@ -148,6 +185,49 @@ public sealed class DiscordPresenceService(
         }
     }
 
+    /// <summary>The images uploaded to the saved Discord application, by the name used as the image key.</summary>
+    public async Task<IReadOnlyList<DiscordAsset>> ListAssetsAsync()
+    {
+        var clientId = settings.Get<string>(settings.DISCORD_APP_ID).Trim();
+        if (!IsValidApplicationId(clientId))
+            return [];
+
+        try
+        {
+            var json = await Http.GetStringAsync(
+                $"https://discord.com/api/v9/oauth2/applications/{clientId}/assets?cb={DateTime.UtcNow.Ticks}"
+            );
+            using var document = System.Text.Json.JsonDocument.Parse(json);
+            return document
+                .RootElement.EnumerateArray()
+                .Select(asset => new DiscordAsset(asset.GetProperty("name").GetString() ?? "", asset.GetProperty("id").GetString() ?? ""))
+                .Where(asset => asset.Name.Length > 0 && asset.Id.Length > 0)
+                .ToList();
+        }
+        catch (Exception)
+        {
+            return [];
+        }
+    }
+
+    /// <summary>Downloads one uploaded image for the preview. Null when it cannot be fetched or is too big.</summary>
+    public async Task<byte[]?> DownloadAssetAsync(DiscordAsset asset)
+    {
+        var clientId = settings.Get<string>(settings.DISCORD_APP_ID).Trim();
+        if (!IsValidApplicationId(clientId))
+            return null;
+
+        try
+        {
+            var bytes = await Http.GetByteArrayAsync($"https://cdn.discordapp.com/app-assets/{clientId}/{asset.Id}.png?size=256");
+            return bytes.Length is > 0 and <= 4 * 1024 * 1024 ? bytes : null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     public void Start()
     {
         if (_started)
@@ -189,29 +269,85 @@ public sealed class DiscordPresenceService(
         }
     }
 
+    private int? _liveDefaultProcessId;
+
+    /// <summary>
+    /// Called when "Default" is picked. If Dolphin is already open it will not show its own status until it restarts,
+    /// so the launcher shows the same status for it now. False when Dolphin is not open (nothing to do then).
+    /// </summary>
+    public bool EnableLiveDefault()
+    {
+        _liveDefaultProcessId = FindDolphinProcessId();
+        RefreshNow();
+        return _liveDefaultProcessId is not null;
+    }
+
+    public void DisableLiveDefault() => _liveDefaultProcessId = null;
+
+    private readonly SemaphoreSlim _tickGate = new(1, 1);
+
     private async Task TickAsync(CancellationToken cancellationToken)
     {
+        await _tickGate.WaitAsync(cancellationToken);
+        try
+        {
+            await TickCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            _tickGate.Release();
+        }
+    }
+
+    /// <summary>Runs an update right away instead of waiting for the next one, for when a setting just changed.</summary>
+    public void RefreshNow()
+    {
+        if (_started)
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await TickAsync(_stop.Token);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogDebug(exception, "Discord presence refresh failed");
+                    DropClient();
+                }
+            });
+    }
+
+    private async Task TickCoreAsync(CancellationToken cancellationToken)
+    {
         var clientId = settings.Get<string>(settings.DISCORD_APP_ID).Trim();
+        // "Default" picked while Dolphin was already open: Dolphin will not start its own status until it restarts, so
+        // the launcher posts the same one (under the pack's application) for that Dolphin.
+        var liveDefault =
+            _liveDefaultProcessId is { } pinned
+            && !settings.Get<bool>(settings.DISCORD_PRESENCE_ENABLED)
+            && FindDolphinProcessId() == pinned;
+        if (_liveDefaultProcessId is not null && !liveDefault)
+            _liveDefaultProcessId = null;
+        if (liveDefault)
+            clientId = PackApplicationId;
         var dolphinId =
-            settings.Get<bool>(settings.DISCORD_PRESENCE_ENABLED) && IsValidApplicationId(clientId) ? FindDolphinProcessId() : null;
-        var useLive = settings.Get<bool>(settings.DISCORD_LIVE_INFO);
-        // WiiCompiled is a native build, not Dolphin: there is no emulated memory to read, so it only gets the
-        // static lines plus whatever the online room list shows.
-        var recompRunning =
-            dolphinId is null
-            && settings.Get<bool>(settings.DISCORD_PRESENCE_ENABLED)
-            && IsValidApplicationId(clientId)
-            && IsRecompRunning();
+            (liveDefault || settings.Get<bool>(settings.DISCORD_PRESENCE_ENABLED)) && IsValidApplicationId(clientId)
+                ? FindDolphinProcessId()
+                : null;
+        var useLive = liveDefault || settings.Get<bool>(settings.DISCORD_LIVE_INFO);
+        // WiiCompiled is a native build, but it keeps the game's memory laid out like the Wii's at a fixed place in its
+        // process, so the same screen, license and track reads work there too.
+        var recompId =
+            dolphinId is null && settings.Get<bool>(settings.DISCORD_PRESENCE_ENABLED) && IsValidApplicationId(clientId)
+                ? FindRecompProcessId()
+                : null;
+        var recompRunning = recompId is not null;
+        var gameId = dolphinId ?? recompId;
         int? section = null;
         LiveInfo? live = null;
-        if (recompRunning && useLive)
+        if (gameId is { } processId && useLive)
         {
-            await RefreshRoomsAsync(cancellationToken);
-            live = BuildLiveInfo(null, null);
-        }
-        else if (dolphinId is { } processId && useLive)
-        {
-            section = _memory.ReadSectionId(processId);
+            section = _memory.ReadSectionId(processId, recompRunning);
             // The screen cannot be read for a moment while the game switches menus or sits idle. The game is still
             // there, so keep the last screen (or a plain menu) instead of dropping the status back to Dolphin's.
             if (section is { } readId)
@@ -222,9 +358,16 @@ public sealed class DiscordPresenceService(
                 _lastGoodSection = null;
             if (section is { } id && RetroRewindSections.IsOnline(id))
                 await RefreshRoomsAsync(cancellationToken);
-            live = BuildLiveInfo(section, _memory.ReadLicenseIndex(processId));
-            // Dolphin open with no game loaded: show nothing rather than a stale static status.
-            if (live == null && DolphinMemoryReader.IsSupported)
+            else if (section is null && recompRunning)
+                await RefreshRoomsAsync(cancellationToken);
+            live = BuildLiveInfo(
+                section,
+                _memory.ReadLicenseIndex(processId, recompRunning),
+                _memory.ReadTrackName(processId, recompRunning)
+            );
+            // Dolphin open with no game loaded: show nothing rather than a stale static status. (WiiCompiled always is
+            // the game, so it keeps the static lines.)
+            if (live == null && DolphinMemoryReader.IsSupported && !recompRunning)
                 dolphinId = null;
         }
 
@@ -243,14 +386,24 @@ public sealed class DiscordPresenceService(
 
         if (_client == null || _connectedClientId != clientId)
         {
-            DropClient();
+            // The old status stays up until the new one is posted, so Discord never falls back to showing "Dolphin".
+            _retiringClient?.Dispose();
+            _retiringClient = _client;
+            _client = null;
+            _connectedClientId = null;
+            _lastSent = null;
             _client = await DiscordIpcClient.ConnectAsync(clientId, cancellationToken);
             _connectedClientId = clientId;
         }
 
         // Like the pack's own presence, the timer restarts whenever the screen changes.
         if (_startedAt == 0 || section != _lastSection)
+        {
             _startedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            // The pack posts its own status again whenever the screen changes, so it is cleared again each time.
+            if (!liveDefault)
+                _ = ClearDolphinOwnStatusAsync();
+        }
         _lastSection = section;
 
         // The first line is always the game's name, so every status reads the same.
@@ -270,11 +423,12 @@ public sealed class DiscordPresenceService(
         // Offline play has no leaderboard page yet, so View Player waits until you are online on a license.
         var online = section is { } onlineId && RetroRewindSections.IsOnline(onlineId) || live is { InRoom: true };
         var playerUrl =
-            online && settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
+            online && !liveDefault && settings.Get<bool>(settings.DISCORD_PLAYER_BUTTON)
                 ? live?.PlayerUrl ?? BuildPlayerUrl(ActiveProfile?.FriendCode)
                 : null;
         var roomUrl =
-            settings.Get<bool>(settings.DISCORD_ROOM_BUTTON)
+            !liveDefault
+            && settings.Get<bool>(settings.DISCORD_ROOM_BUTTON)
             && live is { InRoom: true, RoomId: { } roomId }
             && RoomLinkListener.IsValidRoomId(roomId)
                 ? RoomLinkListener.BuildUrl(roomId, live.PlayerUrl?.Split('/').Last())
@@ -283,7 +437,7 @@ public sealed class DiscordPresenceService(
         var activity = new DiscordActivity(
             details,
             state,
-            settings.Get<string>(settings.DISCORD_LARGE_IMAGE),
+            liveDefault ? "" : settings.Get<string>(settings.DISCORD_LARGE_IMAGE),
             settings.Get<string>(settings.DISCORD_LARGE_TEXT),
             _startedAt,
             partySize,
@@ -295,6 +449,8 @@ public sealed class DiscordPresenceService(
             return;
 
         await _client.SetActivityAsync(activity, cancellationToken);
+        _retiringClient?.Dispose();
+        _retiringClient = null;
         _lastSent = activity;
         _lastSentAt = DateTime.UtcNow;
     }
@@ -340,7 +496,7 @@ public sealed class DiscordPresenceService(
     /// The screen comes from the game itself (same wording as the pack's presence); the online room list adds the
     /// track, player count and ratings. Without the game screen, the room list alone still shows an online room.
     /// </summary>
-    private LiveInfo? BuildLiveInfo(int? sectionId, int? licenseIndex)
+    private LiveInfo? BuildLiveInfo(int? sectionId, int? licenseIndex, string? gameTrack = null)
     {
         // The license picked in the game, not the one selected in the launcher, is the one playing.
         var profile = ProfileAt(licenseIndex) ?? ActiveProfile;
@@ -352,7 +508,12 @@ public sealed class DiscordPresenceService(
             if (RetroRewindSections.IsOnline(id))
                 details += $" (VR: {Rating(room?.Vr, profile?.Vr)} BR: {Rating(room?.Br, profile?.Br)})";
 
-            return new(details, TrackFor(id, room), room?.PlayerCount ?? 0, BuildPlayerUrl(profile?.FriendCode), room != null, room?.Id);
+            var raceTrack = TrackFor(id, room);
+            // Offline play (Time Trials, Grand Prix, VS...) has no room to name the track, so the name the pack has
+            // loaded in the game is used, the same one the pack's own status shows.
+            if (raceTrack.Length == 0 && gameTrack is not null && RetroRewindSections.ShowsGameTrack(id))
+                raceTrack = gameTrack;
+            return new(details, raceTrack, room?.PlayerCount ?? 0, BuildPlayerUrl(profile?.FriendCode), room != null, room?.Id);
         }
 
         var fresh = FindFreshRoom(profile);
@@ -493,7 +654,7 @@ public sealed class DiscordPresenceService(
         return string.IsNullOrWhiteSpace(abbreviation) ? "Online" : $"Online {abbreviation}";
     }
 
-    private bool IsRecompRunning()
+    private int? FindRecompProcessId()
     {
         // The Retro Rewind product and the base game each ship their own executable.
         foreach (var name in new[] { "RetroRewind", "WiiCompiled" })
@@ -502,7 +663,7 @@ public sealed class DiscordPresenceService(
             try
             {
                 if (processes.Length > 0)
-                    return true;
+                    return processes[0].Id;
             }
             finally
             {
@@ -511,7 +672,7 @@ public sealed class DiscordPresenceService(
             }
         }
 
-        return false;
+        return null;
     }
 
     private static string Digits(string? value) => new((value ?? "").Where(char.IsAsciiDigit).ToArray());
@@ -533,8 +694,12 @@ public sealed class DiscordPresenceService(
         }
     }
 
+    private DiscordIpcClient? _retiringClient;
+
     private void DropClient()
     {
+        _retiringClient?.Dispose();
+        _retiringClient = null;
         _client?.Dispose();
         _client = null;
         _connectedClientId = null;
@@ -549,3 +714,6 @@ public sealed class DiscordPresenceService(
         _stop.Dispose();
     }
 }
+
+/// <summary>An image uploaded to a Discord application: its key name and its asset id.</summary>
+public sealed record DiscordAsset(string Name, string Id);

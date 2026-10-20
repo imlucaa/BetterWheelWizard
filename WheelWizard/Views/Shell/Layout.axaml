@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -91,7 +91,7 @@
                                         StillVariant="{x:Static miiVars:MiiImageVariants.FriendsSideProfile}" />
         </Grid>
 
-        <TextBlock Text="{loc:T category.general}" Classes="SidebarSectionText"
+        <TextBlock x:Name="GeneralSectionText" Text="{loc:T category.general}" Classes="SidebarSectionText"
                    VerticalAlignment="Bottom" Grid.Row="3" /> <!-- Repurposing this translation from settings -->
         <StackPanel x:Name="SidePanelButtons" Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="4" VerticalAlignment="Top">
             <shellControls:SidebarRadioButton IconData="{StaticResource Home}"
@@ -110,7 +110,7 @@
              <shellControls:SidebarRadioButton IconData="{StaticResource ThemePalette}"
                                             PageType="{x:Type pages:ThemesPage}"
                                             Text="{loc:T page_title.themes}" />
-            <TextBlock Text="{loc:T attribute.status_online}" Classes="SidebarSectionText" />
+            <TextBlock x:Name="OnlineSectionText" Text="{loc:T attribute.status_online}" Classes="SidebarSectionText" />
             <!-- Repurposing this translation from values -->
             <shellControls:SidebarRadioButton IconData="{StaticResource RoomUsers}"
                                            PageType="{x:Type rooms:RoomsPage}"
@@ -142,9 +142,9 @@
                                      FontSize="13"
                                      Foreground="{DynamicResource LauncherFooterIconBrush}"
                                     Click="SupportUs_OnClick"
-                                    HorizontalAlignment="Left"
+                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Bottom"
-                                    Margin="15,0,0,52"  Tone="Secondary" Variant="Link" Padding="0" MinHeight="0"/>
+                                    Margin="0,0,0,52"  Tone="Secondary" Variant="Link" Padding="0" MinHeight="0"/>
 
         <Border Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Margin="10,0,0,12" Cursor="Hand"
@@ -267,15 +267,36 @@
                     ToolTip.Placement="Top"
                     ToolTip.ShowDelay="20"
                     PointerPressed="SidebarSettingsButton_OnPointerPressed">
-                <PathIcon Data="{StaticResource Gear}"
-                          x:Name="SidebarSettingsIcon"
-                          Width="22" Height="22"
-                          Margin="-1"
+                <Grid>
+                    <PathIcon Data="{StaticResource Gear}"
+                              x:Name="SidebarSettingsIcon"
+                              Width="22" Height="22"
+                              Margin="-1"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center" />
+                    <Ellipse x:Name="SidebarUpdateDot" Width="9" Height="9" Fill="#F59E0B"
+                             Stroke="{DynamicResource LauncherBaseBrush}" StrokeThickness="1.5"
+                             HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,0,0"
+                             IsHitTestVisible="False" IsVisible="False" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="6"
+                    x:Name="SidebarEditButton"
+                    Width="28" Height="28"
+                    HorizontalAlignment="Left"
+                    Classes="BottomSidebarIcon"
+                    ToolTip.Tip="Edit sidebar"
+                    ToolTip.Placement="Top"
+                    ToolTip.ShowDelay="20"
+                    PointerPressed="SidebarEditButton_OnPointerPressed">
+                <PathIcon Data="{StaticResource Pen}"
+                          Width="15" Height="15"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center" />
             </Border>
 
-            <Button Grid.Column="6" x:Name="VersionTagBorder"
+            <Button Grid.Column="6" x:Name="VersionTagBorder" IsVisible="False"
                     Height="26" MaxWidth="90" ClipToBounds="True" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                     Click="VersionTag_OnClick" AutomationProperties.Name="{loc:T action.update}">
                 <Button.Template>

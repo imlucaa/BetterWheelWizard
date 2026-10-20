@@ -59,6 +59,9 @@ public partial class MiiListPage : UserControl
     private IFileSystem FileSystem { get; }
 
     private ISettingsManager SettingsService { get; }
+    private MiiTagStore Tags { get; }
+    private string? _activeTag;
+    private MiiBlock? _pressedBlock;
     private IApiCaller<IRwfcApi> ApiCaller { get; }
     private IRrLeaderboardSingletonService LeaderboardService { get; }
     private IFilePickerService FilePicker { get; }
@@ -97,6 +100,7 @@ public partial class MiiListPage : UserControl
         _stageCalendar = calendar;
         _stageRandom = random;
         Navigation = navigation;
+        Tags = new MiiTagStore(settingsService);
         FilePicker = filePicker;
         CustomCharactersService = customCharactersService;
         MiiDbService = miiDbService;
@@ -109,6 +113,11 @@ public partial class MiiListPage : UserControl
         Popups = popups;
         InitializeComponent();
         DataContext = this;
+        // MiiBlock marks its pointer events handled, so the drag-to-reorder hooks listen on the way down.
+        MiiList.AddHandler(PointerPressedEvent, MiiList_OnPointerPressed, RoutingStrategies.Tunnel, handledEventsToo: true);
+        MiiList.AddHandler(PointerMovedEvent, MiiList_OnPointerMoved, RoutingStrategies.Tunnel, handledEventsToo: true);
+        MiiList.AddHandler(PointerReleasedEvent, MiiList_OnPointerReleased, RoutingStrategies.Tunnel, handledEventsToo: true);
+        MiiList.AddHandler(PointerCaptureLostEvent, MiiList_OnCaptureLost, RoutingStrategies.Tunnel, handledEventsToo: true);
         MyMiisTabButton.Classes.Set("Active", true);
         _isPageReady = true;
 
@@ -159,6 +168,9 @@ public partial class MiiListPage : UserControl
         OnlineMiiPanel.IsVisible = showOnline;
         SavedMiiFilterPanel.IsVisible = !showOnline;
         SearchOnlineMiiButton.IsVisible = showOnline;
+        // The selection buttons (favorite, edit, delete...) belong to the saved Miis.
+        ClearSelectedEntries();
+        ChangeTopButtons();
     }
 
     private void SavedMiiSearch_OnTextChanged(object? sender, TextChangedEventArgs e) { }
@@ -339,11 +351,21 @@ public partial class MiiListPage : UserControl
         if (!_onlineStageStarted)
         {
             _onlineStage.ShowEditor(mii);
+            // The editor's head close-up, but the Mii keeps moving instead of holding still.
+            _onlineStage.SetFraming(MiiEditorFraming.Head);
+            KeepStageAnimated();
             _onlineStageStarted = true;
             return;
         }
 
         _onlineStage.Present(mii);
+        KeepStageAnimated();
+    }
+
+    private void KeepStageAnimated()
+    {
+        if (_onlineStage?.Director is { } director)
+            director.HoldStill = false;
     }
 
     private int _onlineSearchTotalMatches;
@@ -561,6 +583,313 @@ public partial class MiiListPage : UserControl
         ViewUtils.ShowSnackbar(t("snackbar_success.mii_added"));
     }
 
+    #region Tags
+
+    private void RebuildTagChips()
+    {
+        if (_activeTag is not null && !Tags.Tags.Contains(_activeTag, StringComparer.OrdinalIgnoreCase))
+            _activeTag = null;
+
+        ActiveTagLabel.Text = _activeTag is null ? string.Empty : _activeTag;
+        ActiveTagLabel.IsVisible = _activeTag is not null;
+    }
+
+    private void TagsButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var menu = new ContextMenu();
+
+        var all = new MenuItem { Header = _activeTag is null ? "All Miis (showing)" : "All Miis" };
+        all.Click += (_, _) => SelectTag(null);
+        menu.Items.Add(all);
+
+        foreach (var tag in Tags.Tags)
+        {
+            var item = new MenuItem
+            {
+                Header = string.Equals(_activeTag, tag, StringComparison.OrdinalIgnoreCase) ? $"{tag} (showing)" : tag,
+            };
+            item.Click += (_, _) => SelectTag(tag);
+            menu.Items.Add(item);
+        }
+
+        menu.Items.Add(new Separator());
+
+        var sort = new MenuItem { Header = "Sort Miis" };
+        var byName = new MenuItem { Header = "Name (A-Z)" };
+        byName.Click += SortByName_OnClick;
+        var newest = new MenuItem { Header = "Newest first" };
+        newest.Click += SortNewest_OnClick;
+        var oldest = new MenuItem { Header = "Oldest first" };
+        oldest.Click += SortOldest_OnClick;
+        sort.Items.Add(byName);
+        sort.Items.Add(newest);
+        sort.Items.Add(oldest);
+        menu.Items.Add(sort);
+        menu.Items.Add(new Separator());
+
+        var create = new MenuItem { Header = "New tag..." };
+        create.Click += async (_, _) =>
+        {
+            var name = await CreateTagAsync();
+            if (name is not null)
+                SelectTag(name);
+        };
+        menu.Items.Add(create);
+
+        if (Tags.Tags.Count > 0)
+        {
+            var rename = new MenuItem { Header = "Rename tag" };
+            var delete = new MenuItem { Header = "Delete tag" };
+            foreach (var tag in Tags.Tags)
+            {
+                var renameItem = new MenuItem { Header = tag };
+                renameItem.Click += async (_, _) => await RenameTagAsync(tag);
+                rename.Items.Add(renameItem);
+
+                var deleteItem = new MenuItem { Header = tag };
+                deleteItem.Click += async (_, _) => await DeleteTagAsync(tag);
+                delete.Items.Add(deleteItem);
+            }
+
+            menu.Items.Add(rename);
+            menu.Items.Add(delete);
+        }
+
+        menu.Open(TagsButton);
+    }
+
+    private void SelectTag(string? tag)
+    {
+        _activeTag = tag;
+        ClearSelectedEntries();
+        RebuildTagChips();
+        RebuildRows(_savedMiiSearchText);
+        ChangeTopButtons();
+    }
+
+    private async Task<string?> AskTagNameAsync(string title, string initial = "")
+    {
+        var input = await Popups
+            .Create<TextInputWindow>()
+            .SetMainText(title)
+            .SetExtraText("For example: Friends, Racing, Favorites.")
+            .SetPlaceholderText("Tag name")
+            .SetInitialText(initial)
+            .SetButtonText("Cancel", "Save")
+            .ShowDialog();
+        return string.IsNullOrWhiteSpace(input) ? null : input.Trim();
+    }
+
+    private async Task<string?> CreateTagAsync()
+    {
+        var name = await AskTagNameAsync("New tag");
+        if (name is null)
+            return null;
+
+        if (!Tags.Create(name))
+        {
+            ViewUtils.ShowSnackbar("A tag with that name already exists.", ViewUtils.SnackbarType.Warning);
+            return null;
+        }
+
+        RebuildTagChips();
+        return name;
+    }
+
+    private async Task RenameTagAsync(string tag)
+    {
+        var name = await AskTagNameAsync("Rename tag", tag);
+        if (name is null)
+            return;
+
+        Tags.Rename(tag, name);
+        if (string.Equals(_activeTag, tag, StringComparison.OrdinalIgnoreCase))
+            _activeTag = name;
+        RebuildTagChips();
+    }
+
+    private async Task DeleteTagAsync(string tag)
+    {
+        var yes = await Popups
+            .Create<YesNoWindow>()
+            .SetMainText($"Delete the tag \"{tag}\"?")
+            .SetExtraText("Your Miis stay as they are, only the tag is removed.")
+            .AwaitAnswer();
+        if (!yes)
+            return;
+
+        Tags.Delete(tag);
+        if (string.Equals(_activeTag, tag, StringComparison.OrdinalIgnoreCase))
+            _activeTag = null;
+        RebuildTagChips();
+        RebuildRows(_savedMiiSearchText);
+    }
+
+    private void TagContextMenu_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!TryGetMenuMii(sender, out var mii))
+            return;
+
+        var miis = GetSelectedMiis();
+        if (!miis.Contains(mii))
+            miis = [mii];
+
+        var menu = new ContextMenu();
+        foreach (var tag in Tags.Tags)
+        {
+            var allIn = miis.All(m => Tags.Contains(tag, m.MiiId));
+            var item = new MenuItem { Header = allIn ? $"Remove from {tag}" : $"Add to {tag}" };
+            item.Click += (_, _) =>
+            {
+                Tags.SetMembership(tag, miis.Select(m => m.MiiId), !allIn);
+                RebuildRows(_savedMiiSearchText);
+            };
+            menu.Items.Add(item);
+        }
+
+        var create = new MenuItem { Header = "New tag..." };
+        create.Click += async (_, _) =>
+        {
+            var name = await CreateTagAsync();
+            if (name is null)
+                return;
+
+            Tags.SetMembership(name, miis.Select(m => m.MiiId), true);
+            RebuildRows(_savedMiiSearchText);
+        };
+        menu.Items.Add(create);
+        menu.Open((Control?)_pressedBlock ?? MiiList);
+    }
+
+    #endregion
+
+    #region Drag to reorder
+
+    private const double DragThreshold = 8;
+    private MiiListEntry? _dragEntry;
+    private Point _dragStart;
+    private bool _isDragging;
+    private MiiBlock? _dragBlock;
+    private MiiBlock? _hoverBlock;
+
+    private static MiiBlock? FindMiiBlock(object? source) => (source as Visual)?.FindAncestorOfType<MiiBlock>(includeSelf: true);
+
+    private void MiiList_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        _dragEntry = null;
+        _isDragging = false;
+        _pressedBlock = FindMiiBlock(e.Source);
+        if (
+            !e.GetCurrentPoint(MiiList).Properties.IsLeftButtonPressed
+            || !string.IsNullOrWhiteSpace(_savedMiiSearchText)
+            || _activeTag is not null
+        )
+            return;
+
+        if (FindMiiBlock(e.Source) is { DataContext: MiiListEntry { Mii: not null } entry })
+        {
+            _dragEntry = entry;
+            _dragBlock = FindMiiBlock(e.Source);
+            _dragStart = e.GetPosition(MiiList);
+        }
+    }
+
+    private void MiiList_OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_dragEntry is null)
+            return;
+
+        if (!_isDragging)
+        {
+            var delta = e.GetPosition(MiiList) - _dragStart;
+            if (Math.Abs(delta.X) < DragThreshold && Math.Abs(delta.Y) < DragThreshold)
+                return;
+
+            _isDragging = true;
+            Cursor = new Cursor(StandardCursorType.DragMove);
+            _dragBlock?.Classes.Set("Dragging", true);
+        }
+
+        var over = FindMiiBlock(MiiList.InputHitTest(e.GetPosition(MiiList)));
+        if (over is { DataContext: MiiListEntry { Mii: not null } } && over != _dragBlock)
+        {
+            if (over != _hoverBlock)
+            {
+                _hoverBlock?.Classes.Set("DropTarget", false);
+                _hoverBlock = over;
+                _hoverBlock.Classes.Set("DropTarget", true);
+            }
+        }
+        else if (_hoverBlock is not null)
+        {
+            _hoverBlock.Classes.Set("DropTarget", false);
+            _hoverBlock = null;
+        }
+    }
+
+    private void MiiList_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        var entry = _dragEntry;
+        var wasDragging = _isDragging;
+        EndDrag();
+        if (!wasDragging || entry?.Mii is null)
+            return;
+
+        var target = FindMiiBlock(MiiList.InputHitTest(e.GetPosition(MiiList)));
+        if (target?.DataContext is not MiiListEntry { Mii: { } targetMii } || targetMii.MiiId == entry.Mii.MiiId)
+            return;
+
+        var result = MiiDbService.Move(entry.Mii.MiiId, targetMii.MiiId);
+        if (result.IsFailure)
+        {
+            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
+            return;
+        }
+
+        ReloadMiiList();
+    }
+
+    private void MiiList_OnCaptureLost(object? sender, PointerCaptureLostEventArgs e) => EndDrag();
+
+    private void EndDrag()
+    {
+        _dragBlock?.Classes.Set("Dragging", false);
+        _hoverBlock?.Classes.Set("DropTarget", false);
+        _dragBlock = null;
+        _hoverBlock = null;
+        _dragEntry = null;
+        _isDragging = false;
+        Cursor = Cursor.Default;
+    }
+
+    private void SortMiiButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { ContextMenu: { } menu } control)
+            menu.Open(control);
+    }
+
+    private void SortByName_OnClick(object? sender, RoutedEventArgs e) =>
+        SortMiis(miis => miis.OrderBy(m => m.Name.ToString(), StringComparer.CurrentCultureIgnoreCase));
+
+    private void SortNewest_OnClick(object? sender, RoutedEventArgs e) => SortMiis(miis => miis.OrderByDescending(m => m.MiiId));
+
+    private void SortOldest_OnClick(object? sender, RoutedEventArgs e) => SortMiis(miis => miis.OrderBy(m => m.MiiId));
+
+    private void SortMiis(Func<IEnumerable<Mii>, IOrderedEnumerable<Mii>> order)
+    {
+        var sorted = order(MiiDbService.GetAllMiis()).Select(m => m.MiiId).ToList();
+        var result = MiiDbService.Reorder(sorted);
+        if (result.IsFailure)
+        {
+            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
+            return;
+        }
+
+        ReloadMiiList();
+    }
+
+    #endregion
+
     #region Multi and Single select
 
     private bool _isShiftPressed;
@@ -615,6 +944,7 @@ public partial class MiiListPage : UserControl
         if (count < 100)
             _miiEntries.Add(MiiListEntry.CreateAddEntry());
 
+        RebuildTagChips();
         RebuildRows(_savedMiiSearchText);
         ChangeTopButtons();
     }
@@ -623,9 +953,13 @@ public partial class MiiListPage : UserControl
     {
         var query = searchText?.Trim();
         var normalizedQuery = string.IsNullOrWhiteSpace(query) ? null : CustomCharactersService.NormalizeToAscii(query);
-        var visibleEntries = string.IsNullOrWhiteSpace(query)
-            ? _miiEntries
-            : _miiEntries.Where(entry => MiiNameMatchesQuery(entry, query, normalizedQuery)).ToList();
+        IEnumerable<MiiListEntry> source = _miiEntries;
+        if (_activeTag is { } tag)
+            source = source.Where(entry => entry.Mii is { } m && Tags.Contains(tag, m.MiiId));
+
+        var visibleEntries = (
+            string.IsNullOrWhiteSpace(query) ? source : source.Where(entry => MiiNameMatchesQuery(entry, query, normalizedQuery))
+        ).ToList();
 
         MiiRows.Clear();
         for (var i = 0; i < visibleEntries.Count; i += 3)

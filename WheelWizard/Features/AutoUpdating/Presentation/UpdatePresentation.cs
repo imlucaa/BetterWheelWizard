@@ -19,6 +19,20 @@ public sealed class UpdatePresentation : IUpdatePresentation
                     .AwaitAnswer()
         );
 
+    public async Task<bool> ConfirmUpdateAsync(string latestVersion, string currentVersion, string releaseNotes) =>
+        await Dispatcher.UIThread.InvokeAsync(
+            () =>
+                new YesNoWindow()
+                    .SetButtonText(t("action.update"), t("action.maybe_later"))
+                    .SetMainText(t("question.new_version_wh_wz.title"))
+                    .SetExtraText(
+                        t("question.new_version_wh_wz.extra", new { latestVersion = latestVersion, currentVersion = currentVersion })!
+                            + "\n\nWhat's new:\n"
+                            + releaseNotes
+                    )
+                    .AwaitAnswer()
+        );
+
     public async Task<bool> ConfirmElevationAsync() =>
         await Dispatcher.UIThread.InvokeAsync(
             () =>
@@ -56,7 +70,7 @@ public sealed class UpdatePresentation : IUpdatePresentation
                         $"There is a new Wheel Wizard version available!\nVersion {latestVersion} (You are currently on {currentVersion})\n\n"
                             + "You can manually update it by going to the GitHub releases at:"
                     )
-                    .SetLink("https://github.com/TeamWheelWizard/WheelWizard/releases")
+                    .SetLink("https://github.com/imlucaa/BetterWheelWizard/releases")
                     .Show()
         );
 

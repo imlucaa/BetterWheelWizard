@@ -19,6 +19,58 @@ public partial class ThemeColorPickerWindow : PopupContent
         _selectedColor = initialColor;
         Picker.Color = initialColor;
         HexTextBox.Text = ToHex(initialColor);
+        OldSwatch.Background = new SolidColorBrush(initialColor);
+        OldHexText.Text = $"Current · {ToHex(initialColor)}";
+        BuildSwatches();
+        UpdatePreview();
+    }
+
+    private static readonly string[] QuickColors =
+    [
+        "#FFFFFF",
+        "#A3A3A3",
+        "#000000",
+        "#EF4444",
+        "#F97316",
+        "#EAB308",
+        "#22C55E",
+        "#14B8A6",
+        "#3B82F6",
+        "#6366F1",
+        "#A855F7",
+        "#EC4899",
+    ];
+
+    private void BuildSwatches()
+    {
+        foreach (var hex in QuickColors)
+        {
+            var color = Color.Parse(hex);
+            var swatch = new Border
+            {
+                Width = 24,
+                Height = 24,
+                CornerRadius = new Avalonia.CornerRadius(12),
+                BorderThickness = new Avalonia.Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse("#555555")),
+                Background = new SolidColorBrush(color),
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            };
+            ToolTip.SetTip(swatch, hex);
+            swatch.PointerReleased += (_, e) =>
+            {
+                if (e.InitialPressMouseButton == Avalonia.Input.MouseButton.Left)
+                    Picker.Color = color;
+            };
+            SwatchRow.Children.Add(swatch);
+        }
+    }
+
+    private void UpdatePreview()
+    {
+        NewSwatch.Background = new SolidColorBrush(_selectedColor);
+        NewHexText.Text = $"New · {ToHex(_selectedColor)}";
     }
 
     public async Task<Color?> AwaitColor()
@@ -34,6 +86,7 @@ public partial class ThemeColorPickerWindow : PopupContent
         _isUpdatingHex = true;
         HexTextBox.Text = ToHex(_selectedColor);
         _isUpdatingHex = false;
+        UpdatePreview();
     }
 
     private void HexTextBox_OnTextChanged(object? sender, TextChangedEventArgs e)

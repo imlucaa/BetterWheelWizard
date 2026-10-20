@@ -51,6 +51,10 @@ public partial class OtherSettings : UserControl
         // Attach event handlers after loading settings to avoid unwanted triggers
         LaunchRrOnStartup.IsCheckedChanged += ClickLaunchRrOnStartup;
         EnableRecomp.IsCheckedChanged += ClickEnableRecomp;
+        ShowSessionStats.IsCheckedChanged += (_, _) =>
+            SettingsEditing.Set(SettingsService, SettingsService.SHOW_SESSION_STATS, ShowSessionStats.IsChecked == true);
+        FriendRoomAlerts.IsCheckedChanged += (_, _) =>
+            SettingsEditing.Set(SettingsService, SettingsService.FRIEND_ROOM_ALERTS, FriendRoomAlerts.IsChecked == true);
     }
 
     private void LoadSettings()
@@ -64,6 +68,8 @@ public partial class OtherSettings : UserControl
     private void ForceLoadSettings()
     {
         // Always loads
+        FriendRoomAlerts.IsChecked = SettingsService.Get<bool>(SettingsService.FRIEND_ROOM_ALERTS);
+        ShowSessionStats.IsChecked = SettingsService.Get<bool>(SettingsService.SHOW_SESSION_STATS);
 
         // The recomp only runs where a setup backend exists for it, so elsewhere the whole section stays hidden.
         var recompSupported = RecompPlatform.IsSupported;

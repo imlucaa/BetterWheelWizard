@@ -39,8 +39,14 @@
                                Text="{loc:T category.other}" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="DiscordSettings"
                                Text="Discord RPC" />
+                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="OverlaySettings"
+                               Text="VR overlay" />
+                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="FriendCodeSettings"
+                               Text="Friend codes" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="BackupSettings"
                                Text="{loc:T category.backup}" />
+                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="GhostSettings"
+                               Text="Ghosts" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="AppInfo"
                               Text="{loc:T category.about}" />
             </components:SegmentedControl>

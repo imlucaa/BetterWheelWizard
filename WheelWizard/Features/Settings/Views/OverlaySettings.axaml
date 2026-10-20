@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Settings.Views.OverlaySettings">
+    <UserControl.Styles>
+        <!-- Sliders follow the launcher accent: a slim neutral track, accent fill, light knob. -->
+        <Style Selector="Slider">
+            <Setter Property="MinHeight" Value="26" />
+        </Style>
+        <Style Selector="Slider /template/ Border#TrackBackground">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+            <Setter Property="Height" Value="6" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+        <Style Selector="Slider /template/ RepeatButton#PART_DecreaseButton /template/ Border#TrackBackground">
+            <Setter Property="Background" Value="{DynamicResource Brand400}" />
+            <Setter Property="Height" Value="6" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
+        <Style Selector="Slider /template/ Thumb">
+            <Setter Property="Background" Value="{DynamicResource Neutral50}" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,*,Auto" Margin="0,15,0,0">
+        <StackPanel Grid.Row="0" Spacing="8">
+            <components:FormFieldLabel Text="VR overlay" HorizontalAlignment="Center" />
+            <ContentControl x:Name="PreviewHost" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,8,0,0">
+            <StackPanel Spacing="10">
+                <StackPanel x:Name="OptionsHost" Spacing="10" />
+
+                <Border Classes="SettingsBlockStyle SettingsRowStyle">
+                    <StackPanel Spacing="4" Margin="0,6">
+                        <components:FormFieldLabel Text="OBS link" HorizontalAlignment="Center" />
+                        <SelectableTextBlock x:Name="LinkText" Classes="TinyText" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock Classes="TinyText" TextAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource Neutral400}"
+                                   Text="Add it to OBS as a Browser source." />
+                    </StackPanel>
+                </Border>
+
+
+                <Border Classes="SettingsBottomSpacer" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Always visible in the corner, so it does not need scrolling to. -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="4,10,4,6">
+            <components:Button Text="Reset" ButtonSize="Compact" Click="Reset_OnClick" />
+            <components:Button Grid.Column="2" x:Name="CopyButton" Text="Copy link" Click="Copy_OnClick" />
+        </Grid>
+    </Grid>
+</UserControl>

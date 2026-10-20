@@ -53,6 +53,23 @@ public partial class FriendsPage : UserControl, INotifyPropertyChanged, IPolling
         }
     }
 
+    private string _searchText = string.Empty;
+
+    /// <summary>Narrows the wall to friends whose name or friend code contains this text.</summary>
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            value ??= string.Empty;
+            if (value == _searchText)
+                return;
+            _searchText = value;
+            OnPropertyChanged(nameof(SearchText));
+            UpdateFriendList();
+        }
+    }
+
     private int _friendCount;
     private int _onlineCount;
 
@@ -136,8 +153,9 @@ public partial class FriendsPage : UserControl, INotifyPropertyChanged, IPolling
     {
         _friends = GetSortedPlayerList();
         ApplyFriendList(Math.Max(FriendList.Count, CardsAtOnce));
-        FriendCount = _friends.Count;
-        OnlineCount = _friends.Count(friend => friend.IsOnline);
+        var everyone = GameLicenseService.ActiveCurrentFriends;
+        FriendCount = everyone.Count;
+        OnlineCount = everyone.Count(friend => friend.IsOnline);
         // The dot before "8 of 24 online" lights up while anyone is online.
         CountLine.Classes.Set("AnyOnline", OnlineCount > 0);
         HandleVisibility();
@@ -181,9 +199,10 @@ public partial class FriendsPage : UserControl, INotifyPropertyChanged, IPolling
 
     private void HandleVisibility()
     {
-        var hasFriends = _friends.Count > 0;
+        var hasFriends = GameLicenseService.ActiveCurrentFriends.Count > 0;
         VisibleWhenNoFriends.IsVisible = !hasFriends;
         VisibleWhenFriends.IsVisible = hasFriends;
+        NoMatchText.IsVisible = hasFriends && _friends.Count == 0;
     }
 
     private List<FriendProfile> GetSortedPlayerList()
@@ -196,7 +215,17 @@ public partial class FriendsPage : UserControl, INotifyPropertyChanged, IPolling
             ListOrderCondition.TOTAL_RACES => f => f.Losses + f.Wins,
             ListOrderCondition.IS_ONLINE or _ => f => f.IsOnline,
         };
-        return GameLicenseService.ActiveCurrentFriends.OrderByDescending(orderMethod).ToList();
+        var query = _searchText.Trim();
+        var friends = GameLicenseService.ActiveCurrentFriends.AsEnumerable();
+        if (query.Length > 0)
+        {
+            friends = friends.Where(f =>
+                f.NameOfMii.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || f.FriendCode.Contains(query, StringComparison.OrdinalIgnoreCase)
+            );
+        }
+
+        return friends.OrderByDescending(orderMethod).ToList();
     }
 
     private static string SortName(ListOrderCondition type) =>

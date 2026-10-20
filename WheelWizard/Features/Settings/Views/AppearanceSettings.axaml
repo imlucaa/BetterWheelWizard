@@ -14,7 +14,7 @@
             <StackPanel x:Name="WhWzAppearance"
                         Spacing="4"
                         Margin="0,0,0,7">
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="40">
                         <components1:FormFieldLabel Grid.Column="0"
                                                     Margin="0,0,16,0"
@@ -29,9 +29,7 @@
                     </Grid>
                 </Border>
 
-            </StackPanel>
-            <StackPanel Spacing="4" Margin="0,0,0,7">
-                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
                     <Grid ColumnDefinitions="*,Auto" MinHeight="40">
                         <StackPanel Grid.Column="0"
                                     Margin="0,0,16,0"

@@ -6,6 +6,27 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.6.6] - 2026-10-20
+
+### Added
+
+- Ghosts tab: import a ghost and the track is found for you, search tracks, and export any ghost. Exported files are named by the finish time.
+- Friend codes tab (RKSYS editor): check if a friend code is free, claim it in game, back up your save, and undo the last change.
+- Sidebar editor (pen icon): add settings pages to the sidebar, drag items and categories around, rename or add categories, hide what you don't use, and reset.
+- VR overlay: a Preview button that plays the animation, and the preview replays when you change it.
+- Discord RPC: Default, Custom and Off switch live while you play. Track names show in Time Trials, and it works with WiiCompiled too.
+- Theme options for hiding the home menu and wheel now apply right away on WiiCompiled.
+- Patch presets, game discs per region, and a dot on the sidebar when a new version is out.
+
+### Changed
+
+- Cleaner Ghosts, Backup, Discord RPC and VR overlay tabs.
+- Removed the version label from the sidebar.
+
+### Fixed
+
+- The red outline on the search box.
+
 ## [2.6.5] - 2026-10-18
 
 ### Added

@@ -4,6 +4,8 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using WheelWizard.ApplicationData;
 using WheelWizard.ApplicationLifecycle.Logging;
+using WheelWizard.AutoUpdating;
+using WheelWizard.Branding;
 using WheelWizard.Dolphin.Discovery;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.Settings;
@@ -45,9 +47,12 @@ public partial class WhWzSettings : UserControl
         ISettingsManager settingsService,
         IDolphinSettingManager dolphinSettingsService,
         IDolphinDiscoveryService dolphinDiscovery,
-        IApplicationDataLocation applicationData
+        IApplicationDataLocation applicationData,
+        IAutoUpdaterSingletonService updater,
+        IBrandingSingletonService branding
     )
     {
+        _updater = updater;
         FilePicker = filePicker;
         DolphinPaths = dolphinPaths;
         SettingsService = settingsService;
@@ -60,6 +65,80 @@ public partial class WhWzSettings : UserControl
         UpdateLocationRows();
         RefreshLocalizedCodeText();
         UpdateAppDataLocationUi();
+        ShowUpdateSource(branding);
+        AutoCheckToggle.IsChecked = SettingsService.AUTO_CHECK_UPDATES.Get();
+        AutoCheckToggle.IsCheckedChanged += (_, _) =>
+            SettingsEditing.Set(SettingsService, SettingsService.AUTO_CHECK_UPDATES, AutoCheckToggle.IsChecked == true);
+        ShowLastChecked();
+    }
+
+    private void ShowLastChecked() => LastCheckedText.Text = DescribeLastChecked(_updater.LastCheckedAt, DateTimeOffset.Now);
+
+    /// <summary>"Last checked just now / 5 min ago / 3 h ago / yesterday", or "Not checked yet".</summary>
+    public static string DescribeLastChecked(DateTimeOffset? checkedAt, DateTimeOffset now)
+    {
+        if (checkedAt is not { } at)
+            return "Not checked yet";
+
+        var ago = now - at;
+        if (ago < TimeSpan.FromMinutes(1))
+            return "Last checked just now";
+        if (ago < TimeSpan.FromHours(1))
+            return $"Last checked {(int)ago.TotalMinutes} min ago";
+        if (ago < TimeSpan.FromDays(1))
+            return $"Last checked {(int)ago.TotalHours} h ago";
+        return $"Last checked {(int)ago.TotalDays} d ago";
+    }
+
+    private readonly IAutoUpdaterSingletonService _updater;
+
+    private void ShowUpdateSource(IBrandingSingletonService branding)
+    {
+        VersionLabel.Text = $"{branding.Branding.DisplayName} v{branding.Branding.Version}";
+        var repository = branding.Branding.RepositoryUrl;
+        UpdateSourceText.Text = $"{repository.Host}{repository.AbsolutePath.TrimEnd('/')}";
+        if (_updater.IsUpdateAvailable)
+            ShowUpdateResult("A newer version was found earlier.", canInstall: true);
+    }
+
+    private async void CheckUpdates_OnClick(object? sender, RoutedEventArgs e)
+    {
+        CheckUpdatesButton.IsEnabled = false;
+        ShowUpdateResult("Checking GitHub…", canInstall: false);
+        try
+        {
+            var result = await _updater.CheckNowAsync();
+            switch (result.Status)
+            {
+                case UpdateCheckStatus.UpdateAvailable:
+                    ShowUpdateResult($"Version {result.Version} is available.", canInstall: true);
+                    break;
+                case UpdateCheckStatus.UpToDate:
+                    ShowUpdateResult("You are up to date.", canInstall: false);
+                    break;
+                default:
+                    ShowUpdateResult($"Could not check for updates: {result.Message}", canInstall: false);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowUpdateResult($"Could not check for updates: {ex.Message}", canInstall: false);
+        }
+        finally
+        {
+            CheckUpdatesButton.IsEnabled = true;
+            ShowLastChecked();
+        }
+    }
+
+    private async void InstallUpdate_OnClick(object? sender, RoutedEventArgs e) => await _updater.ShowAvailableUpdateAsync();
+
+    private void ShowUpdateResult(string text, bool canInstall)
+    {
+        UpdateResultRow.IsVisible = true;
+        UpdateResultText.Text = text;
+        InstallUpdateButton.IsVisible = canInstall;
     }
 
     private void ConfigureLocationFieldsForActiveFrontend()

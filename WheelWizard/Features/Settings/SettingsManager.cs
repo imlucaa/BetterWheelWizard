@@ -217,6 +217,11 @@ public class SettingsManager : ISettingsManager, IDisposable
         DISCORD_PLAYER_BUTTON = RegisterWhWz("DiscordPlayerButton", true);
         DISCORD_ROOM_BUTTON = RegisterWhWz("DiscordRoomButton", true);
         DISCORD_APP_ID = RegisterWhWz("DiscordAppId", "");
+        MII_TAGS = RegisterWhWz("MiiTags", "");
+        OVERLAY_CONFIG = RegisterWhWz("OverlayConfig", "");
+        OVERLAY_PRESETS = RegisterWhWz("OverlayPresets", "");
+        OVERLAY_FRIEND_CODE = RegisterWhWz("OverlayFriendCode", "");
+        GAME_DISCS = RegisterWhWz("GameDiscs", "");
         DISCORD_LARGE_IMAGE = RegisterWhWz("DiscordLargeImage", "");
         DISCORD_LARGE_TEXT = RegisterWhWz("DiscordLargeText", "");
         DISCORD_DETAILS = RegisterWhWz("DiscordDetails", "Playing Retro Rewind");
@@ -226,15 +231,24 @@ public class SettingsManager : ISettingsManager, IDisposable
         FOCUSED_USER = RegisterWhWz("FavoriteUser", 0, value => value >= 0 && value < 4);
 
         ENABLE_ANIMATIONS = RegisterWhWz("EnableAnimations", true);
+        FRIEND_ROOM_ALERTS = RegisterWhWz("FriendRoomAlerts", true);
+        SHOW_SESSION_STATS = RegisterWhWz("ShowSessionStats", true);
+        AUTO_CHECK_UPDATES = RegisterWhWz("AutoCheckUpdates", true);
         SIDEBAR_COLLAPSED = RegisterWhWz("SidebarCollapsed", false);
+        SIDEBAR_PINNED_TABS = RegisterWhWz("SidebarPinnedTabs", "");
+        SIDEBAR_LAYOUT = RegisterWhWz("SidebarLayout", "");
         TESTING_MODE_ENABLED = RegisterWhWz("TestingModeEnabled", false);
         SAVED_WINDOW_SCALE = RegisterWhWz("WindowScale", 1.0, SettingValues.IsValidWindowScale);
         RR_REGION = RegisterWhWz("RR_Region", MarioKartWiiEnums.Regions.None);
         WW_LANGUAGE = RegisterWhWz("WW_Language", "en", value => SettingValues.WhWzLanguages.ContainsKey(value));
-        LAUNCHER_THEME_COLOR = RegisterWhWz("LauncherThemeColor", "#249AF3", LauncherThemeService.IsValidHexColor);
-        LAUNCHER_TEXT_COLOR = RegisterWhWz("LauncherTextColor", "#F1F3F5", LauncherThemeService.IsValidHexColor);
-        LAUNCHER_BODY_TEXT_COLOR = RegisterWhWz("LauncherBodyTextColor", "#D7D9E0", LauncherThemeService.IsValidHexColor);
-        LAUNCHER_BACKGROUND_COLOR = RegisterWhWz("LauncherBackgroundColor", "#101216", LauncherThemeService.IsValidHexColor);
+        LAUNCHER_THEME_COLOR = RegisterWhWz("LauncherThemeColor", LauncherThemeDefaults.Accent, LauncherThemeService.IsValidHexColor);
+        LAUNCHER_TEXT_COLOR = RegisterWhWz("LauncherTextColor", LauncherThemeDefaults.Branding, LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BODY_TEXT_COLOR = RegisterWhWz("LauncherBodyTextColor", LauncherThemeDefaults.Text, LauncherThemeService.IsValidHexColor);
+        LAUNCHER_BACKGROUND_COLOR = RegisterWhWz(
+            "LauncherBackgroundColor",
+            LauncherThemeDefaults.Background,
+            LauncherThemeService.IsValidHexColor
+        );
         LAUNCHER_BACKGROUND_FILE = RegisterWhWz(
             "LauncherBackgroundFile",
             "",
@@ -247,6 +261,10 @@ public class SettingsManager : ISettingsManager, IDisposable
         );
         LAUNCHER_BACKGROUND_OPACITY = RegisterWhWz("LauncherBackgroundOpacity", 0.42, value => value is >= 0.0 and <= 1.0);
         LAUNCHER_SURFACE_OPACITY = RegisterWhWz("LauncherSurfaceOpacity", 0.92, value => value is >= 0.0 and <= 1.0);
+        LAUNCHER_BACKGROUND_BLUR = RegisterWhWz("LauncherBackgroundBlur", 0.0, value => value is >= 0.0 and <= 40.0);
+        LAUNCHER_BACKGROUND_ZOOM = RegisterWhWz("LauncherBackgroundZoom", 1.0, value => value is >= 1.0 and <= 3.0);
+        LAUNCHER_BACKGROUND_FOCUS_X = RegisterWhWz("LauncherBackgroundFocusX", 0.5, value => value is >= 0.0 and <= 1.0);
+        LAUNCHER_BACKGROUND_FOCUS_Y = RegisterWhWz("LauncherBackgroundFocusY", 0.5, value => value is >= 0.0 and <= 1.0);
         LAUNCHER_MINIMAL_HOME_ARTWORK = RegisterWhWz("LauncherMinimalHomeArtwork", false);
         LAUNCHER_HIDE_HOME_TITLE = RegisterWhWz("LauncherHideHomeTitle", false);
         LAUNCHER_CLEAN_SIDEBAR = RegisterWhWz("LauncherCleanSidebar", false);
@@ -290,6 +308,7 @@ public class SettingsManager : ISettingsManager, IDisposable
         RECOMP_RESOLUTION_MULTIPLIER = RegisterRecomp(("video", "resolution_multiplier"), 1.0);
         RECOMP_GRAPHICS_API = RegisterRecomp(("video", "graphics_api"), "auto");
         RECOMP_SHOW_FPS = RegisterRecomp(("video", "show_fps"), true);
+        RECOMP_DISCORD_PRESENCE = RegisterRecomp(("discord", "enabled"), true);
         RECOMP_PREVENT_STUTTERS = RegisterRecomp(("video", "skip_unready_pipelines"), true);
         // The Wii data folder the runtime should use, written by RecompDolphinDataService after an
         // install and whenever the sharing choice changes. Empty/absent means the runtime's private NAND.
@@ -357,6 +376,11 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<bool> DISCORD_ROOM_BUTTON { get; }
     public Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     public Setting<string> DISCORD_APP_ID { get; }
+    public Setting<string> MII_TAGS { get; }
+    public Setting<string> OVERLAY_CONFIG { get; }
+    public Setting<string> OVERLAY_PRESETS { get; }
+    public Setting<string> OVERLAY_FRIEND_CODE { get; }
+    public Setting<string> GAME_DISCS { get; }
     public Setting<string> DISCORD_LARGE_IMAGE { get; }
     public Setting<string> DISCORD_LARGE_TEXT { get; }
     public Setting<string> DISCORD_DETAILS { get; }
@@ -368,7 +392,12 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<bool> USE_PATCHES_SYSTEM { get; }
     public Setting<int> FOCUSED_USER { get; }
     public Setting<bool> ENABLE_ANIMATIONS { get; }
+    public Setting<bool> FRIEND_ROOM_ALERTS { get; }
+    public Setting<bool> SHOW_SESSION_STATS { get; }
+    public Setting<bool> AUTO_CHECK_UPDATES { get; }
     public Setting<bool> SIDEBAR_COLLAPSED { get; }
+    public Setting<string> SIDEBAR_PINNED_TABS { get; }
+    public Setting<string> SIDEBAR_LAYOUT { get; }
     public Setting<bool> TESTING_MODE_ENABLED { get; }
     public Setting<double> SAVED_WINDOW_SCALE { get; }
     public Setting<MarioKartWiiEnums.Regions> RR_REGION { get; }
@@ -381,6 +410,10 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<string> LAUNCHER_BACKGROUND_STRETCH { get; }
     public Setting<double> LAUNCHER_BACKGROUND_OPACITY { get; }
     public Setting<double> LAUNCHER_SURFACE_OPACITY { get; }
+    public Setting<double> LAUNCHER_BACKGROUND_BLUR { get; }
+    public Setting<double> LAUNCHER_BACKGROUND_ZOOM { get; }
+    public Setting<double> LAUNCHER_BACKGROUND_FOCUS_X { get; }
+    public Setting<double> LAUNCHER_BACKGROUND_FOCUS_Y { get; }
     public Setting<bool> LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
     public Setting<bool> LAUNCHER_HIDE_HOME_TITLE { get; }
     public Setting<bool> LAUNCHER_CLEAN_SIDEBAR { get; }
@@ -398,6 +431,7 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<double> RECOMP_RESOLUTION_MULTIPLIER { get; }
     public Setting<string> RECOMP_GRAPHICS_API { get; }
     public Setting<bool> RECOMP_SHOW_FPS { get; }
+    public Setting<bool> RECOMP_DISCORD_PRESENCE { get; }
     public Setting<bool> RECOMP_PREVENT_STUTTERS { get; }
     public Setting<string> RECOMP_NAND_ROOT { get; }
     #endregion
@@ -418,6 +452,19 @@ public class SettingsManager : ISettingsManager, IDisposable
             && (ReferenceEquals(setting, USER_FOLDER_PATH) || ReferenceEquals(setting, DOLPHIN_LOCATION))
         )
             _dolphinSettingManager.ReloadSettings(_dolphinPaths.Resolve(DOLPHIN_LOCATION.Value, USER_FOLDER_PATH.Value).ConfigFolderPath);
+
+        // Choosing a region starts that region's disc, when one was added in Game discs.
+        if (
+            ReferenceEquals(setting, RR_REGION)
+            && !EqualityComparer<T>.Default.Equals(previous, value)
+            && value is MarioKartWiiEnums.Regions region
+        )
+        {
+            var disc = GameDiscs.RegionDiscs.PathFor(GAME_DISCS.Value, region);
+            if (disc is not null && _fileSystem.File.Exists(disc))
+                GAME_LOCATION.Set(disc, skipSave);
+        }
+
         return true;
     }
 

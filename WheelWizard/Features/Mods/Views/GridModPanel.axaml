@@ -17,17 +17,17 @@
             <Setter Property="Background" Value="{DynamicResource Neutral700}" />
         </Style>
         <Style Selector="Border#RootCardBorder.Enabled">
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
             <Setter Property="Background" Value="{DynamicResource Neutral800}" />
         </Style>
         <Style Selector="Border#RootCardBorder.Enabled:pointerover">
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
             <Setter Property="Background" Value="{DynamicResource Neutral800}" />
         </Style>
     </UserControl.Styles>
     <Border x:Name="RootCardBorder" Classes.Enabled="{Binding Mod.IsEnabled}"
             BorderThickness="1"
-            CornerRadius="8"
+            CornerRadius="12"
             ClipToBounds="True" Margin="4" Height="134">
         <Grid x:Name="CardSurface" RowDefinitions="80,52">
             <!-- Image area -->
@@ -50,6 +50,14 @@
                         </StackPanel>
                     </ToolTip.Tip>
                     </PathIcon>
+                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8" CornerRadius="8" Padding="6,2"
+                            Background="#B3000000" IsHitTestVisible="False" IsVisible="{Binding Mod.IsEnabled}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <PathIcon Data="{StaticResource CheckMark}" Width="10" Height="10"
+                                      Foreground="{DynamicResource Primary400}" />
+                            <TextBlock Text="On" FontSize="11" FontWeight="SemiBold" Foreground="White" />
+                        </StackPanel>
+                    </Border>
                     <!-- Placeholder icon when no image is loaded -->
                     <PathIcon IsVisible="{Binding Preview.ShowPlaceholder}"
                               Data="{StaticResource CubesStacked}"

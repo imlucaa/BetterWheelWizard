@@ -10,6 +10,7 @@ using WheelWizard.Shared.Polling;
 using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell.Navigation;
 using WheelWizard.WheelWizardData;
+using WheelWizard.WiiManagement.GameLicense;
 
 namespace WheelWizard.RrRooms.Views;
 
@@ -23,6 +24,7 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
     private int? _minimumAverageVr;
     private int? _maximumAverageVr;
     private int _averageVrSort;
+    private bool _friendsOnly;
     private readonly DispatcherTimer _raceTimer = new() { Interval = TimeSpan.FromSeconds(1) };
 
     private readonly ObservableCollection<RrRoom> _rooms = [];
@@ -51,11 +53,19 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
 
     private IPopupFactory Popups { get; }
 
-    public RoomsPage(INavigationService navigation, LiveRoomsService liveRooms, IPopupFactory popups)
+    private IGameLicenseSingletonService GameLicenseService { get; }
+
+    public RoomsPage(
+        INavigationService navigation,
+        LiveRoomsService liveRooms,
+        IPopupFactory popups,
+        IGameLicenseSingletonService gameLicenseService
+    )
     {
         Navigation = navigation;
         LiveRooms = liveRooms;
         Popups = popups;
+        GameLicenseService = gameLicenseService;
         InitializeComponent();
         DataContext = this;
         LiveRooms.Subscribe(this);
@@ -83,10 +93,12 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
     private void ApplyFilters()
     {
         var query = _searchQuery?.Trim();
+        var friendCodes = _friendsOnly ? CurrentFriendCodes() : null;
         IEnumerable<RrRoom> filteredRooms = LiveRooms
             .CurrentRooms.Where(room => room.PlayerCount > 0)
             .Where(room => !_minimumAverageVr.HasValue || room.AverageVr >= _minimumAverageVr.Value)
             .Where(room => !_maximumAverageVr.HasValue || room.AverageVr <= _maximumAverageVr.Value)
+            .Where(room => friendCodes is null || room.Players.Any(player => friendCodes.Contains(DigitsOf(player.FriendCode))))
             .Where(room =>
                 string.IsNullOrWhiteSpace(query)
                 || room.Id.Contains(query, StringComparison.OrdinalIgnoreCase)
@@ -117,6 +129,14 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         RoomsListViewContainer.IsVisible = visibleRooms.Count != 0;
         PlayerListViewContainer.IsVisible = false;
         EmptyRoomsView.IsVisible = visibleRooms.Count == 0;
+        if (visibleRooms.Count == 0)
+        {
+            // Rooms exist but the search, VR range or sort hides all of them.
+            EmptyRoomsView.Title = _friendsOnly ? "No friends in a room" : "No rooms match";
+            EmptyRoomsView.BodyText = _friendsOnly
+                ? "None of your friends are in a room right now."
+                : "Try another search, VR range or sort.";
+        }
     }
 
     private void PerformSearch(string? query)
@@ -172,37 +192,48 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         ApplyFilters();
     }
 
+    private void RoomsFriendsButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _friendsOnly = !_friendsOnly;
+        RoomsFriendsButton.Variant = _friendsOnly
+            ? WheelWizard.Views.Components.Button.ButtonsVariantType.Primary
+            : WheelWizard.Views.Components.Button.ButtonsVariantType.Default;
+        ApplyFilters();
+    }
+
+    /// <summary>The friend codes (digits only) of the focused license's friends.</summary>
+    private HashSet<string> CurrentFriendCodes()
+    {
+        try
+        {
+            return GameLicenseService.ActiveCurrentFriends.Select(friend => DigitsOf(friend.FriendCode)).ToHashSet();
+        }
+        catch (Exception ex) when (ex is ArgumentOutOfRangeException or InvalidOperationException or NullReferenceException)
+        {
+            return [];
+        }
+    }
+
+    private static string DigitsOf(string? friendCode) => new((friendCode ?? string.Empty).Where(char.IsDigit).ToArray());
+
     private async void RoomsVrFilterButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var minInput = await Popups
-            .Create<TextInputWindow>()
-            .SetMainText("Minimum average VR")
-            .SetExtraText("Leave blank to remove the minimum VR filter.")
-            .SetPlaceholderText("Min avg. VR")
-            .SetInitialText(_minimumAverageVr?.ToString() ?? string.Empty)
-            .SetButtonText("Clear", "Next")
-            .ShowDialog();
-        _minimumAverageVr = ParseVrFilter(minInput);
+        var range = await new VrFilterWindow(_minimumAverageVr, _maximumAverageVr).AwaitAnswer();
+        if (range is null)
+            return;
 
-        var maxInput = await Popups
-            .Create<TextInputWindow>()
-            .SetMainText("Maximum average VR")
-            .SetExtraText("Leave blank to remove the maximum VR filter.")
-            .SetPlaceholderText("Max avg. VR")
-            .SetInitialText(_maximumAverageVr?.ToString() ?? string.Empty)
-            .SetButtonText("Clear", "Apply")
-            .ShowDialog();
-        _maximumAverageVr = ParseVrFilter(maxInput);
+        _minimumAverageVr = range.Min;
+        _maximumAverageVr = range.Max;
         ApplyFilters();
     }
 
     private async void RoomsSortButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var selectedSort = await Popups.Create<RoomSortWindow>().AwaitAnswer();
-        if (selectedSort == null)
+        var selected = await new RoomSortWindow(_averageVrSort).AwaitAnswer();
+        if (selected is null)
             return;
 
-        _averageVrSort = selectedSort.Value;
+        _averageVrSort = selected.Value;
         ApplyFilters();
     }
 

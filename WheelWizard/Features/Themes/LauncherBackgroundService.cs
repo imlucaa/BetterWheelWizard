@@ -8,7 +8,19 @@ using WheelWizard.Settings;
 
 namespace WheelWizard.Themes;
 
-public sealed record LauncherBackgroundState(string? Path, Stretch Stretch, double Opacity);
+public sealed record LauncherBackgroundState(
+    string? Path,
+    Stretch Stretch,
+    double Opacity,
+    double Blur = 0,
+    double Zoom = 1,
+    double FocusX = 0.5,
+    double FocusY = 0.5
+)
+{
+    /// <summary>Zoom and position only apply while the image fills the window; the other fits show it as it is.</summary>
+    public bool IsFramed => Stretch == Stretch.UniformToFill && (Zoom != 1 || FocusX != 0.5 || FocusY != 0.5);
+}
 
 public interface ILauncherBackgroundService
 {
@@ -57,7 +69,15 @@ public sealed class LauncherBackgroundService : ILauncherBackgroundService, IDis
             var stretch = Enum.TryParse<Stretch>(_settings.LAUNCHER_BACKGROUND_STRETCH.Get(), out var parsed)
                 ? parsed
                 : Stretch.UniformToFill;
-            return new(path, stretch, _settings.LAUNCHER_BACKGROUND_OPACITY.Get());
+            return new(
+                path,
+                stretch,
+                _settings.LAUNCHER_BACKGROUND_OPACITY.Get(),
+                _settings.LAUNCHER_BACKGROUND_BLUR.Get(),
+                _settings.LAUNCHER_BACKGROUND_ZOOM.Get(),
+                _settings.LAUNCHER_BACKGROUND_FOCUS_X.Get(),
+                _settings.LAUNCHER_BACKGROUND_FOCUS_Y.Get()
+            );
         }
     }
 
@@ -145,6 +165,10 @@ public sealed class LauncherBackgroundService : ILauncherBackgroundService, IDis
             signal.Setting == _settings.LAUNCHER_BACKGROUND_FILE
             || signal.Setting == _settings.LAUNCHER_BACKGROUND_STRETCH
             || signal.Setting == _settings.LAUNCHER_BACKGROUND_OPACITY
+            || signal.Setting == _settings.LAUNCHER_BACKGROUND_BLUR
+            || signal.Setting == _settings.LAUNCHER_BACKGROUND_ZOOM
+            || signal.Setting == _settings.LAUNCHER_BACKGROUND_FOCUS_X
+            || signal.Setting == _settings.LAUNCHER_BACKGROUND_FOCUS_Y
         )
             Changed?.Invoke(Current);
     }
@@ -160,21 +184,50 @@ public sealed class LauncherBackgroundImage : Avalonia.Controls.Image, IDisposab
     private int _index;
     private string? _path;
 
+    private (double Zoom, double FocusX, double FocusY) _framing = (1, 0.5, 0.5);
+    private int _loadVersion;
+
+    /// <summary>The zoom and position the picture on screen was cut with (1, 0.5, 0.5 is the whole picture).</summary>
+    public (double Zoom, double FocusX, double FocusY) AppliedFraming => _framing;
+
     public async Task LoadAsync(LauncherBackgroundState state)
     {
+        var version = ++_loadVersion;
         Stretch = state.Stretch;
         Opacity = state.Opacity;
+        Effect = state.Blur > 0 ? new BlurEffect { Radius = state.Blur } : null;
         IsVisible = state.Path != null;
         if (state.Path == null)
         {
             DisposeFrames();
             return;
         }
-        if (string.Equals(_path, state.Path, StringComparison.OrdinalIgnoreCase) && _frames.Count > 0)
+
+        var framing = state.IsFramed ? (state.Zoom, state.FocusX, state.FocusY) : (1.0, 0.5, 0.5);
+        var samePath = string.Equals(_path, state.Path, StringComparison.OrdinalIgnoreCase) && _frames.Count > 0;
+        if (samePath && framing == _framing)
             return;
+
+        // Dragging a slider changes the framing many times a second. Wait for it to settle, then decode once.
+        if (samePath)
+        {
+            await Task.Delay(150);
+            if (version != _loadVersion)
+                return;
+        }
+
+        var decoded = await Task.Run(() => Decode(state.Path, framing.Item1, framing.Item2, framing.Item3));
+        if (version != _loadVersion)
+        {
+            foreach (var frame in decoded.Frames)
+                frame.Dispose();
+            return;
+        }
+
+        // Swap only now, so changing the framing never flashes an empty background.
         DisposeFrames();
         _path = state.Path;
-        var decoded = await Task.Run(() => Decode(state.Path));
+        _framing = framing;
         _frames.AddRange(decoded.Frames);
         _durations = decoded.Durations;
         Source = _frames[0];
@@ -182,7 +235,9 @@ public sealed class LauncherBackgroundImage : Avalonia.Controls.Image, IDisposab
             Schedule();
     }
 
-    internal static (List<Bitmap> Frames, int[] Durations) Decode(string path)
+    internal static (List<Bitmap> Frames, int[] Durations) Decode(string path) => Decode(path, 1, 0.5, 0.5);
+
+    internal static (List<Bitmap> Frames, int[] Durations) Decode(string path, double zoom, double focusX, double focusY)
     {
         using var codec = SKCodec.Create(path) ?? throw new InvalidDataException("The background image could not be decoded.");
         var info = codec.Info;
@@ -206,10 +261,12 @@ public sealed class LauncherBackgroundImage : Avalonia.Controls.Image, IDisposab
             var result = codec.GetPixels(bitmap.Info, bitmap.GetPixels(), bitmap.RowBytes, new SKCodecOptions(i, required));
             if (result is not (SKCodecResult.Success or SKCodecResult.IncompleteInput))
                 throw new InvalidDataException("A background frame could not be decoded.");
-            using var image = SKImage.FromBitmap(bitmap);
+            var framed = zoom != 1 || focusX != 0.5 || focusY != 0.5 ? BackgroundFraming.Apply(bitmap, zoom, focusX, focusY) : null;
+            using var image = SKImage.FromBitmap(framed ?? bitmap);
             using var encoded = image.Encode(SKEncodedImageFormat.Png, 100);
             using var stream = encoded.AsStream();
             frames.Add(new Bitmap(stream));
+            framed?.Dispose();
             durations[i] = frameInfo.Length > i ? Math.Max(20, frameInfo[i].Duration) : 100;
         }
         return (frames, durations);

@@ -7,7 +7,7 @@
                    xmlns:loc="clr-namespace:WheelWizard.Localization"
                    mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="430"
                    x:Class="WheelWizard.Views.Dialogs.ThemeColorPickerWindow">
-    <Grid Width="340" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14">
+    <Grid Width="340" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="14">
         <StackPanel Grid.Row="0" Spacing="3">
             <TextBlock x:Name="PickerTitle" Text="{loc:T theme.choose_color}" FontSize="18" FontWeight="SemiBold"
                         Foreground="{DynamicResource Neutral50}" />
@@ -15,8 +15,8 @@
                         Classes="TinyText" TextWrapping="Wrap" />
         </StackPanel>
 
-        <Border Grid.Row="1" Height="290" ClipToBounds="True">
-            <ColorView x:Name="Picker" Width="340" Margin="0,-48,0,0"
+        <Border Grid.Row="1" Height="258" ClipToBounds="True">
+            <ColorView x:Name="Picker" Width="340" Margin="0,-60,0,0"
                        ColorModel="Hsva"
                        ColorSpectrumComponents="SaturationValue"
                        ColorSpectrumShape="Box"
@@ -35,14 +35,31 @@
                        ColorChanged="Picker_OnColorChanged" />
         </Border>
 
-        <StackPanel Grid.Row="2" Spacing="5">
+        <StackPanel Grid.Row="2" Spacing="10">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <StackPanel Spacing="5">
+                    <Border x:Name="OldSwatch" Height="38" CornerRadius="10"
+                            BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                    <TextBlock x:Name="OldHexText" Classes="TinyText" HorizontalAlignment="Center" Text="Current" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="5">
+                    <Border x:Name="NewSwatch" Height="38" CornerRadius="10"
+                            BorderBrush="{DynamicResource Primary400}" BorderThickness="2" />
+                    <TextBlock x:Name="NewHexText" Classes="TinyText" HorizontalAlignment="Center"
+                               FontWeight="SemiBold" Foreground="{DynamicResource Neutral50}" Text="New" />
+                </StackPanel>
+            </Grid>
+            <UniformGrid x:Name="SwatchRow" Columns="12" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Spacing="5">
             <TextBlock Text="{loc:T theme.hex_color}" FontSize="10" FontWeight="Bold"
                        Foreground="{DynamicResource Neutral400}" />
             <TextBox x:Name="HexTextBox" PlaceholderText="#FFFFFF" MaxLength="7"
                      TextChanged="HexTextBox_OnTextChanged" />
         </StackPanel>
 
-        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8">
+        <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="8">
             <components:Button Text="{loc:T action.cancel}" Variant="Default" Click="Cancel_OnClick" />
             <components:Button Grid.Column="1" Text="{loc:T theme.use_color}" Variant="Primary"
                                IconData="{StaticResource CheckMark}" Click="UseColor_OnClick" />

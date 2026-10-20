@@ -133,6 +133,35 @@ public class SettingsManagerTests
         Assert.Equal(0, manager.Get<int>(manager.FOCUSED_USER));
     }
 
+    [Fact]
+    public void FreshInstall_UsesTheBlackBetterWheelWizardTheme()
+    {
+        using var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.Equal("#FFFFFF", manager.LAUNCHER_THEME_COLOR.Get());
+        Assert.Equal("#FFFFFF", manager.LAUNCHER_TEXT_COLOR.Get());
+        Assert.Equal("#FFFFFF", manager.LAUNCHER_BODY_TEXT_COLOR.Get());
+        Assert.Equal("#000000", manager.LAUNCHER_BACKGROUND_COLOR.Get());
+        Assert.Equal(LauncherThemeDefaults.Accent, manager.LAUNCHER_THEME_COLOR.Get());
+        Assert.Equal(LauncherThemeDefaults.Background, manager.LAUNCHER_BACKGROUND_COLOR.Get());
+    }
+
+    [Fact]
+    public void FreshInstall_ThemeIsReadable_AndHasNoBackgroundImage()
+    {
+        using var manager = CreateManager(new MockFileSystem(), out _, out _, out _);
+
+        Assert.Null(
+            ThemeContrast.Check(
+                manager.LAUNCHER_THEME_COLOR.Get(),
+                manager.LAUNCHER_TEXT_COLOR.Get(),
+                manager.LAUNCHER_BODY_TEXT_COLOR.Get(),
+                manager.LAUNCHER_BACKGROUND_COLOR.Get()
+            )
+        );
+        Assert.Equal(string.Empty, manager.LAUNCHER_BACKGROUND_FILE.Get());
+    }
+
     [Theory]
     [InlineData(0.0)]
     [InlineData(0.25)]

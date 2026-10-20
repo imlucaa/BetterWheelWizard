@@ -26,6 +26,18 @@
         <Style Selector="components|ActionButton.LeaderboardSearchTranslucent:pressed">
             <Setter Property="Background" Value="{DynamicResource LauncherPanelBrush}" />
         </Style>
+        <Style Selector="components|ActionButton.SearchCardButton">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral700}" />
+            <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
+        </Style>
+        <Style Selector="components|ActionButton.SearchCardButton:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary400}" />
+        </Style>
+        <Style Selector="Border.SearchRow:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+        </Style>
         <!-- Match RoomDetailsPage entry background treatment for PlayerListItem -->
         <Style Selector="rooms|PlayerListItem /template/ Border.BoxItemBackground">
             <Setter Property="CornerRadius" Value="6" />
@@ -40,20 +52,27 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="64" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="0" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
-            <TextBlock Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{loc:T page_title.leaderboard}" Classes="PageTitleText" IsVisible="{Binding !HasActiveSearchResult}" />
-            <components:ActionButton Grid.Column="1"
-                                     Classes="LeaderboardSearchTranslucent"
-                                     Text="{loc:T action.search}"
-                                     IconData="{StaticResource Search}"
-                                     IsEnabled="{Binding CanSearchLeaderboard}"
-                                     Click="SearchLeaderboardPlayer_OnClick"
-                                     Margin="0,0,4,8" />
-        </Grid>
+        <StackPanel Grid.Row="0" VerticalAlignment="Bottom" ZIndex="20">
+            <Grid Height="52">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,6"
+                           Text="{loc:T page_title.leaderboard}" Classes="PageTitleText"
+                           IsVisible="{Binding !HasActiveSearchResult}" />
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,8">
+                <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                         Text="Search" IconData="{StaticResource Search}" Size="Compact"
+                                         IsEnabled="{Binding CanSearchLeaderboard}"
+                                         Click="SearchLeaderboardPlayer_OnClick" />
+                <components:ActionButton Classes="LeaderboardSearchTranslucent"
+                                         Text="My rank" IconData="{StaticResource UserCircle}" Size="Compact"
+                                         ToolTip.Tip="Open your own leaderboard profile"
+                                         Click="MyRank_OnClick" />
+            </StackPanel>
+        </StackPanel>
 
         <Grid Grid.Row="1">
             <StackPanel IsVisible="{Binding IsLoading}"
@@ -129,46 +148,47 @@
                     </Border>
 
                     <Border IsVisible="{Binding HasActiveSearchResult}"
-                            Background="Transparent" BorderThickness="0" CornerRadius="12" Padding="4,8">
-                        <Grid ColumnDefinitions="96,*,Auto" ColumnSpacing="8">
-                            <Border Width="96" Height="140" ClipToBounds="True" Background="Transparent" VerticalAlignment="Center">
-                                <!-- Laid out larger than the frame and clipped: the Mii scales with the stage height, so this zooms in. -->
-                                <Grid x:Name="SearchResultStageHost" Margin="-18,-18" />
-                            </Border>
-                            <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding SearchResultPlayerName}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding SearchResultFriendCode}" Classes="TinyText" />
-                                <WrapPanel>
-                                    <TextBlock Text="{Binding SearchResultRankText}" FontWeight="Bold" Margin="0,0,8,0"
-                                               Foreground="{DynamicResource Neutral100}" />
-                                    <TextBlock Text="{Binding SearchResultVrText}" Classes="BodyText" />
-                                </WrapPanel>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Center" Width="112">
-                                <components:ActionButton Classes="LeaderboardSearchTranslucent"
-                                                         Text="{loc:T action.view_profile}"
-                                                         Size="Compact" HorizontalAlignment="Stretch"
-                                                         Click="OpenSearchProfile_OnClick" />
-                                <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasMultipleSearchResults}">
-                                    <components:ActionButton Classes="LeaderboardSearchTranslucent"
-                                                             IconData="{StaticResource ArrowLeft}"
-                                                             Size="Compact" IsCircular="True"
-                                                             ToolTip.Tip="Previous matching player"
-                                                             Click="PreviousSearchMatch_OnClick" />
-                                    <TextBlock Grid.Column="1" Text="{Binding SearchResultMatchIndex}" Classes="TinyText"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    <components:ActionButton Grid.Column="2"
-                                                             Classes="LeaderboardSearchTranslucent"
-                                                             IconData="{StaticResource ArrowRight}"
-                                                             Size="Compact" IsCircular="True"
-                                                             ToolTip.Tip="Next matching player"
-                                                             Click="NextSearchMatch_OnClick" />
-                                </Grid>
-                                <components:ActionButton Classes="LeaderboardSearchTranslucent"
-                                                         Text="Close" Size="Compact" HorizontalAlignment="Stretch"
+                            Background="{DynamicResource LauncherPanelBrush}" CornerRadius="16" Padding="12">
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="1" VerticalAlignment="Center" Margin="4,0,0,0">
+                                    <TextBlock Text="Search results" FontSize="16" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding SearchResultMatchIndex}" Classes="TinyText" />
+                                </StackPanel>
+                                <components:ActionButton Grid.Column="1" Classes="LeaderboardSearchTranslucent"
+                                                         IconData="{StaticResource XMark}" Size="Compact" IsCircular="True"
+                                                         ToolTip.Tip="Clear search"
                                                          Click="CloseSearchResult_OnClick" />
-                            </StackPanel>
-                        </Grid>
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding SearchMatches}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="community:LeaderboardSearchMatch">
+                                        <Border Classes="SearchRow" Background="{DynamicResource Neutral900}" CornerRadius="10"
+                                                Margin="0,3" Padding="8" Cursor="Hand"
+                                                PointerPressed="SearchMatchRow_OnPointerPressed"
+                                                PointerReleased="SearchMatchRow_OnPointerReleased">
+                                            <Grid ColumnDefinitions="40,*,Auto" ColumnSpacing="10">
+                                                <Border Width="40" Height="40" CornerRadius="20" ClipToBounds="True"
+                                                        Background="{DynamicResource Neutral950}">
+                                                    <miiViews:MiiImageLoader Mii="{Binding Mii}"
+                                                                             LoadingColor="{DynamicResource Neutral600}"
+                                                                             FallBackColor="{DynamicResource Neutral600}" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding FriendCode}" Classes="TinyText" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <TextBlock Text="{Binding VrText, StringFormat='{}{0} VR'}" FontWeight="SemiBold"
+                                                               HorizontalAlignment="Right" />
+                                                    <TextBlock Text="{Binding RankText}" Classes="TinyText" HorizontalAlignment="Right" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                     </Border>
 
                     <Border>

@@ -23,6 +23,15 @@ namespace WheelWizard.WiiManagement.GameLicense;
 // Also Refer to this documentation https://wiki.tockdom.com/wiki/Rksys.dat
 public sealed record RegionLicense(MarioKartWiiEnums.Regions Region, int Slot, string Name, string FriendCode);
 
+/// <summary>The three ids that identify a license on the server. They must be unique per license.</summary>
+/// <summary>A copy of the save kept in the backup folder. Kind says why it was made: manual, change, undo, before-restore or before-import.</summary>
+public sealed record SaveBackup(string Name, string Kind, DateTime Time, string FilePath);
+
+/// <summary>A license found inside a backup, so it can be shown before the backup is restored.</summary>
+public sealed record BackupLicense(int Slot, string Name, string FriendCode);
+
+public sealed record LicenseIdentity(int Slot, string Name, uint ProfileId, string FriendCode, uint PseudoId, uint AuthenticId);
+
 public interface IGameLicenseSingletonService
 {
     /// <summary>
@@ -63,6 +72,9 @@ public interface IGameLicenseSingletonService
     /// </summary>
     void RefreshOnlineStatus();
 
+    /// <summary>When the selected region's rksys.dat was last written, or null when there is none to read.</summary>
+    DateTime? GetSaveWriteTimeUtc();
+
     /// <summary>
     /// Changes the name of a Mii for a specific user index.
     /// </summary>
@@ -88,6 +100,42 @@ public interface IGameLicenseSingletonService
     /// Removes a friend from the specified license slot in rksys.dat.
     /// </summary>
     OperationResult RemoveFriend(int userIndex, string friendCode);
+
+    /// <summary>The profile, pseudo and authentic ids of every used license, for finding duplicates.</summary>
+    IReadOnlyList<LicenseIdentity> GetLicenseIdentities();
+
+    /// <summary>
+    /// Gives a license a new profile id (so a new friend code). The pseudo and authentic ids are raised to a new shared value
+    /// no other license uses. A backup of rksys.dat is made first.
+    /// </summary>
+    OperationResult ChangeProfileId(int userIndex, uint newProfileId);
+
+    /// <summary>Copies the current rksys.dat into its own dated folder inside "backup". Returns the folder name.</summary>
+    OperationResult<string> BackupSaveNow();
+
+    /// <summary>The backups in the backup folder, newest first.</summary>
+    IReadOnlyList<SaveBackup> ListBackups();
+
+    /// <summary>The licenses (name and friend code) stored in a backup.</summary>
+    IReadOnlyList<BackupLicense> GetBackupLicenses(string name);
+
+    /// <summary>Puts a whole backup back as the save. The current save is backed up first.</summary>
+    OperationResult RestoreBackup(string name);
+
+    /// <summary>Copies the current rksys.dat to the given path.</summary>
+    OperationResult ExportSave(string destinationPath);
+
+    /// <summary>Replaces the save with a rksys.dat from the given path. The current save is backed up first.</summary>
+    OperationResult ImportSave(string sourcePath);
+
+    /// <summary>When the newest backup made by <see cref="ChangeProfileId"/> was taken, or null when there is none.</summary>
+    DateTime? GetLastBackupTime();
+
+    /// <summary>
+    /// Puts the profile, pseudo and authentic ids back to what the newest backup has. Everything else in the save (races, VR,
+    /// Miis) stays as it is now.
+    /// </summary>
+    OperationResult UndoLastProfileIdChange();
 }
 
 public class GameLicenseSingletonService : ObservablePollingService, IGameLicenseSingletonService
@@ -165,6 +213,19 @@ public class GameLicenseSingletonService : ObservablePollingService, IGameLicens
     public LicenseProfile GetUserData(int index) => Licenses.Users[index];
 
     public bool HasAnyValidUsers => Licenses.Users.Any(user => user.FriendCode != "0000-0000-0000");
+
+    public DateTime? GetSaveWriteTimeUtc()
+    {
+        try
+        {
+            var path = _fileSystem.Path.Combine(SaveFolderForRegion(), "rksys.dat");
+            return _fileSystem.File.Exists(path) ? _fileSystem.File.GetLastWriteTimeUtc(path) : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
 
     public void RefreshOnlineStatus()
     {
@@ -808,6 +869,454 @@ public class GameLicenseSingletonService : ObservablePollingService, IGameLicens
             _rksysData[nameOffset + i] = 0;
         Array.Copy(nameBytes, 0, _rksysData, nameOffset, Math.Min(nameBytes.Length, 20));
         return Ok();
+    }
+
+    public IReadOnlyList<LicenseIdentity> GetLicenseIdentities()
+    {
+        var result = new List<LicenseIdentity>();
+        if (_rksysData is null || _rksysData.Length < RksysSize)
+            return result;
+
+        for (var slot = 0; slot < MaxPlayerNum; slot++)
+        {
+            var offset = RksysMagic.Length + slot * RkpdSize;
+            var profileId = BigEndianBinary.BufferToUint32(_rksysData, offset + 0x5C);
+            if (profileId == 0)
+                continue;
+
+            var name = slot < Licenses.Users.Count ? Licenses.Users[slot].Mii?.Name.ToString() : null;
+            result.Add(
+                new LicenseIdentity(
+                    slot,
+                    string.IsNullOrWhiteSpace(name) ? "No name" : name,
+                    profileId,
+                    FriendCode.GetFriendCode(_rksysData, offset + 0x5C),
+                    BigEndianBinary.BufferToUint32(_rksysData, offset + 0x4C),
+                    BigEndianBinary.BufferToUint32(_rksysData, offset + 0x58)
+                )
+            );
+        }
+
+        return result;
+    }
+
+    public OperationResult ChangeProfileId(int userIndex, uint newProfileId)
+    {
+        if (userIndex is < 0 or >= MaxPlayerNum)
+            return Fail("Invalid license index. Please select a valid license.");
+        if (_rksysData is null || _rksysData.Length != RksysSize)
+            return Fail("Invalid or unloaded rksys.dat data.");
+        if (newProfileId == 0)
+            return Fail("That is not a valid profile id.");
+
+        var identities = GetLicenseIdentities();
+        var others = identities.Where(l => l.Slot != userIndex).ToList();
+        if (others.Any(l => l.ProfileId == newProfileId))
+            return Fail("Another license on this save already uses that profile id.");
+
+        var offset = RksysMagic.Length + userIndex * RkpdSize;
+        var pseudo = BigEndianBinary.BufferToUint32(_rksysData, offset + 0x4C);
+        var authentic = BigEndianBinary.BufferToUint32(_rksysData, offset + 0x58);
+
+        // Raise the shared pseudo/authentic id to a value that no other license has.
+        var used = others.SelectMany(l => new[] { l.PseudoId, l.AuthenticId }).ToHashSet();
+        var next = Math.Max(pseudo, authentic) + 1;
+        while (next == 0 || used.Contains(next))
+            next++;
+
+        var backup = BackupRksys("change");
+        if (backup.IsFailure)
+            return backup;
+
+        BigEndianBinary.WriteUInt32BigEndian(_rksysData, offset + 0x5C, newProfileId);
+        BigEndianBinary.WriteUInt32BigEndian(_rksysData, offset + 0x4C, next);
+        BigEndianBinary.WriteUInt32BigEndian(_rksysData, offset + 0x58, next);
+
+        var saved = SaveRksysToFile();
+        if (saved.IsFailure)
+            return saved;
+
+        MirrorToOtherRegions(userIndex, newProfileId, next);
+        return LoadLicense();
+    }
+
+    private static readonly MarioKartWiiEnums.Regions[] SaveRegionList =
+    [
+        MarioKartWiiEnums.Regions.America,
+        MarioKartWiiEnums.Regions.Europe,
+        MarioKartWiiEnums.Regions.Japan,
+        MarioKartWiiEnums.Regions.Korea,
+    ];
+
+    /// <summary>The save folders of every other region that has a save, so one friend code can be kept on all of them.</summary>
+    private IEnumerable<string> OtherRegionFolders()
+    {
+        var current = _settingsManager.Get<MarioKartWiiEnums.Regions>(_settingsManager.RR_REGION);
+        foreach (var region in SaveRegionList.Where(r => r != current))
+        {
+            var folder = _fileSystem.Path.Combine(_distributionPaths.SaveFolderPath, GameRegion.GetGameId(region));
+            if (_fileSystem.File.Exists(_fileSystem.Path.Combine(folder, "rksys.dat")))
+                yield return folder;
+        }
+    }
+
+    /// <summary>
+    /// Puts the same ids on the same license slot of the other regions' saves (when that slot has a license there), so the
+    /// friend code is the same whichever disc is played. Each of those saves is backed up first. Best effort: the save being
+    /// edited is already done by then.
+    /// </summary>
+    private void MirrorToOtherRegions(int slot, uint profileId, uint authenticId)
+    {
+        foreach (var folder in OtherRegionFolders())
+        {
+            try
+            {
+                var path = _fileSystem.Path.Combine(folder, "rksys.dat");
+                var data = _fileSystem.File.ReadAllBytes(path);
+                if (ValidateSave(data).IsFailure)
+                    continue;
+
+                var offset = RksysMagic.Length + slot * RkpdSize;
+                if (BigEndianBinary.BufferToUint32(data, offset + 0x5C) == 0)
+                    continue;
+
+                CopyFolderBackup(folder, "change");
+                BigEndianBinary.WriteUInt32BigEndian(data, offset + 0x5C, profileId);
+                BigEndianBinary.WriteUInt32BigEndian(data, offset + 0x4C, authenticId);
+                BigEndianBinary.WriteUInt32BigEndian(data, offset + 0x58, authenticId);
+                FixRksysCrc(data);
+                _fileSystem.WriteAllBytesAtomic(path, data, "Failed to update another region's rksys.dat.");
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        }
+    }
+
+    private void CopyFolderBackup(string folder, string kind)
+    {
+        var stamp = DateTime.Now;
+        var name = $"{stamp:yyyyMMdd-HHmmss}-{kind}";
+        while (_fileSystem.Directory.Exists(_fileSystem.Path.Combine(folder, "backup", name)))
+        {
+            stamp = stamp.AddSeconds(1);
+            name = $"{stamp:yyyyMMdd-HHmmss}-{kind}";
+        }
+
+        var directory = _fileSystem.Path.Combine(folder, "backup", name);
+        _fileSystem.Directory.CreateDirectory(directory);
+        _fileSystem.File.Copy(
+            _fileSystem.Path.Combine(folder, "rksys.dat"),
+            _fileSystem.Path.Combine(directory, "rksys.dat"),
+            overwrite: true
+        );
+    }
+
+    /// <summary>Undo for the other regions: puts back the ids from each one's newest "change" backup.</summary>
+    private void UndoOtherRegions()
+    {
+        foreach (var folder in OtherRegionFolders())
+        {
+            try
+            {
+                var root = _fileSystem.Path.Combine(folder, "backup");
+                if (!_fileSystem.Directory.Exists(root))
+                    continue;
+
+                var latest = _fileSystem
+                    .Directory.GetDirectories(root)
+                    .Where(d => _fileSystem.Path.GetFileName(d).EndsWith("-change", StringComparison.Ordinal))
+                    .OrderByDescending(d => _fileSystem.Path.GetFileName(d), StringComparer.Ordinal)
+                    .FirstOrDefault();
+                if (latest is null)
+                    continue;
+
+                var backup = _fileSystem.File.ReadAllBytes(_fileSystem.Path.Combine(latest, "rksys.dat"));
+                var path = _fileSystem.Path.Combine(folder, "rksys.dat");
+                var data = _fileSystem.File.ReadAllBytes(path);
+                if (ValidateSave(backup).IsFailure || ValidateSave(data).IsFailure)
+                    continue;
+
+                var changed = false;
+                for (var slot = 0; slot < MaxPlayerNum; slot++)
+                {
+                    var offset = RksysMagic.Length + slot * RkpdSize;
+                    foreach (var field in new[] { 0x4C, 0x58, 0x5C })
+                    {
+                        var old = BigEndianBinary.BufferToUint32(backup, offset + field);
+                        if (old == BigEndianBinary.BufferToUint32(data, offset + field))
+                            continue;
+                        BigEndianBinary.WriteUInt32BigEndian(data, offset + field, old);
+                        changed = true;
+                    }
+                }
+
+                if (!changed)
+                    continue;
+
+                CopyFolderBackup(folder, "undo");
+                FixRksysCrc(data);
+                _fileSystem.WriteAllBytesAtomic(path, data, "Failed to update another region's rksys.dat.");
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        }
+    }
+
+    private string SaveFolderForRegion()
+    {
+        var region = _settingsManager.Get<MarioKartWiiEnums.Regions>(_settingsManager.RR_REGION);
+        return _fileSystem.Path.Combine(_distributionPaths.SaveFolderPath, GameRegion.GetGameId(region));
+    }
+
+    /// <summary>Every backup is its own folder, named by time and kind, holding a plain rksys.dat.</summary>
+    public IReadOnlyList<SaveBackup> ListBackups()
+    {
+        var result = new List<SaveBackup>();
+        try
+        {
+            var root = _fileSystem.Path.Combine(SaveFolderForRegion(), "backup");
+            if (!_fileSystem.Directory.Exists(root))
+                return result;
+
+            foreach (var directory in _fileSystem.Directory.GetDirectories(root))
+            {
+                var file = _fileSystem.Path.Combine(directory, "rksys.dat");
+                if (!_fileSystem.File.Exists(file))
+                    continue;
+
+                var name = _fileSystem.Path.GetFileName(directory);
+                var kind = name.Length > 16 ? name[16..] : "manual";
+                var time =
+                    name.Length >= 15
+                    && DateTime.TryParseExact(
+                        name[..15],
+                        "yyyyMMdd-HHmmss",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out var parsed
+                    )
+                        ? parsed
+                        : _fileSystem.File.GetLastWriteTime(file);
+                result.Add(new SaveBackup(name, kind, time, file));
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+
+        // The stamp sorts by time, so the biggest name is the newest.
+        return result.OrderByDescending(b => b.Name, StringComparer.Ordinal).ToList();
+    }
+
+    public IReadOnlyList<BackupLicense> GetBackupLicenses(string name)
+    {
+        var result = new List<BackupLicense>();
+        if (ListBackups().FirstOrDefault(b => b.Name == name) is not { } backup)
+            return result;
+
+        try
+        {
+            var data = _fileSystem.File.ReadAllBytes(backup.FilePath);
+            if (ValidateSave(data).IsFailure)
+                return result;
+
+            for (var slot = 0; slot < MaxPlayerNum; slot++)
+            {
+                var offset = RksysMagic.Length + slot * RkpdSize;
+                if (BigEndianBinary.BufferToUint32(data, offset + 0x5C) == 0)
+                    continue;
+
+                var licenseName = Encoding.BigEndianUnicode.GetString(data, offset + 0x14, 20).TrimEnd('\0').Trim();
+                result.Add(new BackupLicense(slot, licenseName, FriendCode.GetFriendCode(data, offset + 0x5C)));
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+
+        return result;
+    }
+
+    private SaveBackup? NewestChangeBackup() => ListBackups().FirstOrDefault(b => b.Kind == "change");
+
+    public OperationResult<string> BackupSaveNow()
+    {
+        var result = BackupRksys("manual", out var name);
+        if (result.IsFailure)
+            return result.Error;
+
+        return Ok(name);
+    }
+
+    public DateTime? GetLastBackupTime() => NewestChangeBackup()?.Time;
+
+    private static OperationResult ValidateSave(byte[] data)
+    {
+        if (data.Length != RksysSize || Encoding.ASCII.GetString(data, 0, RksysMagic.Length) != RksysMagic)
+            return Fail("That is not a Mario Kart Wii save file (rksys.dat).");
+        return Ok();
+    }
+
+    public OperationResult RestoreBackup(string name)
+    {
+        if (ListBackups().FirstOrDefault(b => b.Name == name) is not { } backup)
+            return Fail("That backup was not found.");
+
+        byte[] data;
+        try
+        {
+            data = _fileSystem.File.ReadAllBytes(backup.FilePath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail("Could not read that backup.");
+        }
+
+        var valid = ValidateSave(data);
+        if (valid.IsFailure)
+            return valid;
+
+        // Keep how it is now, in case this was a mistake.
+        var safety = BackupRksys("before-restore");
+        if (safety.IsFailure)
+            return safety;
+
+        var path = _fileSystem.Path.Combine(SaveFolderForRegion(), "rksys.dat");
+        var written = _fileSystem.WriteAllBytesAtomic(path, data, "Failed to restore rksys.dat.");
+        if (written.IsFailure)
+            return written;
+
+        return LoadLicense();
+    }
+
+    public OperationResult ExportSave(string destinationPath)
+    {
+        try
+        {
+            var path = _fileSystem.Path.Combine(SaveFolderForRegion(), "rksys.dat");
+            if (!_fileSystem.File.Exists(path))
+                return Fail("rksys.dat not found.");
+
+            _fileSystem.File.Copy(path, destinationPath, overwrite: true);
+            return Ok();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail("Could not save the file there.");
+        }
+    }
+
+    public OperationResult ImportSave(string sourcePath)
+    {
+        byte[] data;
+        try
+        {
+            data = _fileSystem.File.ReadAllBytes(sourcePath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail("Could not read that file.");
+        }
+
+        var valid = ValidateSave(data);
+        if (valid.IsFailure)
+            return valid;
+
+        var safety = BackupRksys("before-import");
+        if (safety.IsFailure)
+            return safety;
+
+        FixRksysCrc(data);
+        var path = _fileSystem.Path.Combine(SaveFolderForRegion(), "rksys.dat");
+        var written = _fileSystem.WriteAllBytesAtomic(path, data, "Failed to import rksys.dat.");
+        if (written.IsFailure)
+            return written;
+
+        return LoadLicense();
+    }
+
+    public OperationResult UndoLastProfileIdChange()
+    {
+        if (_rksysData is null || _rksysData.Length != RksysSize)
+            return Fail("Invalid or unloaded rksys.dat data.");
+        if (NewestChangeBackup() is not { } latest)
+            return Fail("There is no backup to go back to.");
+
+        byte[] backup;
+        try
+        {
+            backup = _fileSystem.File.ReadAllBytes(latest.FilePath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail("Could not read the backup.");
+        }
+
+        if (backup.Length != RksysSize)
+            return Fail("The backup is not a valid save file.");
+
+        var changed = new List<int>();
+        for (var slot = 0; slot < MaxPlayerNum; slot++)
+        {
+            var offset = RksysMagic.Length + slot * RkpdSize;
+            foreach (var field in new[] { 0x4C, 0x58, 0x5C })
+            {
+                if (BigEndianBinary.BufferToUint32(backup, offset + field) != BigEndianBinary.BufferToUint32(_rksysData, offset + field))
+                {
+                    changed.Add(slot);
+                    break;
+                }
+            }
+        }
+
+        if (changed.Count == 0)
+            return Fail("Nothing to undo: the friend codes already match the backup.");
+
+        // Keep a copy of how it is now, in case the undo itself was a mistake.
+        var safety = BackupRksys("undo");
+        if (safety.IsFailure)
+            return safety;
+
+        foreach (var slot in changed)
+        {
+            var offset = RksysMagic.Length + slot * RkpdSize;
+            foreach (var field in new[] { 0x4C, 0x58, 0x5C })
+                BigEndianBinary.WriteUInt32BigEndian(_rksysData, offset + field, BigEndianBinary.BufferToUint32(backup, offset + field));
+        }
+
+        var saved = SaveRksysToFile();
+        if (saved.IsFailure)
+            return saved;
+
+        UndoOtherRegions();
+        return LoadLicense();
+    }
+
+    private OperationResult BackupRksys(string kind) => BackupRksys(kind, out _);
+
+    /// <summary>Copies rksys.dat into its own dated folder inside "backup", before it is changed.</summary>
+    private OperationResult BackupRksys(string kind, out string name)
+    {
+        name = string.Empty;
+        try
+        {
+            var folder = SaveFolderForRegion();
+            var path = _fileSystem.Path.Combine(folder, "rksys.dat");
+            if (!_fileSystem.File.Exists(path))
+                return Fail("rksys.dat not found.");
+
+            // Two backups in the same second must not share a folder, or the later one would overwrite the earlier state.
+            var stamp = DateTime.Now;
+            name = $"{stamp:yyyyMMdd-HHmmss}-{kind}";
+            while (_fileSystem.Directory.Exists(_fileSystem.Path.Combine(folder, "backup", name)))
+            {
+                stamp = stamp.AddSeconds(1);
+                name = $"{stamp:yyyyMMdd-HHmmss}-{kind}";
+            }
+
+            var directory = _fileSystem.Path.Combine(folder, "backup", name);
+            _fileSystem.Directory.CreateDirectory(directory);
+            _fileSystem.File.Copy(path, _fileSystem.Path.Combine(directory, "rksys.dat"), overwrite: true);
+            return Ok();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail("Could not make a backup of rksys.dat, so nothing was changed.");
+        }
     }
 
     private OperationResult SaveRksysToFile()

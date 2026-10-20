@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Settings.Views.GhostSettings">
+    <UserControl.Styles>
+        <!-- The search box keeps a calm outline while typing instead of the bright accent colour. -->
+        <Style Selector="components|InputField#SearchBox:focus">
+            <Setter Property="BorderBrush" Value="{DynamicResource Neutral600}" />
+        </Style>
+        <Style Selector="components|InputField#SearchBox:focus /template/ PathIcon#PART_Icon">
+            <Setter Property="Foreground" Value="{DynamicResource Neutral400}" />
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,15,0,10" Spacing="14" MaxWidth="440" HorizontalAlignment="Stretch">
+            <StackPanel Spacing="3" HorizontalAlignment="Center">
+                <components:FormFieldLabel Text="Import and export ghosts" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <TextBlock x:Name="UnavailableText" Classes="TinyText" TextWrapping="Wrap" TextAlignment="Center" IsVisible="False"
+                       Text="Install Retro Rewind first." />
+
+            <StackPanel x:Name="ImporterPanel" Spacing="14">
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <components:ActionButton Tone="Secondary" Size="Compact" Text="Import a ghost" Click="ChooseFile_OnClick" />
+                    <components:ActionButton x:Name="OpenFolderButton" Tone="Secondary" Size="Compact" Text="Open folder"
+                                             Click="OpenFolder_OnClick" />
+                </StackPanel>
+
+                <Border x:Name="ImportRow" IsVisible="False" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48" ColumnSpacing="16">
+                        <StackPanel Spacing="3" VerticalAlignment="Center">
+                            <TextBlock x:Name="FileText" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="SummaryText" Classes="TinyText" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <components:ActionButton x:Name="ImportButton" Tone="Secondary" Size="Compact" Text="Replace"
+                                                     Click="Import_OnClick" />
+                            <components:ActionButton Tone="Secondary" Size="Compact" Text="Cancel" Click="CancelImport_OnClick" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <StackPanel Spacing="6">
+                    <components:InputField x:Name="SearchBox" Background="{DynamicResource Neutral900}"
+                                           IconData="{StaticResource Search}" Placeholder="Search tracks"
+                                           TextChanged="Search_OnChanged" />
+                    <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}" Padding="4">
+                        <ListBox x:Name="TrackList" MaxHeight="208" Background="Transparent" SelectionMode="Single"
+                                 SelectionChanged="Track_OnChanged">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Padding" Value="10,6" />
+                                    <Setter Property="CornerRadius" Value="4" />
+                                    <Setter Property="FontSize" Value="14" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral800}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource Neutral700}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Neutral50}" />
+                                </Style>
+                            </ListBox.Styles>
+                        </ListBox>
+                    </Border>
+                    <TextBlock x:Name="StatusText" Classes="TinyText" TextWrapping="Wrap" TextAlignment="Center" />
+                    <components:ActionButton x:Name="ShowAllButton" Tone="Secondary" Size="Compact" Text="Show all tracks"
+                                             IsVisible="False" HorizontalAlignment="Center" Click="ShowAll_OnClick" />
+                </StackPanel>
+
+                <Border x:Name="TrackCard" IsVisible="False" Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="48" ColumnSpacing="16">
+                        <StackPanel Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel x:Name="TrackName" />
+                            <TextBlock x:Name="CurrentText" Classes="TinyText" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <components:ActionButton Grid.Column="1" x:Name="ExportButton" Tone="Secondary" Size="Compact"
+                                                 Text="Export" VerticalAlignment="Center" Click="Export_OnClick" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

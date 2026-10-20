@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:components="clr-namespace:WheelWizard.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
+             x:Class="WheelWizard.Settings.Views.GameDiscSettings">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="0,15,0,0" Spacing="8">
+            <components:FormFieldLabel Text="Game discs" />
+            <TextBlock Classes="TinyText" TextWrapping="Wrap"
+                       Text="Add a Mario Kart Wii disc for each region. Pick a region and Wheel Wizard starts that disc with that region's save." />
+            <StackPanel x:Name="DiscList" Spacing="6" />
+            <Border Classes="SettingsBottomSpacer" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

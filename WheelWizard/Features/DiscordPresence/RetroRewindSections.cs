@@ -74,6 +74,9 @@ public static class RetroRewindSections
     /// <summary>The game also appends the player's VR and BR on every online screen.</summary>
     public static bool IsOnline(int sectionId) => sectionId is >= FirstWifi and <= LastWifi;
 
+    /// <summary>Offline modes (Grand Prix, Time Trials, VS, Battle, Mission, replays) where the track the pack has loaded is shown.</summary>
+    public static bool ShowsGameTrack(int sectionId) => sectionId is >= 30 and <= 52 || IsOnlineRace(sectionId);
+
     /// <summary>Online screens where a track is actually being raced or watched (not menus or voting).</summary>
     public static bool IsOnlineRace(int sectionId) => sectionId is >= 104 and <= LastWifi;
 }

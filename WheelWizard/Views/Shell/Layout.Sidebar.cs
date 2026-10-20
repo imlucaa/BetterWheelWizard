@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
@@ -55,7 +55,8 @@ public partial class Layout
             // Follow the animated width so the portrait does not jump when labels are hidden.
             var collapsedProgress = Math.Clamp((221 - SidebarWidth) / (221 - 64), 0, 1);
             SidebarMii.Margin = new Thickness(-7 - 10 * collapsedProgress, 0, 0, 1);
-            LiveStatusBorder.Margin = new Thickness(10 + 8 * collapsedProgress, 0, 0, 12);
+            // The icon row is centred: four icons side by side when wide, one column when compact.
+            LiveStatusBorder.Margin = new Thickness((SidebarWidth - (136 - 108 * collapsedProgress)) / 2, 0, 0, 12);
         }
     }
 
@@ -91,7 +92,7 @@ public partial class Layout
         SupportUsButton.IsHitTestVisible = false;
         await AnimateSidebarDetails(appearing: false, animate);
         SupportUsButton.IsVisible = false;
-        VersionTagBorder.IsVisible = !_sidebarCollapsed;
+        VersionTagBorder.IsVisible = false;
         CollapsedSupportMenuItem.IsVisible = _sidebarCollapsed;
 
         // Keep labels hidden while the column is narrow to avoid wrapping/reflow on expansion.
@@ -124,19 +125,26 @@ public partial class Layout
             await Task.Delay(duration);
         ApplySidebarContents(_sidebarCollapsed);
 
-        SidebarBottomBar.ColumnDefinitions = new ColumnDefinitions(_sidebarCollapsed ? "*" : "28,8,28,8,28,8,*");
-        SidebarBottomBar.RowDefinitions = new RowDefinitions(_sidebarCollapsed ? "28,8,28,8,28" : "Auto");
-        SidebarBottomBar.Margin = _sidebarCollapsed ? new Thickness(0, 0, 0, 12) : new Thickness(10, 0, 13, 12);
+        SidebarBottomBar.ColumnDefinitions = new ColumnDefinitions(_sidebarCollapsed ? "*" : "28,8,28,8,28,8,28");
+        SidebarBottomBar.HorizontalAlignment = _sidebarCollapsed ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+        SidebarBottomBar.RowDefinitions = new RowDefinitions(_sidebarCollapsed ? "28,8,28,8,28,8,28" : "Auto");
+        SidebarBottomBar.Margin = _sidebarCollapsed ? new Thickness(0, 0, 0, 12) : new Thickness(0, 0, 0, 12);
         Grid.SetRowSpan(SidebarBottomBar, _sidebarCollapsed ? 2 : 1);
         Grid.SetRow(SidebarBottomBar, _sidebarCollapsed ? 4 : 5);
         Grid.SetColumn(SidebarInfoButton, _sidebarCollapsed ? 0 : 2);
-        Grid.SetRow(SidebarInfoButton, _sidebarCollapsed ? 2 : 0);
+        Grid.SetRow(SidebarInfoButton, _sidebarCollapsed ? 4 : 0);
         Grid.SetColumn(SidebarSettingsButton, _sidebarCollapsed ? 0 : 4);
-        Grid.SetRow(SidebarSettingsButton, 0);
+        Grid.SetRow(SidebarSettingsButton, _sidebarCollapsed ? 2 : 0);
         Grid.SetColumn(VersionTagBorder, _sidebarCollapsed ? 0 : 6);
+        Grid.SetColumn(SidebarEditButton, _sidebarCollapsed ? 0 : 6);
+        Grid.SetRow(SidebarEditButton, 0);
+        SidebarEditButton.HorizontalAlignment = _sidebarCollapsed
+            ? Avalonia.Layout.HorizontalAlignment.Center
+            : Avalonia.Layout.HorizontalAlignment.Left;
         SupportUsButton.IsVisible = !_sidebarCollapsed;
         ToolTip.SetPlacement(LiveStatusBorder, _sidebarCollapsed ? PlacementMode.Right : PlacementMode.TopEdgeAlignedLeft);
         ToolTip.SetPlacement(SidebarSettingsButton, _sidebarCollapsed ? PlacementMode.Right : PlacementMode.Top);
+        ToolTip.SetPlacement(SidebarEditButton, _sidebarCollapsed ? PlacementMode.Right : PlacementMode.Top);
 
         await AnimateSidebarDetails(appearing: true, animate);
         SidebarBottomBar.IsHitTestVisible = true;
@@ -211,5 +219,6 @@ public partial class Layout
             button.Classes.Set("compact", compact);
             ToolTip.SetPlacement(button, compact ? PlacementMode.Right : PlacementMode.Top);
         }
+        ApplyPinActionsCompact(compact);
     }
 }

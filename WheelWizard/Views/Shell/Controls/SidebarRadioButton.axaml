@@ -108,6 +108,11 @@
     </Style>
   </Style>
 
+  <!-- A faint bar on hover, so the item that will be opened is clear. The selected item keeps its brighter bar. -->
+  <Style Selector="shellControls|SidebarRadioButton:pointerover /template/ Border#PART_SelectionIndicator">
+    <Setter Property="Background" Value="{DynamicResource Neutral500}" />
+  </Style>
+
   <Style Selector="shellControls|SidebarRadioButton:checked">
     <Setter Property="ZIndex" Value="1" />
      <Setter Property="Background" Value="{DynamicResource SidebarBoxHoverBrush}" />

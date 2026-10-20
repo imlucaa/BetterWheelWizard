@@ -56,7 +56,7 @@
                                        PlacementTarget="PART_Field" IsLightDismissEnabled="False" InheritsTransform="True"
                                        MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}" WindowManagerAddShadowHint="False">
-                                    <Border Name="PART_Menu" Background="{DynamicResource Neutral900}" BorderBrush="{DynamicResource Neutral700}"
+                                    <Border Name="PART_Menu" Background="{DynamicResource PopupSurfaceBrush}" BorderBrush="{DynamicResource Neutral700}"
                                             BorderThickness="1" CornerRadius="{StaticResource GlobalCornerRadius}" ClipToBounds="True"
                                             RenderTransformOrigin="50%,0%" Padding="4" Margin="0,4,0,0">
                                         <Grid RowDefinitions="Auto,*">

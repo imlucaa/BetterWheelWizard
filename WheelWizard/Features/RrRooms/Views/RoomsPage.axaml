@@ -27,21 +27,20 @@
             </Border>
         </StackPanel>
 
-        <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,8"
-                Padding="0" CornerRadius="12" Background="Transparent"
-                BorderBrush="Transparent" BorderThickness="0">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-                <components:Button x:Name="RoomsSearchButton" Text="{loc:T action.search}"
-                                   IconData="{StaticResource Search}" Variant="Default" ButtonSize="Compact"
-                                   Click="RoomsSearchButton_OnClick" ToolTip.Tip="Search rooms" />
-                <components:Button x:Name="RoomsVrFilterButton" Text="{loc:T action.filter_vr}"
-                                   IconData="{StaticResource Chart}" Variant="Default" ButtonSize="Compact"
-                                   Click="RoomsVrFilterButton_OnClick" ToolTip.Tip="Set VR filters" />
-                <components:Button x:Name="RoomsSortButton" Text="{loc:T action.sort}"
-                                   IconData="{StaticResource ArrowSwap}" Variant="Default" ButtonSize="Compact"
-                                   Click="RoomsSortButton_OnClick" ToolTip.Tip="Choose room sort" />
-            </StackPanel>
-        </Border>
+        <UniformGrid Grid.Row="1" Columns="2" Margin="7,10,7,4">
+            <components:Button x:Name="RoomsSearchButton" Text="{loc:T action.search}" Margin="3,3"
+                               IconData="{StaticResource Search}" Variant="Default" ButtonSize="Compact"
+                               HorizontalAlignment="Stretch" Click="RoomsSearchButton_OnClick" ToolTip.Tip="Search rooms" />
+            <components:Button x:Name="RoomsFriendsButton" Text="Friends" Margin="3,3"
+                               IconData="{StaticResource Friends}" Variant="Default" ButtonSize="Compact"
+                               HorizontalAlignment="Stretch" Click="RoomsFriendsButton_OnClick" ToolTip.Tip="Only rooms with your friends" />
+            <components:Button x:Name="RoomsVrFilterButton" Text="{loc:T action.filter_vr}" Margin="3,3"
+                               IconData="{StaticResource Chart}" Variant="Default" ButtonSize="Compact"
+                               HorizontalAlignment="Stretch" Click="RoomsVrFilterButton_OnClick" ToolTip.Tip="Set VR filters" />
+            <components:Button x:Name="RoomsSortButton" Text="{loc:T action.sort}" Margin="3,3"
+                               IconData="{StaticResource ArrowSwap}" Variant="Default" ButtonSize="Compact"
+                               HorizontalAlignment="Stretch" Click="RoomsSortButton_OnClick" ToolTip.Tip="Choose room sort" />
+        </UniformGrid>
 
         <components:EmptyPageInfo Grid.Row="2" x:Name="EmptyRoomsView"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -67,24 +66,17 @@
                      SelectionChanged="RoomsView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Classes="BoxItemBackground" Padding="10,8">
-                            <Grid ColumnDefinitions="34,*,88" RowDefinitions="Auto,Auto" ColumnSpacing="9">
-                                <PathIcon Data="{StaticResource Road}" Width="32" Height="32" Classes="RoadIcon"
-                                          IsVisible="{Binding IsPublic }" VerticalAlignment="Center"
-                                          Grid.Column="0" Grid.RowSpan="2" />
-                                <PathIcon Data="{StaticResource RoadLocked}" Width="32" Height="32" Classes="RoadIcon"
-                                          VerticalAlignment="Center" Grid.Column="0" Grid.RowSpan="2"
-                                          IsVisible="{Binding IsPublic, Converter={x:Static BoolConverters.Not}}" />
-
-                                <!-- Temporary, will replace this later with path icon, but it's cool that this exists -->
-                                <!-- <Border Grid.Column="0" CornerRadius="999999" ClipToBounds="True"
-                                        Background="{DynamicResource Neutral950}" Width="50" Height="50" Margin="0,3">
-                                    <miiComp:MiiImageLoader HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                            LoadingColor="{DynamicResource Neutral600}"
-                                                            Mii="{Binding HostMii}"
-                                                            FallBackColor="{DynamicResource Neutral600}"
-                                                            ImageVariant="SMALL"/>
-                                </Border> -->
+                        <Border Classes="BoxItemBackground" Padding="12,10">
+                            <Grid ColumnDefinitions="14,*,84" RowDefinitions="Auto,Auto" ColumnSpacing="9">
+                                <Border Width="5" Height="38" CornerRadius="3" Grid.Column="0" Grid.RowSpan="2"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        Background="{DynamicResource Primary300}"
+                                        IsVisible="{Binding IsPublic}" />
+                                <Border Width="5" Height="38" CornerRadius="3" Grid.Column="0" Grid.RowSpan="2"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        Background="{DynamicResource Neutral500}"
+                                        IsVisible="{Binding IsPublic, Converter={x:Static BoolConverters.Not}}"
+                                        ToolTip.Tip="Private room" />
 
                                 <StackPanel Grid.Column="1"
                                             Orientation="Horizontal"
@@ -111,7 +103,7 @@
 
                                 <Border Grid.Column="2" Grid.RowSpan="2" Background="{DynamicResource Neutral800}"
                                         CornerRadius="6" Padding="6,3" VerticalAlignment="Center">
-                                    <Grid RowDefinitions="Auto,Auto,Auto">
+                                    <Grid RowDefinitions="Auto,Auto">
                                         <TextBlock Text="{Binding AverageVrDisplay}" FontSize="14" FontWeight="Bold"
                                                    Foreground="{DynamicResource Primary300}" HorizontalAlignment="Center" />
                                         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="3"
@@ -123,10 +115,6 @@
                                             <TextBlock Text="{Binding PlayerCount}" FontSize="10"
                                                        Foreground="{DynamicResource Neutral300}" />
                                         </StackPanel>
-                                        <TextBlock Grid.Row="2" Text="{Binding RaceTimeDisplay}" FontSize="10"
-                                                   Foreground="{DynamicResource Neutral200}"
-                                                   HorizontalAlignment="Center" TextAlignment="Center"
-                                                   TextTrimming="CharacterEllipsis" />
                                     </Grid>
                                 </Border>
                             </Grid>

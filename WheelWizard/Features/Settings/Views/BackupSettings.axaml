@@ -6,46 +6,47 @@
              mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
              x:Class="WheelWizard.Settings.Views.BackupSettings">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="0,15,0,0">
-            <components:FormFieldLabel Text="Back up rksys.dat and RRRating.pul files" Margin="0,0,0,10" />
+        <StackPanel Margin="0,15,0,0" Spacing="14" MaxWidth="440">
+            <StackPanel Spacing="3">
+                <components:FormFieldLabel Text="Backup" />
+            </StackPanel>
+
             <StackPanel Spacing="4">
+                <!-- rksys.dat -->
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">
-                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
-                        <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource Neutral800}" Margin="0,0,12,0">
-                            <PathIcon Data="{StaticResource FileExport}" Width="18" Height="18" Foreground="{DynamicResource Primary300}" />
-                        </Border>
-                        <StackPanel Grid.Column="1" Margin="0,0,14,0" Spacing="4" VerticalAlignment="Center">
-                            <components:FormFieldLabel Text="rksys.dat" />
-                            <TextBlock x:Name="RksysStatusText" Classes="TinyText" TextWrapping="Wrap"
-                                       Text="Checking for rksys.dat…" />
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="56" ColumnSpacing="16">
+                        <StackPanel Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Save file (rksys.dat)" />
+                            <TextBlock x:Name="RksysStatusText" IsVisible="False" Classes="TinyText" TextWrapping="Wrap" Text="Checking…" />
                         </StackPanel>
-                        <components:Button Grid.Column="2" x:Name="BackupRksysButton"
-                                           Text="" IconData="{StaticResource FileExport}" Padding="10"
-                                           ToolTip.Tip="Back up rksys.dat" ToolTip.ShowDelay="0"
-                                           VerticalAlignment="Center" Click="BackupRksys_OnClick" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <components:ActionButton x:Name="BackupRksysButton" Tone="Secondary" Size="Compact" Text="Back up"
+                                                     Click="BackupRksys_OnClick" />
+                            <components:ActionButton x:Name="ImportRksysButton" Tone="Secondary" Size="Compact" Text="Import"
+                                                     Click="ImportRksys_OnClick" />
+                        </StackPanel>
                     </Grid>
                 </Border>
 
+                <!-- RRRating.pul -->
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowBottom">
-                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="64">
-                        <Border Width="42" Height="42" CornerRadius="10" Background="{DynamicResource Neutral800}" Margin="0,0,12,0">
-                            <PathIcon Data="{StaticResource FileExport}" Width="18" Height="18" Foreground="{DynamicResource Primary300}" />
-                        </Border>
-                        <StackPanel Grid.Column="1" Margin="0,0,14,0" Spacing="4" VerticalAlignment="Center">
-                            <components:FormFieldLabel Text="RRRating.pul" />
-                            <TextBlock x:Name="RatingStatusText" Classes="TinyText" TextWrapping="Wrap"
-                                       Text="Checking for RRRating.pul…" />
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="56" ColumnSpacing="16">
+                        <StackPanel Spacing="3" VerticalAlignment="Center">
+                            <components:FormFieldLabel Text="Rating file (RRRating.pul)" />
+                            <TextBlock x:Name="RatingStatusText" IsVisible="False" Classes="TinyText" TextWrapping="Wrap" Text="Checking…" />
                         </StackPanel>
-                        <components:Button Grid.Column="2" x:Name="BackupRatingButton"
-                                           Text="" IconData="{StaticResource FileExport}" Padding="10"
-                                           ToolTip.Tip="Back up RRRating.pul" ToolTip.ShowDelay="0"
-                                           VerticalAlignment="Center" Click="BackupRating_OnClick" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <components:ActionButton x:Name="BackupRatingButton" Tone="Secondary" Size="Compact" Text="Back up"
+                                                     Click="BackupRating_OnClick" />
+                            <components:ActionButton x:Name="ImportRatingButton" Tone="Secondary" Size="Compact" Text="Import"
+                                                     Click="ImportRating_OnClick" />
+                        </StackPanel>
                     </Grid>
                 </Border>
             </StackPanel>
 
-            <TextBlock x:Name="BackupResultText" Classes="TinyText BackupStatus" TextWrapping="Wrap"
-                       Margin="4,12,4,0" IsVisible="False" />
+            <TextBlock x:Name="BackupResultText" Classes="TinyText BackupStatus" TextWrapping="Wrap" TextAlignment="Center"
+                       IsVisible="False" />
             <Border Classes="SettingsBottomSpacer" />
         </StackPanel>
     </ScrollViewer>

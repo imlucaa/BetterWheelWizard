@@ -33,6 +33,33 @@
                 </Border>
             </Grid>
 
+            <components1:FormFieldLabel Text="Notifications" Margin="0,0,0,4" />
+            <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0,0,0,7">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="40">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3" HorizontalAlignment="Left"
+                                VerticalAlignment="Center">
+                        <components1:FormFieldLabel Text="Friend joins a room" />
+                        <SelectableTextBlock Classes="TinyText" TextAlignment="Left" TextWrapping="Wrap"
+                                             Text="Show a small message when one of your friends joins a room." />
+                    </StackPanel>
+                    <components1:ToggleCheckBox Grid.Column="1" x:Name="FriendRoomAlerts" Variant="Switch"
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle" Margin="0,0,0,7">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="40">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3" HorizontalAlignment="Left"
+                                VerticalAlignment="Center">
+                        <components1:FormFieldLabel Text="Session card on Home" />
+                        <SelectableTextBlock Classes="TinyText" TextAlignment="Left" TextWrapping="Wrap"
+                                             Text="After you play, show your races and VR gained since opening the launcher." />
+                    </StackPanel>
+                    <components1:ToggleCheckBox Grid.Column="1" x:Name="ShowSessionStats" Variant="Switch"
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
             <components1:FormFieldLabel Text="{loc:T section.retro_rewind}" Margin="0,0,0,4" />
             <StackPanel Spacing="4" Margin="0,0,0,7">
                 <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowTop">

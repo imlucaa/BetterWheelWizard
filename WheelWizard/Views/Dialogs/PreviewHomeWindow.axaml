@@ -1,94 +1,121 @@
-<base:PopupContent xmlns="https://github.com/avaloniaui"
+﻿<base:PopupContent xmlns="https://github.com/avaloniaui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:base="clr-namespace:WheelWizard.Views.Dialogs.Base"
                    xmlns:themes="clr-namespace:WheelWizard.Themes"
+                   xmlns:components="clr-namespace:WheelWizard.Views.Components"
+                   xmlns:shellControls="clr-namespace:WheelWizard.Views.Shell.Controls"
                    x:Class="WheelWizard.Views.Dialogs.PreviewHomeWindow">
-    <Grid Width="620" Height="650" ClipToBounds="True">
-        <Grid.Styles>
-            <Style Selector="Border.PreviewCard">
-                <Setter Property="Background" Value="{DynamicResource PreviewCardBrush}" />
-                <Setter Property="CornerRadius" Value="9" />
-                <Setter Property="BorderBrush" Value="{DynamicResource PreviewTextBrush}" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Opacity" Value="0.96" />
-            </Style>
-            <Style Selector="Button">
-                <Setter Property="HorizontalContentAlignment" Value="Left" />
-                <Setter Property="Foreground" Value="{DynamicResource PreviewTextBrush}" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
-            </Style>
-        </Grid.Styles>
-        <Border x:Name="PreviewBase" />
-        <themes:LauncherBackgroundImage x:Name="PreviewBackground" IsHitTestVisible="False" />
-        <Grid ColumnDefinitions="172,*" RowDefinitions="42,*">
-            <Border Grid.ColumnSpan="2" x:Name="PreviewTopSurface">
-                <StackPanel Margin="12,0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource WheelIcon}" Width="20" Height="20"
-                              Foreground="{DynamicResource PreviewBrandBrush}" />
-                    <TextBlock Text="BetterWheelWizard" FontWeight="SemiBold"
-                               Foreground="{DynamicResource PreviewTextBrush}" />
-                </StackPanel>
-            </Border>
-            <Border Grid.Row="1" x:Name="PreviewSidebarSurface">
-                <StackPanel Margin="8,12" Spacing="3">
-                    <Button Content="⌂  Home" Tag="Home" Click="PreviewTab_OnClick" />
-                    <Button Content="●  My profiles" Tag="My profiles" Click="PreviewTab_OnClick" />
-                    <Button Content="▦  Patches" Tag="Patches" Click="PreviewTab_OnClick" />
-                    <Button Content="◆  My Miis" Tag="My Miis" Click="PreviewTab_OnClick" />
-                    <Button Content="●  Themes" Tag="Themes" Click="PreviewTab_OnClick" />
-                    <Separator Margin="0,6" />
-                    <Button Content="▣  Rooms" Tag="Rooms" Click="PreviewTab_OnClick" />
-                    <Button Content="★  Leaderboard" Tag="Leaderboard" Click="PreviewTab_OnClick" />
-                    <Button Content="+  Friends" Tag="Friends" Click="PreviewTab_OnClick" />
-                </StackPanel>
-            </Border>
-            <Border Grid.Row="1" Grid.Column="1" x:Name="PreviewPageSurface">
-                <Grid Margin="18" RowDefinitions="Auto,*">
-                    <StackPanel Spacing="2">
-                        <TextBlock x:Name="PreviewPageTitle" Text="Home" FontSize="25" FontWeight="Bold"
-                                   Foreground="{DynamicResource PreviewTextBrush}" />
-                        <TextBlock x:Name="PreviewPageSubtitle" Text="Launcher preview"
-                                   Foreground="{DynamicResource PreviewTextBrush}" Opacity="0.78" />
-                    </StackPanel>
-                    <Grid Grid.Row="1">
-                        <StackPanel x:Name="HomePreview" Width="210" HorizontalAlignment="Center"
-                                    VerticalAlignment="Center" Spacing="12">
-                            <TextBlock Text="Retro Rewind" FontSize="22" FontWeight="Bold"
-                                       HorizontalAlignment="Center" Foreground="{DynamicResource PreviewBrandBrush}" />
-                            <Border Height="42" CornerRadius="7" Background="{DynamicResource PreviewAccentBrush}">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
-                                    <PathIcon Data="{StaticResource Play}" Width="16" Height="16"
-                                              Foreground="{DynamicResource PreviewTextBrush}" />
-                                    <TextBlock Text="Play" VerticalAlignment="Center"
-                                               Foreground="{DynamicResource PreviewTextBrush}" />
-                                </StackPanel>
+    <!-- A copy of the launcher at 80% size. It uses the launcher's own controls and brushes, and its own theme
+         resources, so it shows what the chosen colors really look like. -->
+    <Viewbox Stretch="Uniform" Width="525" Height="640">
+        <Grid x:Name="PreviewRoot" Width="656" Height="800" ClipToBounds="True"
+              Background="{DynamicResource LauncherBaseBrush}">
+            <themes:LauncherBackgroundImage x:Name="PreviewBackground" IsHitTestVisible="False" />
+            <Border Height="30" VerticalAlignment="Top" Background="{DynamicResource LauncherSurfaceBrush}" />
+            <Grid Margin="0,30,0,0" ColumnDefinitions="221,*" RowDefinitions="17,18,96,*,80">
+                <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="5"
+                        CornerRadius="{StaticResource WindowCornerRadiusLeftRightTwix}"
+                        Background="{DynamicResource LauncherSurfaceBrush}" />
+
+                <!-- Pages -->
+                <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="5" ClipToBounds="True" Margin="{StaticResource EdgeGap}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{StaticResource TopRowSize}" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="PreviewPageTitle" Text="Home" VerticalAlignment="Bottom" Classes="PageTitleText" />
+                        <Grid Grid.Row="1" x:Name="HomePage">
+                            <Grid x:Name="HomeArtwork" IsHitTestVisible="False">
+                                <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" Width="137" Angle="45"
+                                                          Y="-60" X="-20" ExtendedHeight="1000"
+                                                          Background="{DynamicResource Brand400}" Foreground="{DynamicResource Brand700}" />
+                                <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" Width="137" Angle="45"
+                                                          Y="-40" X="170" ExtendedHeight="1000"
+                                                          Background="{DynamicResource Brand600}" Foreground="{DynamicResource Brand800}" />
+                                <shellControls:WheelTrail HorizontalAlignment="Left" VerticalAlignment="Top" Width="137" Angle="45"
+                                                          Y="165" X="175" ExtendedHeight="1000"
+                                                          Background="{DynamicResource Brand200}" Foreground="{DynamicResource Brand600}" />
+                                <shellControls:WheelTrail HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="137" Angle="-35"
+                                                          X="-160" ExtendedHeight="1000"
+                                                          Background="{DynamicResource Brand400}" Foreground="{DynamicResource Brand700}" />
+                                <shellControls:WheelTrail HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="137" Angle="-35"
+                                                          X="40" Y="30" ExtendedHeight="1000"
+                                                          Background="{DynamicResource Brand600}" Foreground="{DynamicResource Brand800}" />
+                                <Border Height="630" Width="250" CornerRadius="125,125,0,0" VerticalAlignment="Bottom"
+                                        Background="{DynamicResource LauncherBaseBrush}"
+                                        Margin="{StaticResource NegativeEdgeGap}">
+                                    <PathIcon HorizontalAlignment="Center" VerticalAlignment="Top" Data="{StaticResource WheelIcon}"
+                                              Foreground="{DynamicResource LauncherBrandColor}" Width="200" Height="200" Margin="0,25" />
+                                </Border>
+                            </Grid>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="180" Margin="0,220">
+                                <TextBlock HorizontalAlignment="Center" Classes="TitleText" Text="Retro Rewind" />
+                                <components:ActionButton Tone="Brand" Text="Play" IconData="{StaticResource Play}" Margin="0,20,0,0" />
+                                <components:ActionButton Tone="Secondary" IconData="{StaticResource DolphinIcon}" Height="40"
+                                                         Width="100" Margin="0,6,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Grid.Row="1" x:Name="ListPage" IsVisible="False" Spacing="8" Margin="0,16,0,0">
+                            <Border Classes="SettingsBlockStyle SettingsRowStyle" MinHeight="56">
+                                <Grid ColumnDefinitions="*,Auto" Margin="14,0">
+                                    <TextBlock x:Name="ListItemOne" Text="Example item" VerticalAlignment="Center" />
+                                    <components:ActionButton Grid.Column="1" Text="Open" Tone="Brand" Height="30" VerticalAlignment="Center" />
+                                </Grid>
                             </Border>
-                        </StackPanel>
-                        <StackPanel x:Name="ListPreview" IsVisible="False" Margin="0,24,0,0" Spacing="10">
-                            <Border Classes="PreviewCard" Padding="14">
-                                <TextBlock x:Name="ListItemOne" Text="Example item" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource PreviewTextBrush}" />
+                            <Border Classes="SettingsBlockStyle SettingsRowStyle" MinHeight="56">
+                                <TextBlock x:Name="ListItemTwo" Text="Another item" VerticalAlignment="Center" Margin="14,0" />
                             </Border>
-                            <Border Classes="PreviewCard" Padding="14">
-                                <TextBlock x:Name="ListItemTwo" Text="Another item" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource PreviewTextBrush}" />
-                            </Border>
-                        </StackPanel>
-                        <StackPanel x:Name="ThemesPreview" IsVisible="False" Margin="0,24,0,0" Spacing="10">
-                            <Border Classes="PreviewCard" Padding="14">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Theme library" FontSize="17" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource PreviewTextBrush}" />
-                                    <TextBlock Text="Built-in presets and saved themes appear here."
-                                               Foreground="{DynamicResource PreviewTextBrush}" Opacity="0.75" />
-                                    <Border Height="34" CornerRadius="6" Background="{DynamicResource PreviewAccentBrush}" />
-                                </StackPanel>
+                            <Border Classes="SettingsBlockStyle SettingsRowStyle" MinHeight="56">
+                                <TextBlock Text="One more item" VerticalAlignment="Center" Margin="14,0" />
                             </Border>
                         </StackPanel>
                     </Grid>
                 </Grid>
-            </Border>
+
+                <!-- Sidebar -->
+                <Border Grid.Column="0" Grid.RowSpan="5" Background="{DynamicResource LauncherSidebarBrush}" />
+                <Grid Grid.Column="0" Grid.Row="2" Height="60" Margin="10,-12,10,0" VerticalAlignment="Top">
+                    <Border BorderBrush="{DynamicResource Neutral600}" BorderThickness="1"
+                            CornerRadius="{StaticResource GlobalCornerRadius}" Padding="68,0,8,0">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Player" FontWeight="Bold" Foreground="{DynamicResource Neutral50}" />
+                            <TextBlock Text="0000-0000-0000" Classes="TinyText" />
+                        </StackPanel>
+                    </Border>
+                    <Border Width="54" Height="54" CornerRadius="27" HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="6,0,0,0" Background="{DynamicResource Neutral600}" />
+                </Grid>
+                <TextBlock Text="General" Classes="SidebarSectionText" VerticalAlignment="Bottom" Grid.Row="2" />
+                <StackPanel x:Name="PreviewTabs" Grid.Column="0" Grid.Row="3" VerticalAlignment="Top">
+                    <shellControls:SidebarRadioButton IconData="{StaticResource Home}" Text="Home" IsChecked="True" Tag="Home" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource UserCircle}" Text="My profiles" Tag="My profiles" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource CubesStacked}" Text="Patches" Tag="Patches" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource Shirt}" Text="My Miis" Tag="My Miis" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource ThemePalette}" Text="Themes" Tag="Themes" />
+                    <TextBlock Text="Online" Classes="SidebarSectionText" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource RoomUsers}" Text="Rooms" Tag="Rooms"
+                                                      BoxText="0" BoxIconData="{StaticResource UserCouple}" BoxIconSize="14" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource Award}" Text="Leaderboard" Tag="Leaderboard" />
+                    <shellControls:SidebarRadioButton IconData="{StaticResource Friends}" Text="Friends" Tag="Friends" BoxText="0/0" />
+                </StackPanel>
+                <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom" Margin="0,0,0,52">
+                    <PathIcon Data="{StaticResource CoffeeIcon}" Width="14" Height="14"
+                              Foreground="{DynamicResource LauncherFooterIconBrush}" />
+                    <TextBlock Text="Support us!" Classes="TinyText" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LauncherFooterIconBrush}" />
+                </StackPanel>
+                <Grid Grid.Column="0" Grid.Row="4" ColumnDefinitions="28,8,28,8,28" HorizontalAlignment="Center"
+                      VerticalAlignment="Bottom" Margin="0,0,0,12">
+                    <PathIcon Data="{StaticResource InfoTip}" Width="24" Height="24"
+                              Foreground="{DynamicResource LauncherFooterIconBrush}" />
+                    <PathIcon Grid.Column="2" Data="{StaticResource Gear}" Width="22" Height="22"
+                              Foreground="{DynamicResource LauncherFooterIconBrush}" />
+                    <PathIcon Grid.Column="4" Data="{StaticResource Pen}" Width="15" Height="15"
+                              Foreground="{DynamicResource LauncherFooterIconBrush}" />
+                </Grid>
+            </Grid>
         </Grid>
-    </Grid>
+    </Viewbox>
 </base:PopupContent>

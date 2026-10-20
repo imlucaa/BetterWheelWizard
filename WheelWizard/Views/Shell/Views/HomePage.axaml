@@ -175,6 +175,19 @@
                                ToolTip.Placement="Top"
                                ToolTip.ShowDelay="50"  -->
         </StackPanel>
-        
+
+        <!-- What you did since the launcher opened. Only shows once something happened (the game saves after races), in
+             the title row where other pages keep their buttons, so it never covers the artwork or the Play button. -->
+        <Border x:Name="SessionCard" Grid.Row="0" IsVisible="False" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,6,10" Padding="12,6" CornerRadius="14" Background="{DynamicResource LauncherPanelBrush}"
+                ToolTip.Tip="Races played and VR gained since you opened the launcher, for the selected license">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="This session" Classes="TinyText" VerticalAlignment="Center" />
+                <TextBlock x:Name="SessionRaces" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Border Width="1" Height="14" Background="{DynamicResource Neutral600}" VerticalAlignment="Center" />
+                <TextBlock x:Name="SessionVr" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
     </Grid>
 </UserControl>

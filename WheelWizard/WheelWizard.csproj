@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- Program Config -->
         <StartupObject>WheelWizard.Program</StartupObject>
@@ -14,7 +14,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <!-- Program details -->
-        <Version>2.6.5</Version>
+        <Version>2.6.6</Version>
         <Description>This program will manage RetroRewind and mods :)</Description>
         <Copyright>GNU v3.0</Copyright>
         <RepositoryUrl>https://github.com/imlucaa/BetterWheelWizard</RepositoryUrl>
@@ -77,6 +77,8 @@
 
     <ItemGroup Label="Embedded Resources">
         <EmbeddedResource Include="Resources\Languages\*.yml" />
+        <!-- The Rewind VR overlay page (MIT, MichaelAccount1), served locally for the OBS link. -->
+        <EmbeddedResource Include="Resources\Overlay\*" LogicalName="Overlay/%(Filename)%(Extension)" />
 
         <!-- Skinned 3DS Mii body used by the Mii animation player (MiiAnim.Core loads these by logical name). -->
         <EmbeddedResource Include="Features\MiiAnimation\Resources\MaleBody.glb" LogicalName="MiiAnim.Core.Assets.MaleBody.glb" />

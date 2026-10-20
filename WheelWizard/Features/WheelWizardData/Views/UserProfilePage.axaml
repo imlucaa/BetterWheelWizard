@@ -190,7 +190,7 @@
                                                      LetterSpacing="0.6"
                                                      Foreground="{DynamicResource Neutral400}"
                                                      VerticalAlignment="Center" />
-                                <components:ActionButton VerticalAlignment="Center"
+                                <components:ActionButton VerticalAlignment="Center" Text="Copy"
                                                        IconData="{StaticResource Copy}"
                                                        ToolTip.Tip="{loc:T action.copy_friend_code}"
                                                        Click="CopyFriendCode_OnClick"  Tone="Secondary" Variant="Link" Padding="0" MinHeight="0"/>

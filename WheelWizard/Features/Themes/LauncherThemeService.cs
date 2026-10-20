@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Fonts;
 using WheelWizard.ApplicationData;
@@ -70,10 +71,31 @@ public sealed class LauncherThemeService(
         if (resources == null)
             return;
 
-        var themeColor = Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_THEME_COLOR));
-        var brandColor = Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_TEXT_COLOR));
-        var textColor = Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_BODY_TEXT_COLOR));
-        var backgroundColor = Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_BACKGROUND_COLOR));
+        ApplyTo(
+            resources,
+            Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_THEME_COLOR)),
+            Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_TEXT_COLOR)),
+            Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_BODY_TEXT_COLOR)),
+            Color.Parse(settingsManager.Get<string>(settingsManager.LAUNCHER_BACKGROUND_COLOR)),
+            settingsManager.LAUNCHER_SURFACE_OPACITY.Get(),
+            ResolveFont(settingsManager.LAUNCHER_FONT.Get(), applicationData.DirectoryPath)
+        );
+    }
+
+    /// <summary>
+    /// Writes every theme resource into a dictionary: the application's for the real launcher, or a control's own so a
+    /// preview can show exactly what the launcher would look like without touching the real one.
+    /// </summary>
+    public static void ApplyTo(
+        IResourceDictionary resources,
+        Color themeColor,
+        Color brandColor,
+        Color textColor,
+        Color backgroundColor,
+        double surfaceOpacity,
+        FontFamily? font
+    )
+    {
         var accentScale = CreateAccentScale(themeColor);
         for (var i = 0; i < AccentResourceKeys.Length; i++)
         {
@@ -83,7 +105,6 @@ public sealed class LauncherThemeService(
 
         // Panel opacity is useful with both an image and the solid launcher base.
         // Do not silently discard the user's value when no image is selected.
-        var surfaceOpacity = settingsManager.LAUNCHER_SURFACE_OPACITY.Get();
         var surfaceScale = CreateSurfaceScale(backgroundColor).Select(color => ApplyOpacity(color, surfaceOpacity)).ToArray();
         for (var i = 0; i < SurfaceResourceKeys.Length; i++)
             resources[SurfaceResourceKeys[i]] = surfaceScale[i];
@@ -133,7 +154,8 @@ public sealed class LauncherThemeService(
         resources["ScrollBarTrackStrokePointerOver"] = Brushes.Transparent;
         resources["LauncherBrandColor"] = new SolidColorBrush(brandColor);
         resources["LauncherFooterIconBrush"] = new SolidColorBrush(CreateReadableText(Colors.White, backgroundColor));
-        resources["DefaultFont"] = ResolveFont(settingsManager.LAUNCHER_FONT.Get(), applicationData.DirectoryPath);
+        if (font is not null)
+            resources["DefaultFont"] = font;
     }
 
     private void OnSettingChanged(SettingChangedSignal signal)
@@ -280,7 +302,7 @@ public sealed class LauncherThemeService(
         public override Uri Key { get; }
     }
 
-    private static double ContrastRatio(Color first, Color second)
+    public static double ContrastRatio(Color first, Color second)
     {
         var lighter = Math.Max(RelativeLuminance(first), RelativeLuminance(second));
         var darker = Math.Min(RelativeLuminance(first), RelativeLuminance(second));

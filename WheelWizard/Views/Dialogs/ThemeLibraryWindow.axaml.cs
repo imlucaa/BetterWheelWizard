@@ -14,7 +14,7 @@ public partial class ThemeLibraryWindow : PopupContent
 {
     private TaskCompletionSource<int?>? _tcs;
 
-    public ThemeLibraryWindow(IReadOnlyList<string> themeNames)
+    public ThemeLibraryWindow(IReadOnlyList<string> themeNames, IReadOnlyList<string[]>? swatches = null)
         : base(true, false, true, "Theme library")
     {
         InitializeComponent();
@@ -51,7 +51,42 @@ public partial class ThemeLibraryWindow : PopupContent
 
             var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
             Grid.SetColumn(tag, 1);
-            row.Children.Add(label);
+            Control left = label;
+            if (swatches is not null && index < swatches.Count && swatches[index].Length > 0)
+            {
+                var colors = swatches[index];
+                var strip = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                    EndPoint = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                };
+                for (var i = 0; i < colors.Length; i++)
+                {
+                    if (Color.TryParse(colors[i], out var stop))
+                        strip.GradientStops.Add(new GradientStop(stop, colors.Length == 1 ? 0 : i / (double)(colors.Length - 1)));
+                }
+
+                left = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 12,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children =
+                    {
+                        new Border
+                        {
+                            Width = 36,
+                            Height = 16,
+                            CornerRadius = new CornerRadius(8),
+                            Background = strip,
+                            VerticalAlignment = VerticalAlignment.Center,
+                        },
+                        label,
+                    },
+                };
+            }
+
+            row.Children.Add(left);
             row.Children.Add(tag);
 
             var button = new Avalonia.Controls.Button { Content = row };

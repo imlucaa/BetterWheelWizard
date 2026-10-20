@@ -1,12 +1,15 @@
+using System.Diagnostics;
 using System.IO.Abstractions;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using WheelWizard.CustomDistributions;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.Features.Backups;
 using WheelWizard.Models.Enums;
 using WheelWizard.Shared.Desktop.Storage;
 using WheelWizard.Views.Dialogs;
+using WheelWizard.Views.Shell;
 using WheelWizard.WiiManagement;
 using WheelWizard.WiiManagement.GameLicense;
 
@@ -46,8 +49,11 @@ public partial class BackupSettings : UserControl
     {
         _rksysCount = _backups.FindRksysFiles(_distributionPaths.SaveFolderPath).Count;
         _ratingExists = _backups.RatingFileExists(RatingFilePath);
-        RksysStatusText.Text = _rksysCount == 0 ? "rksys.dat was not found." : $"Found {_rksysCount} regional rksys.dat file(s).";
-        RatingStatusText.Text = _ratingExists ? "RRRating.pul is ready to back up." : "RRRating.pul was not found.";
+        RksysStatusText.Text =
+            _rksysCount == 0 ? "Not found"
+            : _rksysCount == 1 ? "1 save found"
+            : $"{_rksysCount} saves found";
+        RatingStatusText.Text = _ratingExists ? "Found" : "Not found";
         UpdateButtons();
     }
 
@@ -55,6 +61,8 @@ public partial class BackupSettings : UserControl
     {
         BackupRksysButton.IsEnabled = _rksysCount > 0;
         BackupRatingButton.IsEnabled = _ratingExists;
+        ImportRksysButton.IsEnabled = true;
+        ImportRatingButton.IsEnabled = true;
     }
 
     private async void BackupRksys_OnClick(object? sender, RoutedEventArgs e)
@@ -131,6 +139,8 @@ public partial class BackupSettings : UserControl
     {
         BackupRksysButton.IsEnabled = false;
         BackupRatingButton.IsEnabled = false;
+        ImportRksysButton.IsEnabled = false;
+        ImportRatingButton.IsEnabled = false;
         BackupResultText.IsVisible = true;
         BackupResultText.Text = $"Backing up {label}…";
         try
@@ -147,4 +157,144 @@ public partial class BackupSettings : UserControl
             RefreshFileStatus();
         }
     }
+
+    #region Import
+
+    private const int RksysSize = 0x2BC000;
+
+    private static readonly MarioKartWiiEnums.Regions[] Regions =
+    [
+        MarioKartWiiEnums.Regions.America,
+        MarioKartWiiEnums.Regions.Europe,
+        MarioKartWiiEnums.Regions.Japan,
+        MarioKartWiiEnums.Regions.Korea,
+    ];
+
+    // Dolphin keeps the save in memory while the game runs and writes it back, so a file put in then is lost.
+    private static bool IsDolphinRunning()
+    {
+        try
+        {
+            return Process
+                .GetProcesses()
+                .Any(p =>
+                    (
+                        p.ProcessName.StartsWith("Dolphin", StringComparison.OrdinalIgnoreCase)
+                        && !p.ProcessName.Contains("Tool", StringComparison.OrdinalIgnoreCase)
+                    ) || p.ProcessName.Equals("dolphin-emu", StringComparison.OrdinalIgnoreCase)
+                );
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private void Report(string text)
+    {
+        BackupResultText.IsVisible = true;
+        BackupResultText.Text = text;
+    }
+
+    private async void ImportRksys_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (IsDolphinRunning())
+        {
+            Report("Close Dolphin first.");
+            return;
+        }
+
+        var path = await _filePicker.OpenSingleFileAsync(
+            "Import a save (rksys.dat)",
+            [new FilePickerFileType("Mario Kart Wii save") { Patterns = ["*.dat"], MimeTypes = ["application/octet-stream"] }]
+        );
+        if (path is null)
+            return;
+
+        byte[] data;
+        try
+        {
+            data = _fileSystem.File.ReadAllBytes(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Report("Could not read that file.");
+            return;
+        }
+
+        if (data.Length != RksysSize || System.Text.Encoding.ASCII.GetString(data, 0, 8) != "RKSD0006")
+        {
+            Report("That is not a Mario Kart Wii save file.");
+            return;
+        }
+
+        var options = Regions.Select(r => new ChoiceOption(RegionName(r), GameRegion.GetGameId(r))).ToList();
+        var index = await _popups
+            .CreateChoiceList(
+                "Import save",
+                "Which region?",
+                "The save goes to this region. The save already there is backed up first.",
+                options
+            )
+            .AwaitAnswer();
+        if (index is not >= 0 || index >= Regions.Length)
+            return;
+
+        try
+        {
+            var folder = _fileSystem.Path.Combine(_distributionPaths.SaveFolderPath, GameRegion.GetGameId(Regions[index.Value]));
+            _fileSystem.Directory.CreateDirectory(folder);
+            var target = _fileSystem.Path.Combine(folder, "rksys.dat");
+            if (_fileSystem.File.Exists(target))
+            {
+                var backup = _fileSystem.Path.Combine(folder, "backup", $"{DateTime.Now:yyyyMMdd-HHmmss}-before-import");
+                _fileSystem.Directory.CreateDirectory(backup);
+                _fileSystem.File.Copy(target, _fileSystem.Path.Combine(backup, "rksys.dat"), overwrite: true);
+            }
+
+            GameLicenseSingletonService.FixRksysCrc(data);
+            _fileSystem.File.WriteAllBytes(target, data);
+            Report($"Imported into {RegionName(Regions[index.Value])}.");
+            ViewUtils.GetLayout().UpdateSidebarProfile();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Report("Could not write the save.");
+        }
+        finally
+        {
+            RefreshFileStatus();
+        }
+    }
+
+    private async void ImportRating_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var path = await _filePicker.OpenSingleFileAsync(
+            "Import RRRating.pul",
+            [new FilePickerFileType("Rating file") { Patterns = ["*.pul"], MimeTypes = ["application/octet-stream"] }]
+        );
+        if (path is null)
+            return;
+
+        try
+        {
+            var target = RatingFilePath;
+            _fileSystem.Directory.CreateDirectory(_fileSystem.Path.GetDirectoryName(target)!);
+            if (_fileSystem.File.Exists(target))
+                _fileSystem.File.Copy(target, $"{target}.before-import-{DateTime.Now:yyyyMMdd-HHmmss}", overwrite: true);
+
+            _fileSystem.File.Copy(path, target, overwrite: true);
+            Report("Imported RRRating.pul. The old one was kept next to it.");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Report("Could not copy that file.");
+        }
+        finally
+        {
+            RefreshFileStatus();
+        }
+    }
+
+    #endregion
 }

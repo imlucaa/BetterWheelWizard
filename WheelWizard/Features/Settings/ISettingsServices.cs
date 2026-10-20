@@ -46,6 +46,11 @@ public interface ISettingsProperties
     Setting<bool> DISCORD_ROOM_BUTTON { get; }
     Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     Setting<string> DISCORD_APP_ID { get; }
+    Setting<string> MII_TAGS { get; }
+    Setting<string> OVERLAY_CONFIG { get; }
+    Setting<string> OVERLAY_PRESETS { get; }
+    Setting<string> OVERLAY_FRIEND_CODE { get; }
+    Setting<string> GAME_DISCS { get; }
     Setting<string> DISCORD_LARGE_IMAGE { get; }
     Setting<string> DISCORD_LARGE_TEXT { get; }
     Setting<string> DISCORD_DETAILS { get; }
@@ -57,7 +62,12 @@ public interface ISettingsProperties
     Setting<bool> USE_PATCHES_SYSTEM { get; }
     Setting<int> FOCUSED_USER { get; }
     Setting<bool> ENABLE_ANIMATIONS { get; }
+    Setting<bool> FRIEND_ROOM_ALERTS { get; }
+    Setting<bool> SHOW_SESSION_STATS { get; }
+    Setting<bool> AUTO_CHECK_UPDATES { get; }
     Setting<bool> SIDEBAR_COLLAPSED { get; }
+    Setting<string> SIDEBAR_PINNED_TABS { get; }
+    Setting<string> SIDEBAR_LAYOUT { get; }
     Setting<bool> TESTING_MODE_ENABLED { get; }
     Setting<double> SAVED_WINDOW_SCALE { get; }
     Setting<MarioKartWiiEnums.Regions> RR_REGION { get; }
@@ -70,6 +80,10 @@ public interface ISettingsProperties
     Setting<string> LAUNCHER_BACKGROUND_STRETCH { get; }
     Setting<double> LAUNCHER_BACKGROUND_OPACITY { get; }
     Setting<double> LAUNCHER_SURFACE_OPACITY { get; }
+    Setting<double> LAUNCHER_BACKGROUND_BLUR { get; }
+    Setting<double> LAUNCHER_BACKGROUND_ZOOM { get; }
+    Setting<double> LAUNCHER_BACKGROUND_FOCUS_X { get; }
+    Setting<double> LAUNCHER_BACKGROUND_FOCUS_Y { get; }
     Setting<bool> LAUNCHER_MINIMAL_HOME_ARTWORK { get; }
     Setting<bool> LAUNCHER_HIDE_HOME_TITLE { get; }
     Setting<bool> LAUNCHER_CLEAN_SIDEBAR { get; }
@@ -86,6 +100,7 @@ public interface ISettingsProperties
     Setting<double> RECOMP_RESOLUTION_MULTIPLIER { get; }
     Setting<string> RECOMP_GRAPHICS_API { get; }
     Setting<bool> RECOMP_SHOW_FPS { get; }
+    Setting<bool> RECOMP_DISCORD_PRESENCE { get; }
     Setting<bool> RECOMP_PREVENT_STUTTERS { get; }
     Setting<string> RECOMP_NAND_ROOT { get; }
 }

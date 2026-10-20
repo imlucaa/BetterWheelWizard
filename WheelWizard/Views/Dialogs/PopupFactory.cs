@@ -17,8 +17,14 @@ public sealed class PopupFactory(IServiceProvider services) : IPopupFactory
 
 public static class PopupFactoryExtensions
 {
-    public static ThemeLibraryWindow CreateThemeLibrary(this IPopupFactory factory, IReadOnlyList<string> themeNames) =>
-        factory.Create<ThemeLibraryWindow>((object)themeNames);
+    public static ThemeLibraryWindow CreateThemeLibrary(
+        this IPopupFactory factory,
+        IReadOnlyList<string> themeNames,
+        IReadOnlyList<string[]>? swatches = null
+    ) =>
+        swatches is null
+            ? factory.Create<ThemeLibraryWindow>((object)themeNames)
+            : factory.Create<ThemeLibraryWindow>((object)themeNames, (object)swatches);
 
     public static ChoiceListWindow CreateChoiceList(
         this IPopupFactory factory,

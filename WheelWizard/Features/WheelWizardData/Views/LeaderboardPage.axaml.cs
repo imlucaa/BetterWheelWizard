@@ -56,7 +56,10 @@ public sealed record LeaderboardPlayerItem
     public bool IsOpenHost => false;
 }
 
-public sealed record LeaderboardSearchMatch(int Rank, string Name, string FriendCode, string VrText, Mii? Mii, bool IsSuspicious);
+public sealed record LeaderboardSearchMatch(int Rank, string Name, string FriendCode, string VrText, Mii? Mii, bool IsSuspicious)
+{
+    public string RankText => Rank > 0 ? $"Rank #{Rank:N0}" : "Unranked";
+}
 
 public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
 {
@@ -171,46 +174,13 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     public bool HasLeaderboardSearchStatus => !string.IsNullOrWhiteSpace(_leaderboardSearchStatus);
     public string LeaderboardSearchStatus => _leaderboardSearchStatus;
     public bool CanSearchLeaderboard => !_isSearching;
-    public string SearchResultRankText => CurrentSearchMatch?.Rank is > 0 ? $"#{CurrentSearchMatch.Rank}" : "Search hit";
-    public string SearchResultPlayerName => CurrentSearchMatch?.Name ?? string.Empty;
-    public string SearchResultFriendCode => CurrentSearchMatch?.FriendCode ?? string.Empty;
-    public string SearchResultVrText => CurrentSearchMatch == null ? string.Empty : $"{CurrentSearchMatch.VrText} VR";
-    public Mii? SearchResultMii => CurrentSearchMatch?.Mii;
-
-    /// <summary>
-    /// Shows the matched player's Mii on the editor's 3D stage. It is built the first time a result needs it, then
-    /// every later match is swapped onto the same stage.
-    /// </summary>
-    private void ShowSearchResultStage(Mii? mii)
-    {
-        if (mii is null)
-            return;
-
-        if (_searchStage is null)
-        {
-            _searchStage = new MiiEditorScene(
-                _stageRenderer,
-                _stageAnimations,
-                _stageCalendar,
-                _stageRandom.Random.Shared,
-                SettingsManager.ENABLE_ANIMATIONS.Get()
-            );
-            SearchResultStageHost.Children.Add(_searchStage);
-        }
-
-        if (!_searchStageStarted)
-        {
-            _searchStage.ShowEditor(mii);
-            _searchStageStarted = true;
-            return;
-        }
-
-        _searchStage.Present(mii);
-    }
+    public IReadOnlyList<LeaderboardSearchMatch> SearchMatches => _searchMatches.Take(MaxShownMatches).ToList();
+    private const int MaxShownMatches = 20;
 
     public string SearchResultMatchIndex =>
-        _searchMatches.Count > 1 ? $"{_selectedSearchMatchIndex + 1} of {_searchMatches.Count}" : string.Empty;
-    public bool HasMultipleSearchResults => _searchMatches.Count > 1;
+        _searchMatches.Count > MaxShownMatches
+            ? $"Showing {MaxShownMatches} of {Math.Max(_leaderboardSearchTotalMatches, _searchMatches.Count)}"
+            : $"{_searchMatches.Count} players";
     private LeaderboardSearchMatch? CurrentSearchMatch => HasActiveSearchResult ? _searchMatches[_selectedSearchMatchIndex] : null;
     public string PodiumTitleText =>
         HasActiveSearchResult ? "Player"
@@ -243,13 +213,6 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
     public bool HasPodiumSecond => _podiumSecond != null;
     public bool HasPodiumThird => _podiumThird != null;
 
-    private readonly IMiiNativeRenderer _stageRenderer;
-    private readonly IMiiAnimationLibrary _stageAnimations;
-    private readonly ISeasonalCalendar _stageCalendar;
-    private readonly IRandomSystem _stageRandom;
-    private MiiEditorScene? _searchStage;
-    private bool _searchStageStarted;
-
     public LeaderboardPage(
         IApiCaller<IRwfcApi> apiCaller,
         IMiiDbService miiDbService,
@@ -266,10 +229,6 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         IRandomSystem random
     )
     {
-        _stageRenderer = miiRenderer;
-        _stageAnimations = miiAnimations;
-        _stageCalendar = calendar;
-        _stageRandom = random;
         LeaderboardService = leaderboardService;
         BadgeService = badgeService;
         GameDataService = gameDataService;
@@ -339,7 +298,7 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         OnPropertyChanged(nameof(CanSearchLeaderboard));
 
         SetLeaderboardSearchStatus(
-            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}ΓÇª" : $"Searching RWFC for \"{query}\"ΓÇª",
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
             false
         );
 
@@ -347,27 +306,12 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         {
             if (normalizedFriendCode != null)
             {
-                var profileResult = await ApiCaller.CallApiAsync(api => api.GetPlayerProfileAsync(normalizedFriendCode));
-                if (profileResult.IsFailure || profileResult.Value == null)
-                {
-                    SetLeaderboardSearchStatus($"No RWFC profile was found for {normalizedFriendCode}.", true);
-                    return;
-                }
+                // The profile popup loads the profile itself and says so when there is none.
 
-                var rank = profileResult.Value.Rank > 0 ? profileResult.Value.Rank : 0;
-                SetLeaderboardSearchMatches(
-                    [
-                        new LeaderboardSearchMatch(
-                            rank,
-                            string.IsNullOrWhiteSpace(profileResult.Value.Name) ? "Unknown Player" : profileResult.Value.Name,
-                            normalizedFriendCode,
-                            profileResult.Value.Vr.ToString("N0"),
-                            DeserializeMii(profileResult.Value.MiiData),
-                            profileResult.Value.IsSuspicious
-                        ),
-                    ],
-                    1
-                );
+                ClearLeaderboardSearchResult();
+
+                OpenProfile(normalizedFriendCode);
+
                 return;
             }
 
@@ -433,6 +377,13 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
 
     private void SetLeaderboardSearchMatches(List<LeaderboardSearchMatch> matches, int totalMatches)
     {
+        if (matches.Count == 1)
+        {
+            ClearLeaderboardSearchResult();
+            OpenProfile(matches[0].FriendCode);
+            return;
+        }
+
         _searchMatches.Clear();
         _searchMatches.AddRange(matches);
         _leaderboardSearchTotalMatches = totalMatches > 0 ? totalMatches : matches.Count;
@@ -471,14 +422,8 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         OnPropertyChanged(nameof(HasActiveSearchResult));
         OnPropertyChanged(nameof(HasLeaderboardSearchStatus));
         OnPropertyChanged(nameof(LeaderboardSearchStatus));
-        OnPropertyChanged(nameof(SearchResultRankText));
-        OnPropertyChanged(nameof(SearchResultPlayerName));
-        OnPropertyChanged(nameof(SearchResultFriendCode));
-        OnPropertyChanged(nameof(SearchResultVrText));
-        OnPropertyChanged(nameof(SearchResultMii));
-        ShowSearchResultStage(SearchResultMii);
+        OnPropertyChanged(nameof(SearchMatches));
         OnPropertyChanged(nameof(SearchResultMatchIndex));
-        OnPropertyChanged(nameof(HasMultipleSearchResults));
         OnPropertyChanged(nameof(PodiumTitleText));
         OnPropertyChanged(nameof(PodiumCaptionText));
     }
@@ -491,34 +436,47 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         OnPropertyChanged(nameof(PodiumCaptionText));
     }
 
-    private void PreviousSearchMatch_OnClick(object? sender, RoutedEventArgs e)
+    /// <summary>Opens the leaderboard profile of the license that is selected in the launcher.</summary>
+    private void MyRank_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (_searchMatches.Count <= 1)
-            return;
+        string? friendCode;
+        try
+        {
+            friendCode = GameDataService.ActiveUser.FriendCode;
+        }
+        catch (Exception ex) when (ex is ArgumentOutOfRangeException or InvalidOperationException or NullReferenceException)
+        {
+            friendCode = null;
+        }
 
-        _selectedSearchMatchIndex = (_selectedSearchMatchIndex - 1 + _searchMatches.Count) % _searchMatches.Count;
-        ApplyCurrentLeaderboardSearchMatch();
+        if (string.IsNullOrWhiteSpace(friendCode) || TryNormalizeFriendCode(friendCode) is not { } normalized)
+        {
+            ViewUtils.ShowSnackbar("Your selected license has no friend code yet.", ViewUtils.SnackbarType.Warning);
+            return;
+        }
+
+        OpenProfile(normalized);
     }
 
-    private void NextSearchMatch_OnClick(object? sender, RoutedEventArgs e)
+    private void OpenProfile(string friendCode)
     {
-        if (_searchMatches.Count <= 1)
-            return;
-
-        _selectedSearchMatchIndex = (_selectedSearchMatchIndex + 1) % _searchMatches.Count;
-        ApplyCurrentLeaderboardSearchMatch();
+        if (!string.IsNullOrWhiteSpace(friendCode))
+            Popups.Create<PlayerProfileWindow>(friendCode).Show();
     }
 
-    private void OpenSearchProfile_OnClick(object? sender, RoutedEventArgs e)
+    private object? _pressedMatchRow;
+
+    private void SearchMatchRow_OnPointerPressed(object? sender, PointerPressedEventArgs e) => _pressedMatchRow = sender;
+
+    private void SearchMatchRow_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (_selectedSearchMatchIndex < 0 || _selectedSearchMatchIndex >= _searchMatches.Count)
+        var pressed = _pressedMatchRow;
+        _pressedMatchRow = null;
+        if (!ReferenceEquals(pressed, sender) || e.InitialPressMouseButton != MouseButton.Left)
             return;
 
-        var match = _searchMatches[_selectedSearchMatchIndex];
-        if (string.IsNullOrWhiteSpace(match.FriendCode))
-            return;
-
-        Popups.Create<PlayerProfileWindow>(match.FriendCode).Show();
+        if ((sender as Control)?.DataContext is LeaderboardSearchMatch match)
+            OpenProfile(match.FriendCode);
     }
 
     private void CloseSearchResult_OnClick(object? sender, RoutedEventArgs e)

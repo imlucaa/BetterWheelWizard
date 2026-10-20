@@ -30,6 +30,9 @@ public interface IModManager : INotifyPropertyChanged
 
     Task<OperationResult> ToggleAllModsAsync(bool enable);
 
+    /// <summary>Turns on exactly the patches with these titles and turns every other one off.</summary>
+    Task<OperationResult> ApplyEnabledAsync(IReadOnlySet<string> enabledTitles);
+
     OperationResult ValidateModName(string? oldName, string newName);
 
     OperationResult ValidateRenameModName(string? oldName, string newName);
@@ -236,6 +239,23 @@ public sealed class ModManager : IModManager
         {
             foreach (var mod in Mods)
                 mod.IsEnabled = enable;
+        }
+        finally
+        {
+            _isBatchUpdating = false;
+        }
+
+        OnPropertyChanged(nameof(Mods));
+        return await SaveModsAsync();
+    }
+
+    public async Task<OperationResult> ApplyEnabledAsync(IReadOnlySet<string> enabledTitles)
+    {
+        _isBatchUpdating = true;
+        try
+        {
+            foreach (var mod in Mods)
+                mod.IsEnabled = enabledTitles.Contains(mod.Title);
         }
         finally
         {

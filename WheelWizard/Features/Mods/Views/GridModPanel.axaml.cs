@@ -21,7 +21,7 @@ public partial class GridModPanel : UserControl
         DataContextChanged += OnDataContextChanged;
         RootCardBorder.PointerEntered += (_, _) => UpdateThumbnail();
         RootCardBorder.PointerExited += (_, _) => UpdateThumbnail();
-        CardSurface.SizeChanged += (_, _) => CardSurface.Clip = new RectangleGeometry(new Rect(CardSurface.Bounds.Size), 7, 7);
+        CardSurface.SizeChanged += (_, _) => CardSurface.Clip = new RectangleGeometry(new Rect(CardSurface.Bounds.Size), 11, 11);
         RootCardBorder.PointerPressed += OnCardPointerPressed;
         RootCardBorder.PointerReleased += OnCardPointerReleased;
         Focusable = true;

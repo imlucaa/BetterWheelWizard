@@ -29,10 +29,10 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,14,0,6" Spacing="12">
+            <StackPanel x:Name="CardsHost" Margin="0,14,0,6" Spacing="12">
 
                 <!-- Theme library -->
-                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                <Border x:Name="LibraryCard" Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="16,14">
                     <StackPanel Spacing="12">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
@@ -73,6 +73,10 @@
                                                    Margin="3,0,0,0"
                                                    ToolTip.Tip="Restore deleted built-in themes" />
                             </UniformGrid>
+                            <components:Button Text="Random colors" ButtonSize="Compact" Variant="Default"
+                                               HorizontalAlignment="Stretch" IconData="{StaticResource ThemePalette}"
+                                               Click="RandomTheme_OnClick"
+                                               ToolTip.Tip="Fill the four colors with a random matching set" />
                         </StackPanel>
                         <TextBlock x:Name="ThemeStatusText" Classes="TinyText" Foreground="{DynamicResource Primary300}"
                                    IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -81,7 +85,7 @@
                 </Border>
 
                 <!-- Colors -->
-                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                <Border x:Name="ColorsCard" Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="16,14">
                     <StackPanel Spacing="6">
                         <StackPanel Spacing="2" Margin="0,0,0,6">
@@ -138,12 +142,16 @@
                         <Border x:Name="TextContrastNotice" IsVisible="False" Margin="0,4,0,0"
                                 Background="{DynamicResource Neutral950}" BorderBrush="{DynamicResource Warning500}"
                                 BorderThickness="1" CornerRadius="8" Padding="10">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                 <Border x:Name="EffectiveTextColorPreview" Width="24" Height="24" CornerRadius="12"
-                                        BorderBrush="{DynamicResource Neutral600}" BorderThickness="1" />
+                                        BorderBrush="{DynamicResource Neutral600}" BorderThickness="1"
+                                        ToolTip.Tip="The text color that would be used" />
                                 <TextBlock Grid.Column="1" x:Name="TextContrastMessage"
                                            Foreground="{DynamicResource Neutral200}" FontSize="13"
                                            VerticalAlignment="Center" TextWrapping="Wrap" />
+                                <components:Button Grid.Column="2" Text="Fix colors" ButtonSize="Compact" Variant="Default"
+                                                   VerticalAlignment="Center" Click="FixContrast_OnClick"
+                                                   ToolTip.Tip="Use lighter or darker versions of these colors that are easy to see" />
                             </Grid>
                         </Border>
                         <Border Height="1" Background="{DynamicResource Neutral800}" Margin="0,4" />
@@ -169,7 +177,7 @@
                 </Border>
 
                 <!-- Background, appearance, font -->
-                <Border Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
+                <Border x:Name="LookCard" Background="{DynamicResource Neutral900}" CornerRadius="{StaticResource GlobalCornerRadius}"
                         BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="16,14">
                     <StackPanel Spacing="12">
                         <StackPanel Spacing="2">
@@ -185,6 +193,10 @@
                                                Click="RemoveBackground_OnClick" />
                         </Grid>
                         <TextBlock x:Name="BackgroundFileText" Classes="TinyText" TextWrapping="Wrap" />
+                        <components:Button x:Name="ImagePaletteButton" Text="Match colors to this image" ButtonSize="Compact"
+                                           Variant="Default" HorizontalAlignment="Stretch"
+                                           IconData="{StaticResource ThemePalette}" Click="ImagePalette_OnClick"
+                                           ToolTip.Tip="Fill the four colors from the most common colors in the image" />
                         <Grid ColumnDefinitions="*,180" ColumnSpacing="12">
                             <StackPanel VerticalAlignment="Center" Spacing="1">
                                 <TextBlock Text="{loc:T theme.image_fit}" FontWeight="SemiBold" FontSize="14" />
@@ -206,6 +218,40 @@
                             <Slider Grid.Column="1" x:Name="BackgroundOpacitySlider" Minimum="0" Maximum="1"
                                     TickFrequency="0.05" VerticalAlignment="Center" ValueChanged="BackgroundOpacity_OnChanged" />
                         </Grid>
+                        <!-- Blur, zoom and position live behind one button, so the card stays short -->
+                        <components:Button x:Name="MoreImageOptionsButton" Text="More image options" ButtonSize="Compact"
+                                           Variant="Default" HorizontalAlignment="Stretch"
+                                           Click="MoreImageOptions_OnClick" />
+                        <StackPanel x:Name="MoreImageOptions" Spacing="12" IsVisible="False">
+                            <Grid ColumnDefinitions="*,180" ColumnSpacing="12">
+                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Text="Image blur" FontWeight="SemiBold" FontSize="14" />
+                                    <TextBlock Text="Softens a busy image so text stays readable" Classes="TinyText" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <Slider Grid.Column="1" x:Name="BackgroundBlurSlider" Minimum="0" Maximum="40"
+                                        TickFrequency="1" VerticalAlignment="Center" ValueChanged="BackgroundBlur_OnChanged" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,180" ColumnSpacing="12">
+                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Text="Image zoom" FontWeight="SemiBold" FontSize="14" />
+                                    <TextBlock Text="Zoom in on part of the image (Fill fit)" Classes="TinyText" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <Slider Grid.Column="1" x:Name="BackgroundZoomSlider" Minimum="1" Maximum="3"
+                                        TickFrequency="0.05" VerticalAlignment="Center" ValueChanged="BackgroundZoom_OnChanged" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,180" ColumnSpacing="12">
+                                <StackPanel VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Text="Image position" FontWeight="SemiBold" FontSize="14" />
+                                    <TextBlock Text="Which part stays in view when zoomed: left to right, then top to bottom" Classes="TinyText" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <Slider x:Name="BackgroundFocusXSlider" Minimum="0" Maximum="1" TickFrequency="0.02"
+                                            ValueChanged="BackgroundFocusX_OnChanged" />
+                                    <Slider x:Name="BackgroundFocusYSlider" Minimum="0" Maximum="1" TickFrequency="0.02"
+                                            ValueChanged="BackgroundFocusY_OnChanged" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
                         <Grid ColumnDefinitions="*,180" ColumnSpacing="12">
                             <StackPanel VerticalAlignment="Center" Spacing="1">
                                 <TextBlock Text="{loc:T theme.panel_opacity}" FontWeight="SemiBold" FontSize="14" />
@@ -239,17 +285,42 @@
                                    Foreground="{DynamicResource Primary300}" TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
+
+                <!-- Palette strip: always visible, so the page never looks empty -->
+                <Border x:Name="PaletteCard" Background="{DynamicResource Neutral900}"
+                        CornerRadius="{StaticResource GlobalCornerRadius}"
+                        BorderBrush="{DynamicResource Neutral800}" BorderThickness="1" Padding="16,14">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Your palette" HorizontalAlignment="Center" FontWeight="SemiBold" />
+                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8" Height="64">
+                            <Border x:Name="PaletteAccent" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Neutral700}" />
+                            <Border x:Name="PaletteBrand" Grid.Column="1" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Neutral700}" />
+                            <Border x:Name="PaletteText" Grid.Column="2" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Neutral700}" />
+                            <Border x:Name="PaletteBackground" Grid.Column="3" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource Neutral700}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                            <TextBlock Text="Main" Classes="TinyText" HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="Title" Classes="TinyText" HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Text="Text" Classes="TinyText" HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="3" Text="Background" Classes="TinyText" HorizontalAlignment="Center" />
+                        </Grid>
+                        <TextBlock Text="Use Preview below to see the whole launcher." Classes="TinyText"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
 
         <Border Grid.Row="2" Background="Transparent"
                 BorderThickness="0"
                 Padding="0,10,0,2">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
                 <TextBlock x:Name="ColorError" Text="{loc:T theme.invalid_colors}"
                            Foreground="{StaticResource Danger400}" VerticalAlignment="Center"
                            TextWrapping="Wrap" IsVisible="False" />
-                <components:Button Grid.Column="1" Text="{loc:T theme.apply}" Variant="Default"
+                <components:Button Grid.Column="1" Text="{loc:T theme.preview}" Variant="Default"
+                                   IconData="{StaticResource Eye}" Click="PreviewHome_OnClick" />
+                <components:Button Grid.Column="2" Text="{loc:T theme.apply}" Variant="Default"
                                    IconData="{StaticResource CheckMark}" Click="ApplyTheme_OnClick" />
             </Grid>
         </Border>

@@ -57,7 +57,13 @@ public partial class ThemesPage : UserControl
 
     private static readonly LauncherThemeFile[] BuiltInThemes =
     [
-        new("BetterWheelWizard", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#000000"),
+        new(
+            LauncherThemeDefaults.Name,
+            LauncherThemeDefaults.Accent,
+            LauncherThemeDefaults.Branding,
+            LauncherThemeDefaults.Text,
+            LauncherThemeDefaults.Background
+        ),
         new("Red", "#F04444", "#F04444", "#F8DADA", "#260909"),
         new("Orange", "#FF8A3D", "#FF8A3D", "#FFE0CC", "#281006"),
         new("Yellow", "#FFD80D", "#FFD80D", "#FFF4B8", "#211B02"),
@@ -90,7 +96,6 @@ public partial class ThemesPage : UserControl
     private ThemeChoice? _selectedTheme;
     private string _editorThemeName = string.Empty;
     private bool _isLoadingTheme;
-    private PreviewHomeWindow? _homePreview;
 
     private ISettingsManager SettingsService { get; }
 
@@ -110,6 +115,7 @@ public partial class ThemesPage : UserControl
         _filePicker = filePicker;
         ThemesFolderPath = fileSystem.Path.Combine(applicationData.DirectoryPath, "Themes");
         InitializeComponent();
+        MakeCollapsible();
         LoadCurrentTheme();
         ReloadThemeChoices();
         UpdatePreview();
@@ -125,6 +131,11 @@ public partial class ThemesPage : UserControl
             BackgroundFileText.Text = state.Path == null ? t("theme.no_background") : _fileSystem.Path.GetFileName(state.Path);
             BackgroundOpacitySlider.Value = SettingsService.LAUNCHER_BACKGROUND_OPACITY.Get();
             SurfaceOpacitySlider.Value = SettingsService.LAUNCHER_SURFACE_OPACITY.Get();
+            BackgroundBlurSlider.Value = SettingsService.LAUNCHER_BACKGROUND_BLUR.Get();
+            BackgroundZoomSlider.Value = SettingsService.LAUNCHER_BACKGROUND_ZOOM.Get();
+            BackgroundFocusXSlider.Value = SettingsService.LAUNCHER_BACKGROUND_FOCUS_X.Get();
+            BackgroundFocusYSlider.Value = SettingsService.LAUNCHER_BACKGROUND_FOCUS_Y.Get();
+            ImagePaletteButton.IsEnabled = state.Path != null;
             MinimalHomeArtworkCheckBox.IsChecked = SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK.Get();
             HideHomeTitleCheckBox.IsChecked = SettingsService.LAUNCHER_HIDE_HOME_TITLE.Get();
             CleanSidebarCheckBox.IsChecked = SettingsService.LAUNCHER_CLEAN_SIDEBAR.Get();
@@ -202,19 +213,85 @@ public partial class ThemesPage : UserControl
             SettingsService.LAUNCHER_BACKGROUND_OPACITY.Set(e.NewValue);
     }
 
+    private void MoreImageOptions_OnClick(object? sender, RoutedEventArgs e)
+    {
+        MoreImageOptions.IsVisible = !MoreImageOptions.IsVisible;
+        MoreImageOptionsButton.Text = MoreImageOptions.IsVisible ? "Fewer image options" : "More image options";
+    }
+
+    private void BackgroundBlur_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_BACKGROUND_BLUR.Set(e.NewValue);
+    }
+
+    private void BackgroundZoom_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_BACKGROUND_ZOOM.Set(e.NewValue);
+    }
+
+    private void BackgroundFocusX_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_BACKGROUND_FOCUS_X.Set(e.NewValue);
+    }
+
+    private void BackgroundFocusY_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (!_loadingAppearance)
+            SettingsService.LAUNCHER_BACKGROUND_FOCUS_Y.Set(e.NewValue);
+    }
+
+    /// <summary>Fills the four colors from the image that is set as the background, as an unsaved theme.</summary>
+    private async void ImagePalette_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var path = _backgrounds.Current.Path;
+        if (path == null)
+        {
+            BackgroundStatusText.Text = "Choose a background image first.";
+            return;
+        }
+
+        ImagePaletteButton.IsEnabled = false;
+        try
+        {
+            var colors = await Task.Run(() => ImagePalette.FromFile(path));
+            if (colors is null)
+            {
+                BackgroundStatusText.Text = "Could not read colors from this image.";
+                return;
+            }
+
+            LoadColorsIntoEditor(
+                colors.Value.Accent,
+                colors.Value.Branding,
+                colors.Value.Text,
+                colors.Value.Background,
+                "Colors from image"
+            );
+            ThemeStatusText.Text = "Colors taken from your image. Preview them, then Apply or Save.";
+            BackgroundStatusText.Text = "Colors taken from the image.";
+        }
+        finally
+        {
+            ImagePaletteButton.IsEnabled = _backgrounds.Current.Path != null;
+        }
+    }
+
     private void SurfaceOpacity_OnChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (!_loadingAppearance)
-            SettingsService.LAUNCHER_SURFACE_OPACITY.Set(e.NewValue);
+            SettingsService.Set(SettingsService.LAUNCHER_SURFACE_OPACITY, e.NewValue);
     }
 
     private void AppearanceToggle_OnChanged(object? sender, RoutedEventArgs e)
     {
         if (_loadingAppearance)
             return;
-        SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK.Set(MinimalHomeArtworkCheckBox.IsChecked == true);
-        SettingsService.LAUNCHER_HIDE_HOME_TITLE.Set(HideHomeTitleCheckBox.IsChecked == true);
-        SettingsService.LAUNCHER_CLEAN_SIDEBAR.Set(CleanSidebarCheckBox.IsChecked == true);
+        SettingsService.Set(SettingsService.LAUNCHER_MINIMAL_HOME_ARTWORK, MinimalHomeArtworkCheckBox.IsChecked == true);
+        SettingsService.Set(SettingsService.LAUNCHER_HIDE_HOME_TITLE, HideHomeTitleCheckBox.IsChecked == true);
+        SettingsService.Set(SettingsService.LAUNCHER_CLEAN_SIDEBAR, CleanSidebarCheckBox.IsChecked == true);
     }
 
     private async void ImportFont_OnClick(object? sender, RoutedEventArgs e)
@@ -280,7 +357,11 @@ public partial class ThemesPage : UserControl
 
     private async void ChooseTheme_OnClick(object? sender, RoutedEventArgs e)
     {
-        var selectedIndex = await _popups.CreateThemeLibrary(_themeChoices.Select(choice => choice.DisplayName).ToArray()).AwaitAnswer();
+        // Each row shows the theme's own accent, text and background colors.
+        var swatches = _themeChoices.Select(choice => new[] { choice.Theme.Accent, choice.Theme.Text, choice.Theme.Background }).ToArray();
+        var selectedIndex = await _popups
+            .CreateThemeLibrary(_themeChoices.Select(choice => choice.DisplayName).ToArray(), swatches)
+            .AwaitAnswer();
         if (selectedIndex is not >= 0 || selectedIndex >= _themeChoices.Count)
             return;
 
@@ -380,6 +461,8 @@ public partial class ThemesPage : UserControl
         ThemeStatusText.Text = t("theme.applied", new { name = appliedName });
     }
 
+    private PreviewHomeWindow? _homePreview;
+
     private void PreviewHome_OnClick(object? sender, RoutedEventArgs e)
     {
         var theme = ReadEditor(requireName: false);
@@ -387,16 +470,11 @@ public partial class ThemesPage : UserControl
             return;
         if (_homePreview?.IsOpen == true)
         {
-            _homePreview.UpdatePreview(
-                theme,
-                _backgrounds.Current,
-                SurfaceOpacitySlider.Value,
-                MinimalHomeArtworkCheckBox.IsChecked == true,
-                HideHomeTitleCheckBox.IsChecked == true
-            );
+            RefreshOpenPreview();
             _homePreview.Focus();
             return;
         }
+
         _homePreview = new PreviewHomeWindow(
             theme,
             _backgrounds.Current,
@@ -472,16 +550,29 @@ public partial class ThemesPage : UserControl
             return;
         }
 
-        ColorTextBox.Text = theme.Accent;
-        BrandColorTextBox.Text = theme.Branding;
-        TextColorTextBox.Text = theme.Text;
-        BackgroundColorTextBox.Text = theme.Background;
+        LoadColorsIntoEditor(theme.Accent, theme.Branding, theme.Text, theme.Background, t("theme.imported_colors"));
+        ThemeStatusText.Text = t("theme.code_loaded");
+    }
+
+    private void RandomTheme_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var colors = WheelWizard.Themes.RandomTheme.Create(Random.Shared);
+        LoadColorsIntoEditor(colors.Accent, colors.Branding, colors.Text, colors.Background, "Random colors");
+        ThemeStatusText.Text = "Random colors. Press again for another, or Preview to see them.";
+    }
+
+    /// <summary>Puts four colors into the editor as an unsaved theme, so nothing already saved is overwritten.</summary>
+    private void LoadColorsIntoEditor(string accent, string branding, string text, string background, string label)
+    {
+        ColorTextBox.Text = accent;
+        BrandColorTextBox.Text = branding;
+        TextColorTextBox.Text = text;
+        BackgroundColorTextBox.Text = background;
         _editorThemeName = string.Empty;
         _selectedTheme = null;
-        SelectedThemeText.Text = t("theme.imported_colors");
+        SelectedThemeText.Text = label;
         DeleteThemeButton.IsEnabled = false;
         UpdatePreview();
-        ThemeStatusText.Text = t("theme.code_loaded");
     }
 
     private LauncherThemeFile? ReadEditor(bool requireName)
@@ -574,8 +665,110 @@ public partial class ThemesPage : UserControl
         UpdatePreview();
     }
 
+    // Each card becomes a section with a centered title and a chevron, like the VR overlay editor.
+    private readonly List<(Border Card, Avalonia.Controls.Shapes.Path Chevron)> _sections = [];
+
+    private void MakeCollapsible()
+    {
+        Collapsible(LibraryCard, "Theme library", expanded: false, hideFirstChild: false);
+        Collapsible(ColorsCard, "Colors", expanded: true, hideFirstChild: true);
+        Collapsible(LookCard, "Background and look", expanded: false, hideFirstChild: true);
+    }
+
+    private void Collapsible(Border card, string title, bool expanded, bool hideFirstChild)
+    {
+        if (hideFirstChild && card.Child is StackPanel inner && inner.Children.Count > 0)
+        {
+            // The header already names the section.
+            if (inner.Children[0] is StackPanel heading && heading.Children.Count == 2 && heading.Children[0] is TextBlock)
+                heading.IsVisible = false;
+        }
+
+        var chevron = new Avalonia.Controls.Shapes.Path
+        {
+            Data = Geometry.Parse("M 1 3 L 6 8 L 11 3"),
+            Stroke = new SolidColorBrush(Color.Parse("#99ffffff")),
+            StrokeThickness = 2,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
+            Width = 12,
+            Height = 11,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            RenderTransformOrigin = Avalonia.RelativePoint.Center,
+            RenderTransform = new RotateTransform(expanded ? 0 : -90),
+        };
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("20,*,20"), Background = Brushes.Transparent };
+        var label = new FormFieldLabel
+        {
+            Text = title,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+        };
+        Grid.SetColumn(label, 1);
+        row.Children.Add(label);
+        Grid.SetColumn(chevron, 2);
+        row.Children.Add(chevron);
+        var header = new Border
+        {
+            MinHeight = 44,
+            Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+            Child = row,
+        };
+        header.Classes.Add("SettingsBlockStyle");
+        header.Classes.Add("SettingsRowStyle");
+        card.IsVisible = expanded;
+        _sections.Add((card, chevron));
+        header.PointerPressed += (_, _) =>
+        {
+            var open = !card.IsVisible;
+            // One section open at a time keeps the page short.
+            foreach (var (other, arrow) in _sections)
+            {
+                other.IsVisible = ReferenceEquals(other, card) && open;
+                arrow.RenderTransform = new RotateTransform(other.IsVisible ? 0 : -90);
+            }
+        };
+
+        var index = CardsHost.Children.IndexOf(card);
+        CardsHost.Children.Insert(index, header);
+    }
+
+    private void PaintPalette()
+    {
+        void Paint(Border target, string? text)
+        {
+            var hex = NormalizeHex(text);
+            if (LauncherThemeService.IsValidHexColor(hex))
+                target.Background = new SolidColorBrush(Color.Parse(hex));
+        }
+
+        Paint(PaletteAccent, ColorTextBox.Text);
+        Paint(PaletteBrand, BrandColorTextBox.Text);
+        Paint(PaletteText, TextColorTextBox.Text);
+        Paint(PaletteBackground, BackgroundColorTextBox.Text);
+    }
+
+    // The preview pop-up follows the colors while it is open.
+    private void RefreshOpenPreview()
+    {
+        if (_homePreview?.IsOpen != true)
+            return;
+        var theme = ReadEditor(requireName: false);
+        if (theme == null)
+            return;
+        _homePreview.UpdatePreview(
+            theme,
+            _backgrounds.Current,
+            SurfaceOpacitySlider.Value,
+            MinimalHomeArtworkCheckBox.IsChecked == true,
+            HideHomeTitleCheckBox.IsChecked == true
+        );
+    }
+
     private void UpdatePreview()
     {
+        RefreshOpenPreview();
+        PaintPalette();
         var color = NormalizeHex(ColorTextBox.Text);
         if (LauncherThemeService.IsValidHexColor(color))
         {
@@ -593,12 +786,35 @@ public partial class ThemesPage : UserControl
             UpdateColorChoice(TextSwatch, textColor);
         if (LauncherThemeService.IsValidHexColor(backgroundColor))
             UpdateColorChoice(BackgroundSwatch, backgroundColor);
-        TextContrastNotice.IsVisible = false;
-        if (!LauncherThemeService.IsValidHexColor(textColor) || !LauncherThemeService.IsValidHexColor(backgroundColor))
+        UpdateContrastNotice(brandColor, textColor, backgroundColor);
+    }
+
+    private ContrastReport? _contrastSuggestion;
+
+    /// <summary>
+    /// Colors are always used exactly as typed, so this only warns when the main, title or text color is hard to see
+    /// against the background, and offers easier-to-see versions that keep each color's own shade.
+    /// </summary>
+    private void UpdateContrastNotice(string brandColor, string textColor, string backgroundColor)
+    {
+        _contrastSuggestion = ThemeContrast.Check(NormalizeHex(ColorTextBox.Text), brandColor, textColor, backgroundColor);
+        TextContrastNotice.IsVisible = _contrastSuggestion is not null;
+        if (_contrastSuggestion is null)
             return;
 
-        // Any color is used exactly as typed, however dark or light it is.
-        EffectiveTextColorPreview.Background = new SolidColorBrush(Color.Parse(textColor));
+        TextContrastMessage.Text = string.Join(" ", _contrastSuggestion.Problems);
+        EffectiveTextColorPreview.Background = new SolidColorBrush(Color.Parse(_contrastSuggestion.Text));
+    }
+
+    private void FixContrast_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_contrastSuggestion is not { } fix)
+            return;
+
+        ColorTextBox.Text = fix.Accent;
+        BrandColorTextBox.Text = fix.Branding;
+        TextColorTextBox.Text = fix.Text;
+        ThemeStatusText.Text = "Colors adjusted so they are easier to see. Preview them, then Apply or Save.";
     }
 
     private async void AccentColor_OnClick(object? sender, RoutedEventArgs e) =>

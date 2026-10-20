@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -10,7 +11,15 @@ namespace WheelWizard.Views.Dialogs;
 /// <param name="Label">Main text of the row.</param>
 /// <param name="Tag">Small muted text on the right of the row.</param>
 /// <param name="Highlight">Draws the row bold and slightly lighter, e.g. for a detected default.</param>
-public sealed record ChoiceOption(string Label, string Tag, bool Highlight = false);
+/// <param name="Swatches">Optional colors drawn as a small strip before the label, to show what a look is like.</param>
+/// <param name="Detail">Optional small muted text under the label, for example what is inside the item.</param>
+public sealed record ChoiceOption(
+    string Label,
+    string Tag,
+    bool Highlight = false,
+    IReadOnlyList<string>? Swatches = null,
+    string? Detail = null
+);
 
 /// <summary>A flat list popup that resolves to the index of the chosen option, or null when dismissed.</summary>
 public partial class ChoiceListWindow : PopupContent
@@ -46,9 +55,70 @@ public partial class ChoiceListWindow : PopupContent
             };
             Grid.SetColumn(tag, 1);
 
+            Control left = label;
+            if (option.Swatches is { Count: > 0 } colors)
+            {
+                var strip = new LinearGradientBrush
+                {
+                    StartPoint = new RelativePoint(0, 0.5, RelativeUnit.Relative),
+                    EndPoint = new RelativePoint(1, 0.5, RelativeUnit.Relative),
+                };
+                for (var i = 0; i < colors.Count; i++)
+                {
+                    if (Color.TryParse(colors[i], out var stop))
+                        strip.GradientStops.Add(new GradientStop(stop, colors.Count == 1 ? 0 : i / (double)(colors.Count - 1)));
+                }
+
+                left = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 12,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children =
+                    {
+                        new Border
+                        {
+                            Width = 36,
+                            Height = 16,
+                            CornerRadius = new CornerRadius(8),
+                            Background = strip,
+                            VerticalAlignment = VerticalAlignment.Center,
+                        },
+                        label,
+                    },
+                };
+            }
+
+            if (!string.IsNullOrWhiteSpace(option.Detail))
+            {
+                // One item per line, laid out two to a row so they line up.
+                var items = new UniformGrid { Columns = 2, HorizontalAlignment = HorizontalAlignment.Left };
+                foreach (var line in option.Detail.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    items.Children.Add(
+                        new TextBlock
+                        {
+                            Text = line,
+                            FontSize = 12,
+                            Margin = new Thickness(0, 1, 18, 1),
+                            Opacity = 0.65,
+                            Foreground = new SolidColorBrush(labelColor),
+                        }
+                    );
+                }
+
+                left = new StackPanel
+                {
+                    Spacing = 5,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 8),
+                    Children = { left, items },
+                };
+            }
+
             var button = new Avalonia.Controls.Button
             {
-                Content = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Children = { label, tag } },
+                Content = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Children = { left, tag } },
             };
             button.Classes.Add("ChoiceRow");
             if (option.Highlight)
