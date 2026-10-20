@@ -71,8 +71,7 @@ No. The game files stay untouched, so online play works as normal. BetterWheelWi
 </table>
 
 <p align="center">
-  <img src="docs/screenshots/discord-rpc2.png" width="420" alt="Discord status" /><br />
-  <sub><b>Your own image on Discord</b></sub>
+  <img src="docs/screenshots/discord-rpc2.png" width="420" alt="Discord status" />
 </p>
 
 ## Build from source
