@@ -63,7 +63,6 @@ public partial class MiiListPage : UserControl
     private string? _activeTag;
     private MiiBlock? _pressedBlock;
     private IApiCaller<IRwfcApi> ApiCaller { get; }
-    private IRrLeaderboardSingletonService LeaderboardService { get; }
     private IFilePickerService FilePicker { get; }
     private IPopupFactory Popups { get; }
 
@@ -87,7 +86,6 @@ public partial class MiiListPage : UserControl
         ISettingsManager settingsService,
         INavigationService navigation,
         IApiCaller<IRwfcApi> apiCaller,
-        IRrLeaderboardSingletonService leaderboardService,
         IPopupFactory popups,
         IMiiNativeRenderer renderer,
         IMiiAnimationLibrary animations,
@@ -108,7 +106,6 @@ public partial class MiiListPage : UserControl
         FileSystem = fileSystem;
         SettingsService = settingsService;
         ApiCaller = apiCaller;
-        LeaderboardService = leaderboardService;
         FilePicker = filePicker;
         Popups = popups;
         InitializeComponent();
@@ -241,7 +238,7 @@ public partial class MiiListPage : UserControl
 
         SearchOnlineMiiButton.IsEnabled = false;
         SetOnlineLookupStatus(
-            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}ΓÇª" : $"Searching RWFC for \"{query}\"ΓÇª",
+            normalizedFriendCode != null ? $"Looking up {normalizedFriendCode}…" : $"Searching RWFC for \"{query}\"…",
             isError: false
         );
 
@@ -470,23 +467,60 @@ public partial class MiiListPage : UserControl
 
     private async void RefreshSuggestedMiis_OnClick(object? sender, RoutedEventArgs e) => await LoadSuggestedMiisAsync();
 
+    private const int SuggestedMiiCount = 9;
+    private const int SuggestedPages = 3;
+
+    // How many pages the leaderboard has, learned from the first page fetched (it only grows).
+    private static int _leaderboardPages;
+
+    /// <summary>
+    /// <paramref name="count"/> different random page numbers between 1 and <paramref name="pages"/>, so the Miis come
+    /// from all over the leaderboard rather than from its top.
+    /// </summary>
+    public static List<int> RandomPages(int pages, int count, Random random)
+    {
+        pages = Math.Max(1, pages);
+        var picked = new HashSet<int>();
+        while (picked.Count < Math.Min(count, pages))
+            picked.Add(random.Next(1, pages + 1));
+        return picked.ToList();
+    }
+
+    private async Task<List<RwfcLeaderboardEntry>?> RandomLeaderboardPlayersAsync()
+    {
+        // The first look, before the size is known, is anywhere in the first hundred pages (the board has thousands).
+        var known = _leaderboardPages;
+        var pages = RandomPages(known > 0 ? known : 100, SuggestedPages, Random.Shared);
+        var results = await Task.WhenAll(pages.Select(page => ApiCaller.CallApiAsync(api => api.GetLeaderboardPageAsync(page))));
+
+        var entries = new List<RwfcLeaderboardEntry>();
+        foreach (var result in results.Where(result => result.IsSuccess && result.Value is not null))
+        {
+            _leaderboardPages = Math.Max(_leaderboardPages, result.Value.TotalPages);
+            entries.AddRange(result.Value.Players);
+        }
+
+        return entries.Count > 0 ? entries : null;
+    }
+
     private async Task LoadSuggestedMiisAsync()
     {
         RefreshSuggestedMiisButton.IsEnabled = false;
-        SuggestedMiisStatus.Text = "Finding random public MiisΓÇª";
+        SuggestedMiisStatus.Text = "Finding random public Miis…";
         try
         {
-            var result = await LeaderboardService.GetTopPlayersAsync(200);
-            if (result.IsFailure)
+            // Random players from anywhere on the leaderboard, not just the top: a few random pages of it.
+            var entries = await RandomLeaderboardPlayersAsync();
+            if (entries is null)
             {
                 SuggestedMiisStatus.Text = "Random Miis could not be loaded from RWFC. Try again.";
                 return;
             }
 
-            var suggestions = result
-                .Value.Where(entry => !string.IsNullOrWhiteSpace(entry.MiiData) && !string.IsNullOrWhiteSpace(entry.FriendCode))
-                .OrderBy(_ => Guid.NewGuid())
-                .Take(8)
+            var suggestions = entries
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.MiiData) && !string.IsNullOrWhiteSpace(entry.FriendCode))
+                .DistinctBy(entry => entry.FriendCode)
+                .OrderBy(_ => Random.Shared.Next())
                 .Select(entry =>
                 {
                     var parsed = MiiSerializer.Deserialize(entry.MiiData!);
@@ -500,6 +534,8 @@ public partial class MiiListPage : UserControl
                 })
                 .Where(item => item != null)
                 .Cast<SuggestedOnlineMii>()
+                // Nine fill the three-by-three grid; picked after reading, so a Mii that fails to load leaves no gap.
+                .Take(SuggestedMiiCount)
                 .ToList();
 
             SuggestedOnlineMiis.Clear();
@@ -1010,40 +1046,58 @@ public partial class MiiListPage : UserControl
         );
         if (miiFiles.Count == 0)
             return;
-        foreach (var file in miiFiles)
+
+        // The list is reloaded at the end even when a file fails, so the Miis that were added before it show up.
+        try
         {
-            FileSystem.File.Exists(file);
-            //get raw bytes from file
-            var stream = FileSystem.File.OpenRead(file);
-            using var reader = new BinaryReader(stream);
-            var miiData = reader.ReadBytes((int)stream.Length);
-            stream.Close();
-            var result = MiiSerializer.Deserialize(miiData);
-            if (result.IsFailure)
+            foreach (var file in miiFiles)
             {
-                ViewUtils.ShowSnackbar(
-                    t("snackbar_error.mii_failure_deserialize", new { error = result.Error.Message })!,
-                    ViewUtils.SnackbarType.Danger
-                );
-                return;
-            }
+                byte[] miiData;
+                try
+                {
+                    // A Mii file is under a hundred bytes; anything far bigger is not one, so it is not read into memory.
+                    if (FileSystem.FileInfo.New(file).Length > 4096)
+                        throw new InvalidDataException("That file is too big to be a Mii.");
+                    miiData = FileSystem.File.ReadAllBytes(file);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+                {
+                    ViewUtils.ShowSnackbar(
+                        t("snackbar_error.mii_failure_deserialize", new { error = ex.Message })!,
+                        ViewUtils.SnackbarType.Danger
+                    );
+                    return;
+                }
 
-            var mii = result.Value;
+                var result = MiiSerializer.Deserialize(miiData);
+                if (result.IsFailure)
+                {
+                    ViewUtils.ShowSnackbar(
+                        t("snackbar_error.mii_failure_deserialize", new { error = result.Error.Message })!,
+                        ViewUtils.SnackbarType.Danger
+                    );
+                    return;
+                }
 
-            //We duplicate to make sure it does not actually have the original MiiId
-            var macAddress = "02:11:11:11:11:11";
-            var saveResult = MiiDbService.AddToDatabase(mii, macAddress);
-            if (saveResult.IsFailure)
-            {
-                ViewUtils.ShowSnackbar(
-                    t("snackbar_error.mii_failure_save", new { error = saveResult.Error.Message })!,
-                    ViewUtils.SnackbarType.Danger
-                );
-                return;
+                var mii = result.Value;
+
+                //We duplicate to make sure it does not actually have the original MiiId
+                var macAddress = "02:11:11:11:11:11";
+                var saveResult = MiiDbService.AddToDatabase(mii, macAddress);
+                if (saveResult.IsFailure)
+                {
+                    ViewUtils.ShowSnackbar(
+                        t("snackbar_error.mii_failure_save", new { error = saveResult.Error.Message })!,
+                        ViewUtils.SnackbarType.Danger
+                    );
+                    return;
+                }
             }
         }
-
-        ReloadMiiList();
+        finally
+        {
+            ReloadMiiList();
+        }
     }
 
     private void MiiBlock_OnClick(object? sender, RoutedEventArgs e)
@@ -1182,12 +1236,9 @@ public partial class MiiListPage : UserControl
                 t("snackbar_error.mii_failure_save", new { error = saveResult.Error.Message })!,
                 ViewUtils.SnackbarType.Danger
             );
-            return;
         }
 
-        ViewUtils.ShowSnackbar(
-            t("snackbar_success.saved_mii", new { name = miiToExport.Name, fileName = diaglog }) ?? "Saved Mii successfully"
-        );
+        // SaveMiiToDisk already says it was saved, so there is no second message here.
     }
 
     private OperationResult SaveMiiToDisk(Mii mii, string path)
@@ -1203,12 +1254,17 @@ public partial class MiiListPage : UserControl
         }
 
         var file = FileSystem.FileInfo.New(path);
-        using var stream = file.Open(FileMode.Create, FileAccess.Write);
-        using var writer = new BinaryWriter(stream);
-        writer.Write(miiData.Value);
-        writer.Flush();
-        writer.Close();
-        stream.Close();
+        // A read-only folder or a file that is open elsewhere must give a message, not take the launcher down.
+        try
+        {
+            using var stream = file.Open(FileMode.Create, FileAccess.Write);
+            stream.Write(miiData.Value);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return Fail(ex.Message);
+        }
+
         ViewUtils.ShowSnackbar(
             t("snackbar_success.saved_mii", new { name = mii.Name, fileName = file.FullName }) ?? "Saved Mii successfully"
         );

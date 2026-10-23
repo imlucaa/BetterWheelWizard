@@ -16,7 +16,7 @@ public partial class TextInputWindow : PopupContent
 
     // Constructor with dynamic label parameter
     public TextInputWindow()
-        : base(true, false, true, "Wheel Wizard")
+        : base(true, false, true, "BetterWheelWizard")
     {
         InitializeComponent();
         InputField.TextChanged += InputField_TextChanged;

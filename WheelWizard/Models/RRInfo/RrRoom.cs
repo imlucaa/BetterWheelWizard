@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
 using static WheelWizard.Localization.TranslationFunctions;
 
@@ -17,6 +17,39 @@ public class RrRoom : INotifyPropertyChanged
     public int? CourseId { get; set; }
     public DateTime? RaceObservedAt { get; set; }
     public required List<RrPlayer> Players { get; set; }
+
+    private string _flagSummary = string.Empty;
+
+    /// <summary>The note of the flagged player in this room ("2 flagged" for more), or empty. See PlayerFlags.</summary>
+    public string FlagSummary
+    {
+        get => _flagSummary;
+        set
+        {
+            if (_flagSummary == value)
+                return;
+            _flagSummary = value;
+            PropertyChanged?.Invoke(this, new(nameof(FlagSummary)));
+            PropertyChanged?.Invoke(this, new(nameof(HasFlags)));
+        }
+    }
+
+    public bool HasFlags => FlagSummary.Length > 0;
+
+    private string _flagColor = "#FF6581";
+
+    /// <summary>The colour of the room's flag tag: that of its first flagged player.</summary>
+    public string FlagColor
+    {
+        get => _flagColor;
+        set
+        {
+            if (_flagColor == value)
+                return;
+            _flagColor = value;
+            PropertyChanged?.Invoke(this, new(nameof(FlagColor)));
+        }
+    }
 
     public int PlayerCount => Players.Count;
 

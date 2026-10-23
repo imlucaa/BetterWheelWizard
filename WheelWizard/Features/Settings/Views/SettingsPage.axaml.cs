@@ -6,6 +6,7 @@ using WheelWizard.Shared;
 using WheelWizard.Views.Components;
 using WheelWizard.Views.DesignTime;
 using WheelWizard.Views.Dialogs;
+using WheelWizard.Views.Shell;
 using WheelWizard.Views.Shell.Navigation;
 
 namespace WheelWizard.Settings.Views;
@@ -22,6 +23,7 @@ public partial class SettingsPage : UserControl, ILockedSidebarPage
     private ISettingsSignalBus SettingsSignalBus { get; }
 
     private IPageFactory Pages { get; }
+    private INavigationService? Navigation { get; }
     private IDisposable? _settingsSignalSubscription;
     private bool _navigationReady;
 
@@ -30,9 +32,11 @@ public partial class SettingsPage : UserControl, ILockedSidebarPage
         ISettingsManager settingsService,
         ISettingsSignalBus settingsSignalBus,
         IPageFactory pages,
+        INavigationService? navigation = null,
         Type? initialPage = null
     )
     {
+        Navigation = navigation;
         Popups = popups;
         SettingsService = settingsService;
         SettingsSignalBus = settingsSignalBus;
@@ -47,12 +51,39 @@ public partial class SettingsPage : UserControl, ILockedSidebarPage
         SettingsContent.Content = initialSettingsPage;
         SetCheckedSidebarButton(initialSettingsPage);
         _navigationReady = true;
+
+        ShowHiddenTabs();
+        HiddenSidebarTabs.Changed += ShowHiddenTabs;
+    }
+
+    // The pages hidden from the sidebar, under the settings tabs; one opens like it would from the sidebar.
+    private void ShowHiddenTabs()
+    {
+        var tabs = HiddenSidebarTabs.Current;
+        HiddenPages.ItemsSource = tabs.Select(tab => new SegmentOption
+            {
+                Text = tab.Label,
+                Tag = tab.Page,
+                Padding = new Avalonia.Thickness(10, 12),
+                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            })
+            .ToList();
+        HiddenTabsPanel.IsVisible = tabs.Count > 0;
+    }
+
+    private void HiddenPages_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (HiddenPages.SelectedItem is not SegmentOption { Tag: Type page })
+            return;
+        HiddenPages.SelectedItem = null;
+        Navigation?.NavigateTo(page);
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         _settingsSignalSubscription?.Dispose();
         _settingsSignalSubscription = null;
+        HiddenSidebarTabs.Changed -= ShowHiddenTabs;
         base.OnUnloaded(e);
     }
 

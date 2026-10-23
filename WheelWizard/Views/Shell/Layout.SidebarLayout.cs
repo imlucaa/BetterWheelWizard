@@ -19,15 +19,36 @@ namespace WheelWizard.Views.Shell;
 public partial class Layout
 {
     // The sidebar buttons that are always there, in the order they are written in the layout file.
-    private static readonly string[] BuiltInKeys = ["home", "profiles", "patches", "miis", "themes", "rooms", "leaderboard", "friends"];
+    private static readonly string[] BuiltInKeys =
+    [
+        "home",
+        "profiles",
+        "patches",
+        "miis",
+        "themes",
+        "rooms",
+        "leaderboard",
+        "friends",
+        // Named for their category: before it existed they were saved under Online, and a new name lets them move.
+        "competitive-lounge",
+        "competitive-ghosts",
+    ];
     private const int GeneralItemCount = 5;
+
+    // RR Lounge and Ghosts have a category of their own by default.
+    private const string CompetitiveName = "Competitive";
+    private static readonly Dictionary<string, string> BuiltInCategories = new()
+    {
+        ["competitive-lounge"] = CompetitiveName,
+        ["competitive-ghosts"] = CompetitiveName,
+    };
 
     private Dictionary<string, SidebarRadioButton>? _builtInButtons;
     private readonly List<TextBlock> _extraHeaders = [];
     private Window? _sidebarEditor;
 
     private SidebarLayoutModel LoadSidebarLayout() =>
-        SidebarLayoutModel.Parse(SettingsService.SIDEBAR_LAYOUT.Get(), BuiltInKeys, GeneralItemCount, _pinKeys.Values);
+        SidebarLayoutModel.Parse(SettingsService.SIDEBAR_LAYOUT.Get(), BuiltInKeys, GeneralItemCount, _pinKeys.Values, BuiltInCategories);
 
     private void SaveSidebarLayout(SidebarLayoutModel data) =>
         SettingsEditing.Set(SettingsService, SettingsService.SIDEBAR_LAYOUT, data.ToJson());
@@ -79,6 +100,7 @@ public partial class Layout
             buttons[key] = button;
 
         SidePanelButtons.Children.Clear();
+        var hidden = new List<HiddenSidebarTab>();
         for (var section = 0; section < layout.Sections.Count; section++)
         {
             var header = HeaderFor(section);
@@ -86,19 +108,26 @@ public partial class Layout
             if (section > 0)
                 SidePanelButtons.Children.Add(header);
 
+            var anyShown = false;
             foreach (var key in layout.Sections[section].Items)
             {
                 var button = buttons[key];
                 var pinned = PinnableTabs.FirstOrDefault(tab => tab.Page == button.PageType && _pinKeys.ContainsKey(button));
                 button.IsVisible = !layout.IsHidden(key) && (pinned is null || IsAvailable(pinned));
+                // A hidden page stays reachable from Settings; a pinned settings tab is in Settings anyway.
+                if (layout.IsHidden(key) && pinned is null && !_pinKeys.ContainsKey(button) && button.PageType is { } page)
+                    hidden.Add(new HiddenSidebarTab(button.Text ?? key, page));
+                anyShown |= button.IsVisible;
                 SidePanelButtons.Children.Add(button);
             }
 
-            header.IsVisible = true;
+            // A category with nothing to show (empty, or every item hidden) would leave a heading over a gap.
+            header.IsVisible = anyShown;
         }
 
         SidePanelButtons.Children.Add(OtherSectionText);
         SidePanelButtons.Children.Add(TestingButton);
+        HiddenSidebarTabs.Set(hidden);
     }
 
     private void SidebarEditButton_OnPointerPressed(object? sender, PointerPressedEventArgs e)

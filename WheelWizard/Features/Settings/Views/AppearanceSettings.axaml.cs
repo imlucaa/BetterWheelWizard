@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using WheelWizard.Settings;
@@ -15,10 +15,12 @@ public partial class AppearanceSettings : UserControl
     private readonly bool _pageLoaded;
     private bool _editingScale;
 
-    public AppearanceSettings(ISettingsManager settingsService)
+    public AppearanceSettings(ISettingsManager settingsService, ISettingsLocalizationService localization)
     {
         SettingsService = settingsService;
         InitializeComponent();
+        // Language has one setting, so it lives here instead of in a tab of its own.
+        LanguageHost.Content = new LanguageSettings(settingsService, localization);
         EnableAnimations.IsChecked = SettingsService.ENABLE_ANIMATIONS.Get();
         LoadSettings();
         _pageLoaded = true;

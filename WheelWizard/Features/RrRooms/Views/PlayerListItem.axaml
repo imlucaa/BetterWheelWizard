@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:domain="using:WheelWizard.WheelWizardData.Domain"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:WheelWizard.Localization"
@@ -61,7 +61,7 @@
                         </Border>
 
                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <components:FormFieldLabel Text="{TemplateBinding UserName}" Margin="10,0,0,0" />
+                            <components:FormFieldLabel x:Name="PART_Name" Text="{TemplateBinding UserName}" Margin="10,0,0,0" />
                             <TextBlock Text="{TemplateBinding FriendCode}" FontSize="14"
                                        Classes="TinyText" HorizontalAlignment="Left" VerticalAlignment="Center"
                                        Margin="10,0,0,0" />
@@ -76,7 +76,7 @@
                                        Margin="10,0,0,0" />
                         </StackPanel>
 
-                        <Grid Grid.Column="3" ColumnDefinitions="*,Auto,Auto,Auto" VerticalAlignment="Center">
+                        <Grid Grid.Column="3" ColumnDefinitions="*,Auto,Auto,Auto,Auto" VerticalAlignment="Center">
                             <Border Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch"
                                     IsVisible="{TemplateBinding HasBadges}" Margin="0,0,6,0"
                                     CornerRadius="6" Height="40" BorderThickness="0"
@@ -122,6 +122,14 @@
                             <components:StatusBadge Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
                                 IsVisible="{TemplateBinding IsOpenHost}" IconData="{StaticResource LockOpen}"
                                 Variant="Brand" Text="" Margin="0,0,10,0" ToolTip.Tip="Open Host" ToolTip.Placement="Top" ToolTip.ShowDelay="20" />
+
+                            <!-- Your own note for a flagged player. -->
+                            <Border Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                    IsVisible="{TemplateBinding IsFlagged}" Background="{TemplateBinding FlagBrush}"
+                                    CornerRadius="5" Padding="7,2" Margin="0,0,10,0"
+                                    ToolTip.Tip="You flagged this player" ToolTip.Placement="Top" ToolTip.ShowDelay="20">
+                                <TextBlock Text="{TemplateBinding FlagNote}" FontSize="12" FontWeight="SemiBold" Foreground="#141414" />
+                            </Border>
                         </Grid>
                     </Grid>
                 </Border>
@@ -149,6 +157,10 @@
     <Style Selector="rooms|PlayerListItem /template/ components|ActionButton#PART_JoinRoomButton /template/ PathIcon">
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="28" />
+    </Style>
+
+    <Style Selector="rooms|PlayerListItem[IsFlagged=true] /template/ components|FormFieldLabel#PART_Name">
+        <Setter Property="Foreground" Value="{Binding FlagBrush, RelativeSource={RelativeSource TemplatedParent}}" />
     </Style>
 
     <Style Selector="rooms|PlayerListItem[ShowJoinRoomButton=true][IsOnline=true] /template/ components|ActionButton#PART_JoinRoomButton">

@@ -25,11 +25,16 @@ public sealed class SidebarLayoutModel
     /// <param name="builtInKeys">The always-present items, in their default order.</param>
     /// <param name="generalItemCount">How many of those belong to the first category by default.</param>
     /// <param name="pinKeys">The pinned tabs that exist right now.</param>
+    /// <param name="categories">
+    /// Built-in items that belong to a category of their own by default, by the category's name. When missing, such an
+    /// item goes to the category with that name, which is added at the end when there is none.
+    /// </param>
     public static SidebarLayoutModel Parse(
         string? json,
         IReadOnlyList<string> builtInKeys,
         int generalItemCount,
-        IEnumerable<string> pinKeys
+        IEnumerable<string> pinKeys,
+        IReadOnlyDictionary<string, string>? categories = null
     )
     {
         SidebarLayoutModel? data = null;
@@ -60,8 +65,13 @@ public sealed class SidebarLayoutModel
 
         for (var index = 0; index < builtInKeys.Count; index++)
         {
-            if (seen.Add(builtInKeys[index]))
-                data.Sections[index < generalItemCount ? 0 : 1].Items.Add(builtInKeys[index]);
+            var key = builtInKeys[index];
+            if (!seen.Add(key))
+                continue;
+            if (categories is not null && categories.TryGetValue(key, out var category))
+                data.SectionNamed(category).Items.Add(key);
+            else
+                data.Sections[index < generalItemCount ? 0 : 1].Items.Add(key);
         }
 
         foreach (var key in pins)
@@ -75,6 +85,16 @@ public sealed class SidebarLayoutModel
     }
 
     public string ToJson() => JsonSerializer.Serialize(this);
+
+    private SidebarSection SectionNamed(string name)
+    {
+        var found = Sections.FirstOrDefault(section => section.Name.Trim().Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (found is not null)
+            return found;
+        var added = new SidebarSection { Name = name };
+        Sections.Add(added);
+        return added;
+    }
 
     /// <summary>
     /// Moves an item to a gap in a category. <paramref name="toSlot"/> counts the gaps in the target category as they are

@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -25,6 +24,7 @@ public partial class BackupSettings : UserControl
     private readonly IFilePickerService _filePicker;
     private readonly IFileSystem _fileSystem;
     private readonly IPopupFactory _popups;
+    private readonly IGameLicenseSingletonService _licenses;
 
     public BackupSettings(
         GameDataBackupService backups,
@@ -32,7 +32,8 @@ public partial class BackupSettings : UserControl
         IDolphinPaths dolphinPaths,
         IFilePickerService filePicker,
         IFileSystem fileSystem,
-        IPopupFactory popups
+        IPopupFactory popups,
+        IGameLicenseSingletonService licenses
     )
     {
         _backups = backups;
@@ -41,6 +42,7 @@ public partial class BackupSettings : UserControl
         _filePicker = filePicker;
         _fileSystem = fileSystem;
         _popups = popups;
+        _licenses = licenses;
         InitializeComponent();
         RefreshFileStatus();
     }
@@ -170,24 +172,67 @@ public partial class BackupSettings : UserControl
         MarioKartWiiEnums.Regions.Korea,
     ];
 
-    // Dolphin keeps the save in memory while the game runs and writes it back, so a file put in then is lost.
-    private static bool IsDolphinRunning()
+    private static string KindText(string kind) =>
+        kind switch
+        {
+            "manual" => "Manual",
+            "change" => "Before a friend code change",
+            "undo" => "Before an undo",
+            "before-restore" => "Before a restore",
+            "before-import" => "Before an import",
+            _ => kind,
+        };
+
+    /// <summary>Puts back one of the copies kept before each change to the save, after showing its friend codes.</summary>
+    private async void RestoreRksys_OnClick(object? sender, RoutedEventArgs e)
     {
-        try
+        var backups = _licenses.ListBackups();
+        if (backups.Count == 0)
         {
-            return Process
-                .GetProcesses()
-                .Any(p =>
-                    (
-                        p.ProcessName.StartsWith("Dolphin", StringComparison.OrdinalIgnoreCase)
-                        && !p.ProcessName.Contains("Tool", StringComparison.OrdinalIgnoreCase)
-                    ) || p.ProcessName.Equals("dolphin-emu", StringComparison.OrdinalIgnoreCase)
-                );
+            Report("No earlier saves yet. One is kept each time the save is changed.");
+            return;
         }
-        catch (Exception)
+
+        var options = backups
+            .Select(b =>
+            {
+                var codes = _licenses.GetBackupLicenses(b.Name).Select(l => l.FriendCode);
+                return new ChoiceOption($"{b.Time:d MMM yyyy, HH:mm}", KindText(b.Kind), Detail: string.Join("\n", codes));
+            })
+            .ToList();
+        var index = await _popups
+            .CreateChoiceList("Restore a save", "Choose a save", "You see its friend codes before anything changes.", options)
+            .AwaitAnswer();
+        if (index is not { } chosen || chosen < 0 || chosen >= backups.Count)
+            return;
+        if (FriendCodeSettings.BlockWhileGameRuns())
+            return;
+
+        var backup = backups[chosen];
+        var licenses = _licenses.GetBackupLicenses(backup.Name);
+        var codes =
+            licenses.Count == 0
+                ? "No licenses found in this save."
+                : string.Join("\n", licenses.Select(l => $"{(string.IsNullOrWhiteSpace(l.Name) ? "No name" : l.Name)}   {l.FriendCode}"));
+        var yes = await _popups
+            .Create<YesNoWindow>()
+            .SetMainText($"Restore the save from {backup.Time:d MMM, HH:mm}?")
+            .SetExtraText($"{codes}\n\nYour current save is kept first.")
+            .AwaitAnswer();
+        if (!yes)
+            return;
+
+        var result = _licenses.RestoreBackup(backup.Name);
+        if (result.IsFailure)
         {
-            return false;
+            Report(result.Error.Message);
+            return;
         }
+
+        Report("Save restored.");
+        ViewUtils.GetLayout().UpdateSidebarProfile();
+        ViewUtils.GetLayout().UpdateFriendCount();
+        RefreshFileStatus();
     }
 
     private void Report(string text)
@@ -198,11 +243,8 @@ public partial class BackupSettings : UserControl
 
     private async void ImportRksys_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (IsDolphinRunning())
-        {
-            Report("Close Dolphin first.");
+        if (FriendCodeSettings.BlockWhileGameRuns())
             return;
-        }
 
         var path = await _filePicker.OpenSingleFileAsync(
             "Import a save (rksys.dat)",
@@ -255,7 +297,10 @@ public partial class BackupSettings : UserControl
             GameLicenseSingletonService.FixRksysCrc(data);
             _fileSystem.File.WriteAllBytes(target, data);
             Report($"Imported into {RegionName(Regions[index.Value])}.");
+            // The launcher keeps the licenses it read, so read them again in case this was the region in use.
+            _licenses.LoadLicense();
             ViewUtils.GetLayout().UpdateSidebarProfile();
+            ViewUtils.GetLayout().UpdateFriendCount();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

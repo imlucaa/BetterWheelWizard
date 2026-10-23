@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,7 +6,7 @@
              xmlns:components="clr-namespace:WheelWizard.Views.Components"
              mc:Ignorable="d" d:DesignWidth="444" d:DesignHeight="716"
              x:Class="WheelWizard.Settings.Views.LanguageSettings">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <!-- Shown as a section of the Appearance tab. -->
         <StackPanel>
             <components:FormFieldLabel Text="{loc:T section.language}" Margin="0,10,0,4" />
             <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowSingle">
@@ -24,7 +24,5 @@
                                          HorizontalAlignment="Right" VerticalAlignment="Center" ZIndex="2" />
                 </Grid>
             </Border>
-            <Border Classes="SettingsBottomSpacer" />
         </StackPanel>
-    </ScrollViewer>
 </UserControl>

@@ -14,10 +14,19 @@ namespace WheelWizard.RrRooms;
 public sealed class FriendRoomDetector
 {
     private HashSet<string>? _previous;
+    private HashSet<string> _friends = [];
 
     /// <summary>Names of the friends that are in a room now but were not in the previous list.</summary>
     public IReadOnlyList<string> Update(IEnumerable<RrRoom> rooms, IReadOnlySet<string> friendCodes)
     {
+        // A different friend list (another license picked, or a friend added) starts over from a new baseline;
+        // otherwise every friend of the new list who is already in a room would be announced as just joined.
+        if (!_friends.SetEquals(friendCodes))
+        {
+            _friends = [.. friendCodes];
+            _previous = null;
+        }
+
         var current = new Dictionary<string, string>();
         foreach (var player in rooms.SelectMany(room => room.Players))
         {

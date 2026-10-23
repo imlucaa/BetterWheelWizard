@@ -1,4 +1,4 @@
-using WheelWizard.ApplicationData;
+﻿using WheelWizard.ApplicationData;
 using WheelWizard.ApplicationIntegration;
 using WheelWizard.ApplicationLifecycle;
 using WheelWizard.AutoUpdating;
@@ -17,6 +17,7 @@ using WheelWizard.MiiAnimations;
 using WheelWizard.MiiImages;
 using WheelWizard.Mods;
 using WheelWizard.Recomp;
+using WheelWizard.RrLounge;
 using WheelWizard.RrRooms;
 using WheelWizard.Settings;
 using WheelWizard.Themes;
@@ -45,6 +46,7 @@ public static class SetupExtensions
         services.AddBranding();
         services.AddGitHub();
         services.AddRrRooms();
+        services.AddRrLounge();
         services.AddWhWzData();
         services.AddWiiManagement();
         services.AddGameBanana();

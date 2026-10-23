@@ -1,4 +1,4 @@
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using WheelWizard.AutoUpdating;
 using WheelWizard.Shared.Downloads;
 using WheelWizard.Views.Dialogs;
@@ -12,10 +12,8 @@ public sealed class UpdatePresentation : IUpdatePresentation
             () =>
                 new YesNoWindow()
                     .SetButtonText(t("action.update"), t("action.maybe_later"))
-                    .SetMainText(t("question.new_version_wh_wz.title"))
-                    .SetExtraText(
-                        t("question.new_version_wh_wz.extra", new { latestVersion = latestVersion, currentVersion = currentVersion })!
-                    )
+                    .SetMainText("Update available")
+                    .SetExtraText($"BetterWheelWizard {latestVersion} is out. You have {currentVersion}.")
                     .AwaitAnswer()
         );
 
@@ -24,12 +22,8 @@ public sealed class UpdatePresentation : IUpdatePresentation
             () =>
                 new YesNoWindow()
                     .SetButtonText(t("action.update"), t("action.maybe_later"))
-                    .SetMainText(t("question.new_version_wh_wz.title"))
-                    .SetExtraText(
-                        t("question.new_version_wh_wz.extra", new { latestVersion = latestVersion, currentVersion = currentVersion })!
-                            + "\n\nWhat's new:\n"
-                            + releaseNotes
-                    )
+                    .SetMainText("Update available")
+                    .SetExtraText($"BetterWheelWizard {latestVersion} is out. You have {currentVersion}.\n\nWhat's new:\n{releaseNotes}")
                     .AwaitAnswer()
         );
 
@@ -54,7 +48,7 @@ public sealed class UpdatePresentation : IUpdatePresentation
             () =>
                 new MessageBoxWindow()
                     .SetMessageType(MessageBoxWindow.MessageType.Warning)
-                    .SetTitleText("Unable to update Wheel Wizard")
+                    .SetTitleText("Unable to update BetterWheelWizard")
                     .SetInfoText(message)
                     .ShowDialog()
         );

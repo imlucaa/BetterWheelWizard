@@ -484,6 +484,25 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
         ClearLeaderboardSearchResult();
     }
 
+    /// <summary>
+    /// The profile ids of the selected license's friends, used to mark them on the leaderboard. Empty when no save is
+    /// loaded yet (a fresh install), so the leaderboard still shows instead of failing half way.
+    /// </summary>
+    private HashSet<uint> CurrentFriendProfileIds()
+    {
+        try
+        {
+            return GameDataService
+                .ActiveCurrentFriends.Select(friend => FriendCode.FriendCodeToProfileId(friend.FriendCode))
+                .Where(profileId => profileId != 0)
+                .ToHashSet();
+        }
+        catch (Exception ex) when (ex is ArgumentOutOfRangeException or InvalidOperationException or NullReferenceException)
+        {
+            return [];
+        }
+    }
+
     private async Task ReloadLeaderboardAsync(int page = 1)
     {
         CancelCurrentLoad();
@@ -524,10 +543,7 @@ public partial class LeaderboardPage : UserControl, INotifyPropertyChanged
             .OrderBy(entry => entry.Rank)
             .ToList();
 
-        var friendProfileIds = GameDataService
-            .ActiveCurrentFriends.Select(friend => FriendCode.FriendCodeToProfileId(friend.FriendCode))
-            .Where(profileId => profileId != 0)
-            .ToHashSet();
+        var friendProfileIds = CurrentFriendProfileIds();
         var onlineProfileIds = LiveRooms
             .CurrentRooms.SelectMany(room => room.Players)
             .Select(player => FriendCode.FriendCodeToProfileId(player.FriendCode))

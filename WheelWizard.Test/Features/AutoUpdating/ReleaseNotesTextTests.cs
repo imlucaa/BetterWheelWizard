@@ -1,4 +1,4 @@
-using WheelWizard.AutoUpdating;
+﻿using WheelWizard.AutoUpdating;
 
 namespace WheelWizard.Test.Features.AutoUpdating;
 
@@ -17,7 +17,15 @@ public class ReleaseNotesTextTests
             "## What's new\r\n- **Discord** preview, see [docs](https://example.com)\r\n* Korea `RMCK` support\r\n"
         );
 
-        Assert.Equal("What's new\n• Discord preview, see docs\n• Korea RMCK support", text);
+        Assert.Equal("• Discord preview, see docs\n• Korea RMCK support", text);
+    }
+
+    [Fact]
+    public void Summarize_KeepsOtherHeadings_AndAWhatsNewThatIsNotAHeading()
+    {
+        var text = ReleaseNotesText.Summarize("## Fixed\n- Search box\nWhat's new is below");
+
+        Assert.Equal("Fixed\n• Search box\nWhat's new is below", text);
     }
 
     [Fact]

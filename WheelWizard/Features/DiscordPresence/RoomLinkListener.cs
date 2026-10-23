@@ -68,65 +68,83 @@ public sealed class RoomLinkListener(
     {
         while (listener.IsListening)
         {
+            HttpListenerContext context;
             try
             {
-                var context = await listener.GetContextAsync();
-                var path = context.Request.Url?.AbsolutePath ?? "";
-
-                if (path.StartsWith("/rewind-overlay", StringComparison.Ordinal) || path == "/overlay/bg")
-                {
-                    await ServeOverlayFileAsync(context, path);
-                    continue;
-                }
-
-                if (path is "/overlay" or "/overlay/state")
-                {
-                    await ServeOverlayAsync(context, path);
-                    continue;
-                }
-
-                // Browsers also ask for /favicon.ico and the like; those must not open anything.
-                if (!path.StartsWith("/room/", StringComparison.Ordinal))
-                {
-                    context.Response.StatusCode = 404;
-                    context.Response.Close();
-                    continue;
-                }
-
-                var roomId = Uri.UnescapeDataString(path[6..]);
-
-                var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
-
-                var bytes = Encoding.UTF8.GetBytes(string.Concat(Page));
-                context.Response.ContentType = "text/html; charset=utf-8";
-                context.Response.ContentLength64 = bytes.Length;
-                await context.Response.OutputStream.WriteAsync(bytes);
-                context.Response.Close();
-
-                var id = IsValidRoomId(roomId) ? roomId : null;
-                // A room made since the last refresh is not in the launcher's list yet, so fetch it fresh first.
-                if (id != null && FindRoom(id, friendCode) == null)
-                {
-                    try
-                    {
-                        await rooms.RefreshNowAsync();
-                    }
-                    catch (Exception exception)
-                    {
-                        logger.LogDebug(exception, "Could not refresh rooms for a room link");
-                    }
-                }
-
-                await Dispatcher.UIThread.InvokeAsync(() => OpenRoom(id, friendCode));
+                context = await listener.GetContextAsync();
             }
             catch (Exception exception) when (!listener.IsListening)
             {
                 logger.LogDebug(exception, "Room link listener stopped");
+                return;
             }
             catch (Exception exception)
             {
-                logger.LogWarning(exception, "Could not open a room link");
+                logger.LogWarning(exception, "Could not accept a room link request");
+                continue;
             }
+
+            // Each request runs on its own, so a room link that waits for a room refresh never holds up the OBS
+            // overlay, which asks for its state every few seconds.
+            _ = Task.Run(() => HandleAsync(context));
+        }
+    }
+
+    private async Task HandleAsync(HttpListenerContext context)
+    {
+        try
+        {
+            var path = context.Request.Url?.AbsolutePath ?? "";
+
+            if (path.StartsWith("/rewind-overlay", StringComparison.Ordinal) || path == "/overlay/bg")
+            {
+                await ServeOverlayFileAsync(context, path);
+                return;
+            }
+
+            if (path is "/overlay" or "/overlay/state")
+            {
+                await ServeOverlayAsync(context, path);
+                return;
+            }
+
+            // Browsers also ask for /favicon.ico and the like; those must not open anything.
+            if (!path.StartsWith("/room/", StringComparison.Ordinal))
+            {
+                context.Response.StatusCode = 404;
+                context.Response.Close();
+                return;
+            }
+
+            var roomId = Uri.UnescapeDataString(path[6..]);
+
+            var friendCode = new string((context.Request.QueryString["fc"] ?? "").Where(char.IsAsciiDigit).ToArray());
+
+            var bytes = Encoding.UTF8.GetBytes(string.Concat(Page));
+            context.Response.ContentType = "text/html; charset=utf-8";
+            context.Response.ContentLength64 = bytes.Length;
+            await context.Response.OutputStream.WriteAsync(bytes);
+            context.Response.Close();
+
+            var id = IsValidRoomId(roomId) ? roomId : null;
+            // A room made since the last refresh is not in the launcher's list yet, so fetch it fresh first.
+            if (id != null && FindRoom(id, friendCode) == null)
+            {
+                try
+                {
+                    await rooms.RefreshNowAsync();
+                }
+                catch (Exception exception)
+                {
+                    logger.LogDebug(exception, "Could not refresh rooms for a room link");
+                }
+            }
+
+            await Dispatcher.UIThread.InvokeAsync(() => OpenRoom(id, friendCode));
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, "Could not open a room link");
         }
     }
 

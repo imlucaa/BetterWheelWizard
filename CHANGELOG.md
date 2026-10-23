@@ -6,6 +6,32 @@ version sequence.
 
 ## [Unreleased]
 
+## [2.6.7] - 2026-10-24
+
+### Added
+
+- RR Lounge tab: the rr-lounge.com leaderboard for Retro Rewind, Custom Tracks and Time Trial, with seasons, search, rank colours and badges. It updates every minute.
+- Player profiles in RR Lounge: division, rank, stats, an MMR chart and every mogi.
+- Ghosts tab in the sidebar: your times next to the world records, with the same filters as rwfc.net/tt.
+- Get top ghosts: download the fastest ghosts from rwfc.net/tt, with player rankings and player pages.
+- Flag players in rooms with a note and a colour. Left click a player for their stats, right click to flag them.
+- VR overlay can open as its own window.
+- Discover Miis shows nine Miis from anywhere on the leaderboard.
+- Hidden sidebar pages are listed in Settings.
+
+### Changed
+
+- RR Lounge and Ghosts have their own Competitive category in the sidebar.
+- Language moved into Appearance, and save backups moved into Backup.
+- Simpler update prompt and shorter setting descriptions.
+- Rank badges and flags are kept on disk, so they only download once.
+
+### Fixed
+
+- Switching theme left the old background behind.
+- The two bottom sidebar icons overlapping.
+- Odd characters in some Mii search messages.
+
 ## [2.6.6] - 2026-10-20
 
 ### Added

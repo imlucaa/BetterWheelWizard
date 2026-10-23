@@ -20,7 +20,8 @@ public sealed class MiiTagStore(ISettingsManager settings)
             var data = JsonSerializer.Deserialize<Dictionary<string, List<uint>>>(json);
             return data is null ? new(StringComparer.OrdinalIgnoreCase) : new(data, StringComparer.OrdinalIgnoreCase);
         }
-        catch (JsonException)
+        // A hand-edited value can hold two names that only differ in case, which the case-insensitive list refuses.
+        catch (Exception ex) when (ex is JsonException or ArgumentException)
         {
             return new(StringComparer.OrdinalIgnoreCase);
         }

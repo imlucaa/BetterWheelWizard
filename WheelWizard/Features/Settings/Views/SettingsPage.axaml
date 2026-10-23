@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -24,6 +24,7 @@
                 CornerRadius="0">
             <Grid RowDefinitions="*,Auto" Width="157" HorizontalAlignment="Right">
             <ScrollViewer Grid.Row="0" Margin="8,8,8,12" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
             <components:SegmentedControl x:Name="SettingPages" Orientation="Vertical" HasBorder="False" Variant="Dark" Padding="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" SelectionChanged="SettingsNavigation_OnSelectionChanged">
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="WhWzSettings"
                               Text="{loc:T value.wheel_wizard}" />
@@ -33,8 +34,6 @@
                               Text="{loc:T category.dolphin}"/>
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="AppearanceSettings"
                                Text="{loc:T category.appearance}" />
-                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="LanguageSettings"
-                               Text="{loc:T category.language}" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="OtherSettings"
                                Text="{loc:T category.other}" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="DiscordSettings"
@@ -45,11 +44,19 @@
                                Text="Friend codes" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="BackupSettings"
                                Text="{loc:T category.backup}" />
-                <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="GhostSettings"
-                               Text="Ghosts" />
                 <components:SegmentOption HorizontalContentAlignment="Left" Padding="10,12" Tag="AppInfo"
                               Text="{loc:T category.about}" />
             </components:SegmentedControl>
+            <!-- Pages hidden from the sidebar, so they can still be opened. -->
+            <StackPanel x:Name="HiddenTabsPanel" IsVisible="False" Margin="0,14,0,0">
+                <TextBlock Text="Hidden tabs" Classes="TinyText" Margin="10,0,0,6"
+                           Foreground="{DynamicResource Neutral400}"
+                           ToolTip.Tip="Hidden from the sidebar. Show them again with the pencil under the sidebar." />
+                <components:SegmentedControl x:Name="HiddenPages" Orientation="Vertical" HasBorder="False" Variant="Dark"
+                                             Padding="0" HorizontalAlignment="Stretch"
+                                             SelectionChanged="HiddenPages_OnSelectionChanged" />
+            </StackPanel>
+            </StackPanel>
             </ScrollViewer>
             </Grid>
         </Border>

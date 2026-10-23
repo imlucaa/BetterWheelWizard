@@ -55,8 +55,6 @@ public partial class Layout
             // Follow the animated width so the portrait does not jump when labels are hidden.
             var collapsedProgress = Math.Clamp((221 - SidebarWidth) / (221 - 64), 0, 1);
             SidebarMii.Margin = new Thickness(-7 - 10 * collapsedProgress, 0, 0, 1);
-            // The icon row is centred: four icons side by side when wide, one column when compact.
-            LiveStatusBorder.Margin = new Thickness((SidebarWidth - (136 - 108 * collapsedProgress)) / 2, 0, 0, 12);
         }
     }
 
@@ -131,6 +129,8 @@ public partial class Layout
         SidebarBottomBar.Margin = _sidebarCollapsed ? new Thickness(0, 0, 0, 12) : new Thickness(0, 0, 0, 12);
         Grid.SetRowSpan(SidebarBottomBar, _sidebarCollapsed ? 2 : 1);
         Grid.SetRow(SidebarBottomBar, _sidebarCollapsed ? 4 : 5);
+        Grid.SetColumn(LiveStatusBorder, 0);
+        Grid.SetRow(LiveStatusBorder, _sidebarCollapsed ? 6 : 0);
         Grid.SetColumn(SidebarInfoButton, _sidebarCollapsed ? 0 : 2);
         Grid.SetRow(SidebarInfoButton, _sidebarCollapsed ? 4 : 0);
         Grid.SetColumn(SidebarSettingsButton, _sidebarCollapsed ? 0 : 4);
@@ -219,6 +219,5 @@ public partial class Layout
             button.Classes.Set("compact", compact);
             ToolTip.SetPlacement(button, compact ? PlacementMode.Right : PlacementMode.Top);
         }
-        ApplyPinActionsCompact(compact);
     }
 }

@@ -1,4 +1,4 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using WheelWizard.CustomDistributions;
 
@@ -272,6 +272,14 @@ public sealed partial class GhostImporter(ICustomDistributionPaths paths, IFileS
             return new(false, "Could not read that file.");
         }
 
+        return ImportData(data, track, speed);
+    }
+
+    /// <summary>Puts ghost data (a file's contents, or a download) into the track's slot, the same way as <see cref="Import"/>.</summary>
+    public GhostImportResult ImportData(byte[] data, GhostTrack track, int speed)
+    {
+        if (!IsAvailable)
+            return new(false, "Retro Rewind is not installed yet, so there is no ghost folder.");
         if (!GhostFile.TryRead(data, out var importedTime))
             return new(false, "That is not a Mario Kart Wii ghost file.");
 

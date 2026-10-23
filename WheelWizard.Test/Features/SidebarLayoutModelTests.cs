@@ -216,4 +216,54 @@ public class SidebarLayoutModelTests
         Assert.Equal("home,profiles,patches,miis,themes", Items(reset, 0));
         Assert.Empty(reset.Hidden);
     }
+
+    private static readonly string[] WithCompetitive = [.. BuiltIn, "competitive-lounge", "competitive-ghosts"];
+    private static readonly Dictionary<string, string> Competitive = new()
+    {
+        ["competitive-lounge"] = "Competitive",
+        ["competitive-ghosts"] = "Competitive",
+    };
+
+    private static SidebarLayoutModel ParseCompetitive(string? json = null) =>
+        SidebarLayoutModel.Parse(json, WithCompetitive, General, [], Competitive);
+
+    [Fact]
+    public void TabsWithACategoryOfTheirOwn_GetIt_ByDefault()
+    {
+        var model = ParseCompetitive();
+
+        Assert.Equal(3, model.Sections.Count);
+        Assert.Equal("rooms,leaderboard,friends", Items(model, 1));
+        Assert.Equal("Competitive", model.Sections[2].Name);
+        Assert.Equal("competitive-lounge,competitive-ghosts", Items(model, 2));
+    }
+
+    [Fact]
+    public void ASavedSidebarFromBefore_GainsTheCategory_AfterItsOwnOnes()
+    {
+        // Saved before the category existed, with RR Lounge and Ghosts under their old names, and a category of the user's.
+        const string json =
+            """{"Sections":[{"Name":"","Items":["home"]},{"Name":"","Items":["rooms","lounge","ghosts"]},{"Name":"Mine","Items":["themes"]}],"Hidden":[]}""";
+
+        var model = ParseCompetitive(json);
+
+        Assert.Equal(4, model.Sections.Count);
+        Assert.Equal("Mine", model.Sections[2].Name);
+        Assert.Equal("Competitive", model.Sections[3].Name);
+        Assert.Equal("competitive-lounge,competitive-ghosts", Items(model, 3));
+    }
+
+    [Fact]
+    public void TheCategory_IsFoundByName_WhereverTheUserMovedIt()
+    {
+        const string json =
+            """{"Sections":[{"Name":"competitive ","Items":["competitive-lounge"]},{"Name":"","Items":["home"]},{"Name":"","Items":["rooms"]}],"Hidden":[]}""";
+
+        var model = ParseCompetitive(json);
+
+        // No second category is added: Ghosts joins RR Lounge in the renamed, moved one.
+        Assert.Equal(3, model.Sections.Count);
+        Assert.Equal("competitive-lounge", model.Sections[0].Items[0]);
+        Assert.Contains("competitive-ghosts", model.Sections[0].Items);
+    }
 }

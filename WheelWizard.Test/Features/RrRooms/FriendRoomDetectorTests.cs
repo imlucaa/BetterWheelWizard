@@ -80,6 +80,21 @@ public class FriendRoomDetectorTests
     }
 
     [Fact]
+    public void SwitchingToAnotherFriendList_StartsANewBaseline()
+    {
+        var detector = new FriendRoomDetector();
+        detector.Update([Room(("Ann", "1111-2222-3333")), Room(("Cy", "7777-8888-9999"))], Friends);
+
+        // Another license is picked: Cy is its friend and already in a room, so Cy is not announced.
+        var otherFriends = new HashSet<string> { "777788889999" };
+        var afterSwitch = detector.Update([Room(("Ann", "1111-2222-3333")), Room(("Cy", "7777-8888-9999"))], otherFriends);
+        var stillThere = detector.Update([Room(("Cy", "7777-8888-9999"))], otherFriends);
+
+        Assert.Empty(afterSwitch);
+        Assert.Empty(stillThere);
+    }
+
+    [Fact]
     public void FriendCodesWithOrWithoutDashes_Match()
     {
         var detector = new FriendRoomDetector();

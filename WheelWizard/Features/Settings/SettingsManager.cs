@@ -1,4 +1,4 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using WheelWizard.ApplicationData;
 using WheelWizard.Dolphin.Paths;
 using WheelWizard.DolphinInstaller;
@@ -218,6 +218,7 @@ public class SettingsManager : ISettingsManager, IDisposable
         DISCORD_ROOM_BUTTON = RegisterWhWz("DiscordRoomButton", true);
         DISCORD_APP_ID = RegisterWhWz("DiscordAppId", "");
         MII_TAGS = RegisterWhWz("MiiTags", "");
+        PLAYER_FLAGS = RegisterWhWz("PlayerFlags", "");
         OVERLAY_CONFIG = RegisterWhWz("OverlayConfig", "");
         OVERLAY_PRESETS = RegisterWhWz("OverlayPresets", "");
         OVERLAY_FRIEND_CODE = RegisterWhWz("OverlayFriendCode", "");
@@ -377,6 +378,7 @@ public class SettingsManager : ISettingsManager, IDisposable
     public Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     public Setting<string> DISCORD_APP_ID { get; }
     public Setting<string> MII_TAGS { get; }
+    public Setting<string> PLAYER_FLAGS { get; }
     public Setting<string> OVERLAY_CONFIG { get; }
     public Setting<string> OVERLAY_PRESETS { get; }
     public Setting<string> OVERLAY_FRIEND_CODE { get; }

@@ -249,11 +249,6 @@ public sealed class DiscordPresenceService(
             {
                 return;
             }
-            catch (Exception exception)
-            {
-                logger.LogDebug(exception, "Discord presence update failed");
-                DropClient();
-            }
         } while (await WaitAsync(timer, cancellationToken));
     }
 
@@ -293,6 +288,12 @@ public sealed class DiscordPresenceService(
         {
             await TickCoreAsync(cancellationToken);
         }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            // Dropped inside the gate, so a refresh and the timer never tear down a connection the other is using.
+            logger.LogDebug(exception, "Discord presence update failed");
+            DropClient();
+        }
         finally
         {
             _tickGate.Release();
@@ -309,10 +310,13 @@ public sealed class DiscordPresenceService(
                 {
                     await TickAsync(_stop.Token);
                 }
-                catch (Exception exception)
+                catch (OperationCanceledException)
                 {
-                    logger.LogDebug(exception, "Discord presence refresh failed");
-                    DropClient();
+                    // The launcher is closing.
+                }
+                catch (ObjectDisposedException)
+                {
+                    // The launcher is closing.
                 }
             });
     }

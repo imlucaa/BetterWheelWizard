@@ -22,7 +22,9 @@
         xmlns:design="clr-namespace:WheelWizard.Views.DesignTime"
         xmlns:miiImages="clr-namespace:WheelWizard.MiiImages.Views"
         xmlns:shellControls="clr-namespace:WheelWizard.Views.Shell.Controls"
-        xmlns:themes="clr-namespace:WheelWizard.Themes">
+        xmlns:themes="clr-namespace:WheelWizard.Themes"
+        xmlns:lounge="clr-namespace:WheelWizard.RrLounge.Views"
+        xmlns:ghosts="clr-namespace:WheelWizard.Ghosts.Views">
         <Grid x:Name="WindowFrame" RowDefinitions="30,*"
            Background="{DynamicResource LauncherBaseBrush}">
         <themes:LauncherBackgroundImage x:Name="LauncherBackground" Grid.RowSpan="2" />
@@ -126,6 +128,12 @@
                                            Text="{loc:T page_title.friends}" x:Name="FriendsButton"
                                            PageType="{x:Type community:FriendsPage}"
                                            BoxText="0/0" />
+            <shellControls:SidebarRadioButton IconData="{StaticResource Chart}"
+                                           PageType="{x:Type lounge:RrLoungePage}"
+                                           Text="RR Lounge" />
+            <shellControls:SidebarRadioButton IconData="{StaticResource Hourglass}"
+                                           PageType="{x:Type ghosts:GhostsPage}"
+                                           Text="Ghosts" />
 
             <TextBlock Text="{loc:T category.other}" Classes="SidebarSectionText"
                        x:Name="OtherSectionText" IsVisible="False" />
@@ -146,53 +154,55 @@
                                     VerticalAlignment="Bottom"
                                     Margin="0,0,0,52"  Tone="Secondary" Variant="Link" Padding="0" MinHeight="0"/>
 
-        <Border Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                Margin="10,0,0,12" Cursor="Hand"
-                ToolTip.Tip="This only shows regions YOU have played on"
-                ToolTip.Placement="TopEdgeAlignedLeft" ToolTip.ShowDelay="20"
-                x:Name="LiveStatusBorder" IsVisible="False"
-                Width="28" Height="28"
-                Classes="BottomSidebarIcon">
-            <PathIcon Width="24" Height="24"
-                      Margin="-2"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center" />
-            <Border.Styles>
-                <Style Selector="Border PathIcon">
-                    <Setter Property="Foreground" Value="Transparent" />
-                </Style>
-                <Style Selector="Border.Warning PathIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
-                    <Setter Property="Data" Value="{StaticResource WarningTip}" />
-                </Style>
-                <Style Selector="Border.Error PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Danger500}" />
-                    <Setter Property="Data" Value="{StaticResource ErrorTip}" />
-                </Style>
-                <Style Selector="Border.Success PathIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
-                    <Setter Property="Data" Value="{StaticResource SuccessTip}" />
-                </Style>
-                <Style Selector="Border.Info PathIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Neutral200}" />
-                    <Setter Property="Data" Value="{StaticResource InfoTip}" />
-                </Style>
-                <Style Selector="Border.Question PathIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Brand300}" />
-                    <Setter Property="Data" Value="{StaticResource QuestionTip}" />
-                </Style>
-                <Style Selector="Border.Party PathIcon">
-                    <Setter Property="Foreground" Value="{StaticResource Danger300}" />
-                    <Setter Property="Data" Value="{StaticResource StarIcon}" />
-                </Style>
-                <Style Selector="Border#LiveStatusBorder:pointerover PathIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
-                </Style>
-            </Border.Styles>
-        </Border>
 
-        <Grid Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="5" ColumnDefinitions="28,8,28,8,28,8,*"
-              VerticalAlignment="Bottom" Margin="10,0,13,12" x:Name="SidebarBottomBar">
+        <!-- Same as the wide layout set in code: four centred slots, the first one left free for the status alert. -->
+        <Grid Grid.Column="0" components:Dropdown.AllowDismissInteraction="True" Grid.Row="5" ColumnDefinitions="28,8,28,8,28,8,28"
+              VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,12" x:Name="SidebarBottomBar">
+            <!-- The status alert has the first slot of the icon row, so it can never land on another icon. -->
+            <Border Grid.Column="0" Cursor="Hand"
+                    ToolTip.Tip="This only shows regions YOU have played on"
+                    ToolTip.Placement="TopEdgeAlignedLeft" ToolTip.ShowDelay="20"
+                    x:Name="LiveStatusBorder" IsVisible="False"
+                    Width="28" Height="28"
+                    Classes="BottomSidebarIcon">
+                <PathIcon Width="24" Height="24"
+                          Margin="-2"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center" />
+                <Border.Styles>
+                    <Style Selector="Border PathIcon">
+                        <Setter Property="Foreground" Value="Transparent" />
+                    </Style>
+                    <Style Selector="Border.Warning PathIcon">
+                        <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
+                        <Setter Property="Data" Value="{StaticResource WarningTip}" />
+                    </Style>
+                    <Style Selector="Border.Error PathIcon">
+                        <Setter Property="Foreground" Value="{StaticResource Danger500}" />
+                        <Setter Property="Data" Value="{StaticResource ErrorTip}" />
+                    </Style>
+                    <Style Selector="Border.Success PathIcon">
+                        <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
+                        <Setter Property="Data" Value="{StaticResource SuccessTip}" />
+                    </Style>
+                    <Style Selector="Border.Info PathIcon">
+                        <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
+                        <Setter Property="Data" Value="{StaticResource InfoTip}" />
+                    </Style>
+                    <Style Selector="Border.Question PathIcon">
+                        <Setter Property="Foreground" Value="{DynamicResource LauncherFooterIconBrush}" />
+                        <Setter Property="Data" Value="{StaticResource QuestionTip}" />
+                    </Style>
+                    <Style Selector="Border.Party PathIcon">
+                        <Setter Property="Foreground" Value="{StaticResource Danger300}" />
+                        <Setter Property="Data" Value="{StaticResource StarIcon}" />
+                    </Style>
+                    <!-- Everyday alerts look like the icons next to them; only an error (and a party) keep their own colour. -->
+                    <Style Selector="Border#LiveStatusBorder:pointerover PathIcon">
+                        <Setter Property="Foreground" Value="{DynamicResource Neutral300}" />
+                    </Style>
+                </Border.Styles>
+            </Border>
             <Border Grid.Column="2"
                     x:Name="SidebarInfoButton"
                     Width="28" Height="28"

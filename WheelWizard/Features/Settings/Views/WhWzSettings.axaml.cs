@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -154,9 +154,48 @@ public partial class WhWzSettings : UserControl
 
     private void RefreshLocalizedCodeText()
     {
-        MarioKartHelperText.Text = t("helper_text.end_with_x") + " .iso/.gcm/.gcz/.ciso/.wbfs/.wia/.rvz";
-        if (string.IsNullOrWhiteSpace(DolphinPaths.ExecutablePath))
-            DolphinExecutableValueText.Text = GetDolphinExecutableHelperText();
+        ShowPaths();
+    }
+
+    /// <summary>
+    /// Each location row shows its path on one line, shortened in the middle ("C:\…\Dolphin-x64\Dolphin.exe"), with
+    /// the full path on hover. A path that is not set yet shows what to pick instead.
+    /// </summary>
+    private void ShowPaths()
+    {
+        var executable = DolphinPaths.ExecutablePath;
+        SetPathText(DolphinExecutableValueText, executable, GetDolphinExecutableHelperText());
+        SetPathText(
+            MarioKartHelperText,
+            SettingsService.Get<string>(SettingsService.GAME_LOCATION),
+            t("helper_text.end_with_x") + " .iso/.gcm/.gcz/.ciso/.wbfs/.wia/.rvz"
+        );
+        var userFolder = DolphinPaths.UserFolderPath;
+        SetPathText(DolphinUserFolderValueText, userFolder, string.Empty);
+        DolphinUserFolderValueText.IsVisible = !string.IsNullOrWhiteSpace(userFolder);
+    }
+
+    private static void SetPathText(TextBlock text, string? path, string whenEmpty)
+    {
+        var empty = string.IsNullOrWhiteSpace(path);
+        text.Text = empty ? whenEmpty : ShortPath(path!);
+        ToolTip.SetTip(text, empty ? null : path);
+    }
+
+    /// <summary>The first part of a path and its last two parts, with "…" between when it is long.</summary>
+    internal static string ShortPath(string path)
+    {
+        const int MaxLength = 42;
+        if (path.Length <= MaxLength)
+            return path;
+
+        var separator = path.Contains('\\') ? '\\' : '/';
+        var parts = path.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length <= 3)
+            return path;
+
+        var start = path.StartsWith(separator) ? separator + parts[0] : parts[0];
+        return $"{start}{separator}…{separator}{parts[^2]}{separator}{parts[^1]}";
     }
 
     private static string GetDolphinExecutableHelperText()
@@ -425,9 +464,7 @@ public partial class WhWzSettings : UserControl
         );
 
         LocationWarningIcon.IsVisible = !SettingsService.PathsSetupCorrectly();
-        DolphinExecutableValueText.Text = string.IsNullOrWhiteSpace(DolphinPaths.ExecutablePath)
-            ? GetDolphinExecutableHelperText()
-            : DolphinPaths.ExecutablePath;
+        ShowPaths();
         DolphinExecutableOpenButton.IsVisible = !OperatingSystem.IsLinux() || IsConfiguredExecutableFile(DolphinPaths.ExecutablePath);
         DolphinExecutableOpenButton.IsEnabled =
             DolphinExecutableOpenButton.IsVisible && CanOpenContainingFolder(DolphinPaths.ExecutablePath);

@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
@@ -175,6 +175,13 @@
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="TextTrimming" Value="None"/>
     </Style>
+
+    <!-- Sub-menus (a menu item that opens another list) draw their own popup with these theme brushes; they get the
+         same dark background and no border as the menu they come from. -->
+    <Styles.Resources>
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="{StaticResource BlackIsh}" />
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="Transparent" />
+    </Styles.Resources>
 
     <Style Selector="ContextMenu">
         <Setter Property="Background" Value="{StaticResource BlackIsh}"/>

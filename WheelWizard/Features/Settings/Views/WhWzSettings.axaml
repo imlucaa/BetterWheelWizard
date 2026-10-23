@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -45,9 +45,9 @@
                                       IsVisible="False" />
                             <StackPanel Grid.Column="1" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                                 <components1:FormFieldLabel Text="{loc:T option.dolphin_emulator_exe}" />
-                                <SelectableTextBlock x:Name="DolphinExecutableValueText"
-                                                     Classes="TinyText"
-                                                     TextWrapping="Wrap" />
+                                <TextBlock x:Name="DolphinExecutableValueText"
+                                           Classes="TinyText"
+                                           TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                             <components1:ActionButton Grid.Column="2"
                                                 x:Name="DolphinExecutableChangeButton"
@@ -94,9 +94,9 @@
                                       IsVisible="False" />
                             <StackPanel Grid.Column="1" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                                 <components1:FormFieldLabel Text="{loc:T option.mario_kart_game}" />
-                                <SelectableTextBlock Classes="TinyText"
-                                                     x:Name="MarioKartHelperText"
-                                                     TextWrapping="Wrap" />
+                                <TextBlock Classes="TinyText"
+                                           x:Name="MarioKartHelperText"
+                                           TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                             <components1:ActionButton Grid.Column="2"
                                                 x:Name="GameLocationChangeButton"
@@ -144,6 +144,10 @@
                             <StackPanel Grid.Column="1" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                                 <components1:FormFieldLabel x:Name="DolphinUserFolderLabel"
                                                             Text="{loc:T option.dolphin_user_path}" />
+                                <TextBlock x:Name="DolphinUserFolderValueText"
+                                           Classes="TinyText"
+                                           TextTrimming="CharacterEllipsis"
+                                           IsVisible="False" />
                             </StackPanel>
                             <components1:ActionButton Grid.Column="2"
                                                 x:Name="DolphinUserFolderChangeButton"
@@ -227,7 +231,7 @@
                     <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" MinHeight="40">
                         <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components1:FormFieldLabel x:Name="VersionLabel" />
-                            <TextBlock x:Name="UpdateSourceText" Classes="TinyText" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="UpdateSourceText" Classes="TinyText" TextTrimming="CharacterEllipsis" IsVisible="False" />
                             <TextBlock x:Name="LastCheckedText" Classes="TinyText" TextTrimming="CharacterEllipsis" />
                         </StackPanel>
                         <components1:ActionButton Grid.Column="1"

@@ -94,7 +94,7 @@ public static class ImagePalette
             if (codec is null)
                 return null;
 
-            using var full = SKBitmap.Decode(codec);
+            using var full = DecodeSmall(codec);
             if (full is null || full.Width <= 0 || full.Height <= 0)
                 return null;
 
@@ -124,6 +124,28 @@ public static class ImagePalette
         {
             return null;
         }
+    }
+
+    // Only a 64 x 64 sample is needed, so a big photo is not decoded at full size (a 10000 x 10000 picture would take
+    // 400 MB). Formats that can decode smaller (JPEG, WebP) do so; the rest are decoded whole only when that is modest.
+    private const long MaxFullDecodePixels = 40_000_000;
+
+    private static SKBitmap? DecodeSmall(SKCodec codec)
+    {
+        var info = codec.Info;
+        var longest = Math.Max(info.Width, info.Height);
+        if (longest > SampleSize * 4)
+        {
+            var size = codec.GetScaledDimensions((float)(SampleSize * 4) / longest);
+            if (size.Width < info.Width)
+            {
+                var scaled = SKBitmap.Decode(codec, new SKImageInfo(size.Width, size.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul));
+                if (scaled is not null)
+                    return scaled;
+            }
+        }
+
+        return (long)info.Width * info.Height <= MaxFullDecodePixels ? SKBitmap.Decode(codec) : null;
     }
 
     /// <summary>

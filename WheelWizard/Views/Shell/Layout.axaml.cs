@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -269,6 +269,17 @@ public partial class Layout : BaseWindow, IPollingListener
             || setting == SettingsService.LAUNCHER_BACKGROUND_FILE
         )
             ApplyLauncherAppearance();
+
+        // The window's surfaces copy their colours from the theme when they are drawn, so a new theme (a preset, or a
+        // colour changed by hand) has to redraw them too; otherwise the old theme's background stays behind the pages.
+        // Posted, so it runs after the theme service has put the new colours in place.
+        if (
+            setting == SettingsService.LAUNCHER_THEME_COLOR
+            || setting == SettingsService.LAUNCHER_TEXT_COLOR
+            || setting == SettingsService.LAUNCHER_BODY_TEXT_COLOR
+            || setting == SettingsService.LAUNCHER_BACKGROUND_COLOR
+        )
+            Avalonia.Threading.Dispatcher.UIThread.Post(ApplyLauncherAppearance, Avalonia.Threading.DispatcherPriority.Background);
     }
 
     private void ApplyLauncherAppearance()

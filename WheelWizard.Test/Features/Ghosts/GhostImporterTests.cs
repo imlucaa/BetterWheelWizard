@@ -1,4 +1,4 @@
-using Testably.Abstractions.Testing;
+﻿using Testably.Abstractions.Testing;
 using WheelWizard.CustomDistributions;
 using WheelWizard.Ghosts;
 
@@ -96,6 +96,36 @@ public class GhostImporterTests
         Assert.Null(result.Replaced);
         Assert.True(fixture.Files.File.Exists(fixture.Importer.TargetPath(track, 150)));
         Assert.False(fixture.Files.Directory.Exists(fixture.Path("Replaced")));
+    }
+
+    [Fact]
+    public void ImportData_FromADownload_ReplacesTheGhost_AsAnExpertGhost_AndKeepsTheOldOne()
+    {
+        var fixture = new Fixture();
+        var track = fixture.Importer.LoadTracks(GhostKind.Custom)[0];
+        fixture.Write("ExpertsCT/0_200.rkg", Ghost(0x00, 0x78, 0x01));
+
+        var result = fixture.Importer.ImportData(Ghost(0x02, 0x00, 0x7B), track, 200);
+
+        Assert.True(result.Success);
+        var installed = fixture.Files.File.ReadAllBytes(fixture.Importer.TargetPath(track, 200));
+        Assert.Equal(GhostFile.ExpertGhostType, ((installed[0x0C] & 1) << 6) | (installed[0x0D] >> 2));
+        Assert.Equal(new TimeSpan(0, 0, 1, 0, 123), fixture.Importer.CurrentTime(track, 200));
+        Assert.Single(fixture.Files.Directory.GetFiles(fixture.Path("Replaced/ExpertsCT")));
+    }
+
+    [Fact]
+    public void ImportData_OfSomethingThatIsNotAGhost_ChangesNothing()
+    {
+        var fixture = new Fixture();
+        var track = fixture.Importer.LoadTracks(GhostKind.Custom)[0];
+        var original = Ghost(0x00, 0x78, 0x01);
+        fixture.Write("ExpertsCT/0_150.rkg", original);
+
+        var result = fixture.Importer.ImportData("<html>error</html>"u8.ToArray(), track, 150);
+
+        Assert.False(result.Success);
+        Assert.Equal(original, fixture.Files.File.ReadAllBytes(fixture.Importer.TargetPath(track, 150)));
     }
 
     [Fact]

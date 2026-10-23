@@ -1,7 +1,8 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using WheelWizard.Views.Components;
 using WheelWizard.WheelWizardData.Domain;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
@@ -117,6 +118,44 @@ public class PlayerListItem : TemplatedControl
     {
         get => GetValue(FriendCodeProperty);
         set => SetValue(FriendCodeProperty, value);
+    }
+
+    public static readonly StyledProperty<string> FlagNoteProperty = AvaloniaProperty.Register<PlayerListItem, string>(
+        nameof(FlagNote),
+        string.Empty
+    );
+
+    /// <summary>Your note for a flagged player ("Wii off"); empty when the player is not flagged.</summary>
+    public string FlagNote
+    {
+        get => GetValue(FlagNoteProperty);
+        set => SetValue(FlagNoteProperty, value);
+    }
+
+    public static readonly StyledProperty<IBrush?> FlagBrushProperty = AvaloniaProperty.Register<PlayerListItem, IBrush?>(
+        nameof(FlagBrush)
+    );
+
+    /// <summary>The colour picked for this player's flag; the name and the note badge take it.</summary>
+    public IBrush? FlagBrush
+    {
+        get => GetValue(FlagBrushProperty);
+        set => SetValue(FlagBrushProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> IsFlaggedProperty = AvaloniaProperty.Register<PlayerListItem, bool>(nameof(IsFlagged));
+
+    public bool IsFlagged
+    {
+        get => GetValue(IsFlaggedProperty);
+        private set => SetValue(IsFlaggedProperty, value);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == FlagNoteProperty)
+            IsFlagged = !string.IsNullOrEmpty(FlagNote);
     }
 
     public static readonly StyledProperty<string> UserNameProperty = AvaloniaProperty.Register<PlayerListItem, string>(nameof(UserName));

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -37,7 +37,6 @@ public partial class FriendCodeSettings : UserControl
     private readonly IApiCaller<IRwfcApi> _api;
     private readonly IGameLicenseSingletonService _licenses;
     private readonly IPopupFactory _popups;
-    private readonly IFilePickerService _filePicker;
     private readonly ISettingsManager _settings;
     private readonly ISaveRegionService _saveRegions;
     private readonly ICustomDistributionPaths _paths;
@@ -56,13 +55,11 @@ public partial class FriendCodeSettings : UserControl
         IApiCaller<IRwfcApi> api,
         IGameLicenseSingletonService licenses,
         IPopupFactory popups,
-        IFilePickerService filePicker,
         ISettingsManager settings,
         ISaveRegionService saveRegions,
         ICustomDistributionPaths paths
     )
     {
-        _filePicker = filePicker;
         _settings = settings;
         _saveRegions = saveRegions;
         _paths = paths;
@@ -183,22 +180,23 @@ public partial class FriendCodeSettings : UserControl
                     o.Slot != license.Slot
                     && (o.ProfileId == license.ProfileId || o.PseudoId == license.PseudoId || o.AuthenticId == license.AuthenticId)
                 )
-                .Select(o => o.Name)
+                .Select(Label)
                 .Distinct()
                 .ToList();
             var selected = index == _selected;
 
             // Name small on top, the friend code under it; a red line only when IDs clash.
             var row = new StackPanel { Spacing = 1 };
-            row.Children.Add(
-                new TextBlock
-                {
-                    Text = license.Name,
-                    FontSize = 11,
-                    Opacity = 0.7,
-                    TextTrimming = TextTrimming.CharacterEllipsis,
-                }
-            );
+            if (HasName(license))
+                row.Children.Add(
+                    new TextBlock
+                    {
+                        Text = license.Name,
+                        FontSize = 11,
+                        Opacity = 0.7,
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                    }
+                );
             row.Children.Add(
                 new TextBlock
                 {
@@ -256,9 +254,14 @@ public partial class FriendCodeSettings : UserControl
         ApplyPanel.IsVisible = false;
     }
 
+    // A license without a name (the game calls it "no name") goes by its friend code instead.
+    private static bool HasName(LicenseIdentity license) => !string.IsNullOrWhiteSpace(license.Name) && license.Name != "no name";
+
+    private static string Label(LicenseIdentity license) => HasName(license) ? license.Name : license.FriendCode;
+
     private void UpdateApplyButton()
     {
-        var name = _selected >= 0 && _selected < _identities.Count ? _identities[_selected].Name : string.Empty;
+        var name = _selected >= 0 && _selected < _identities.Count ? Label(_identities[_selected]) : string.Empty;
         ApplyButton.Text = name.Length == 0 ? "Replace" : $"Replace {name}";
         ApplyButton.IsEnabled = _approvedProfileId is not null && AckBox.IsChecked == true && name.Length > 0;
     }
@@ -323,7 +326,7 @@ public partial class FriendCodeSettings : UserControl
         if (_identities.FirstOrDefault(i => i.ProfileId == profileId) is { } mine)
         {
             ResultVerdict.Foreground = Bad;
-            ResultVerdict.Text = $"{mine.Name} already has this code.";
+            ResultVerdict.Text = $"{Label(mine)} already has this code.";
             return;
         }
 
@@ -358,33 +361,54 @@ public partial class FriendCodeSettings : UserControl
     #region Replace
 
     /// <summary>
-    /// Dolphin keeps the save in memory while the game runs and writes it back, so a change made then is lost.
+    /// Dolphin and WiiCompiled keep the save in memory while the game runs and write it back, so a change made then is
+    /// lost.
     /// </summary>
-    private static bool IsDolphinRunning()
+    internal static bool IsGameRunning()
     {
+        Process[] processes;
         try
         {
-            return Process
-                .GetProcesses()
-                .Any(p =>
-                    (
-                        p.ProcessName.StartsWith("Dolphin", StringComparison.OrdinalIgnoreCase)
-                        && !p.ProcessName.Contains("Tool", StringComparison.OrdinalIgnoreCase)
-                    ) || p.ProcessName.Equals("dolphin-emu", StringComparison.OrdinalIgnoreCase)
-                );
+            processes = Process.GetProcesses();
         }
         catch (Exception)
         {
             return false;
         }
+
+        try
+        {
+            return processes.Any(p =>
+            {
+                try
+                {
+                    var name = p.ProcessName;
+                    return name.StartsWith("Dolphin", StringComparison.OrdinalIgnoreCase)
+                            && !name.Contains("Tool", StringComparison.OrdinalIgnoreCase)
+                        || name.Equals("dolphin-emu", StringComparison.OrdinalIgnoreCase)
+                        || name.Equals("WiiCompiled", StringComparison.OrdinalIgnoreCase)
+                        || name.Equals("RetroRewind", StringComparison.OrdinalIgnoreCase);
+                }
+                catch (Exception)
+                {
+                    // The process ended while the list was read.
+                    return false;
+                }
+            });
+        }
+        finally
+        {
+            foreach (var process in processes)
+                process.Dispose();
+        }
     }
 
-    private static bool BlockWhileDolphinRuns()
+    internal static bool BlockWhileGameRuns()
     {
-        if (!IsDolphinRunning())
+        if (!IsGameRunning())
             return false;
 
-        ViewUtils.ShowSnackbar("Close Dolphin first. It would write its old save back over the change.", ViewUtils.SnackbarType.Warning);
+        ViewUtils.ShowSnackbar("Close the game first. It would write its old save back over the change.", ViewUtils.SnackbarType.Warning);
         return true;
     }
 
@@ -392,7 +416,7 @@ public partial class FriendCodeSettings : UserControl
     {
         if (_approvedProfileId is not { } profileId || AckBox.IsChecked != true)
             return;
-        if (BlockWhileDolphinRuns())
+        if (BlockWhileGameRuns())
             return;
         if (_selected < 0 || _selected >= _identities.Count)
             return;
@@ -400,9 +424,9 @@ public partial class FriendCodeSettings : UserControl
         var license = _identities[_selected];
         var yes = await _popups
             .Create<YesNoWindow>()
-            .SetMainText($"Replace the code of {license.Name}?")
+            .SetMainText($"Replace the code of {Label(license)}?")
             .SetExtraText(
-                $"{license.FriendCode} becomes {_approvedCode}. It is set on all your regions' saves, which are backed up first. Close Dolphin before you continue."
+                $"{license.FriendCode} becomes {_approvedCode}. It is set on all your regions' saves, which are backed up first. Close the game before you continue."
             )
             .AwaitAnswer();
         if (!yes)
@@ -436,33 +460,6 @@ public partial class FriendCodeSettings : UserControl
         ViewUtils.ShowSnackbar("Profile ID copied.");
     }
 
-    private void Backup_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var result = _licenses.BackupSaveNow();
-        if (result.IsFailure)
-        {
-            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
-            return;
-        }
-
-        ViewUtils.ShowSnackbar("Backup saved.");
-        RefreshUndo();
-    }
-
-    private static FilePickerFileType SaveFile =>
-        new("Mario Kart Wii save") { Patterns = ["*.dat"], MimeTypes = ["application/octet-stream"] };
-
-    private static string KindText(string kind) =>
-        kind switch
-        {
-            "manual" => "Manual",
-            "change" => "Before a change",
-            "undo" => "Before an undo",
-            "before-restore" => "Before a restore",
-            "before-import" => "Before an import",
-            _ => kind,
-        };
-
     private void AfterSaveChanged()
     {
         ViewUtils.GetLayout().UpdateSidebarProfile();
@@ -470,99 +467,6 @@ public partial class FriendCodeSettings : UserControl
         HideApply();
         RefreshLicenses();
         RefreshUndo();
-    }
-
-    private async void Restore_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var backups = _licenses.ListBackups();
-        if (backups.Count == 0)
-        {
-            ViewUtils.ShowSnackbar("There are no backups yet.", ViewUtils.SnackbarType.Warning);
-            return;
-        }
-
-        // Each row also lists the friend codes that are inside that backup.
-        var options = backups
-            .Select(b =>
-            {
-                var codes = _licenses.GetBackupLicenses(b.Name).Select(l => l.FriendCode);
-                return new ChoiceOption($"{b.Time:d MMM yyyy, HH:mm}", KindText(b.Kind), Detail: string.Join("\n", codes));
-            })
-            .ToList();
-        var index = await _popups
-            .CreateChoiceList("Restore a backup", "Choose a backup", "You see its friend codes before anything changes.", options)
-            .AwaitAnswer();
-        if (index is not { } chosen || chosen < 0 || chosen >= backups.Count)
-            return;
-        if (BlockWhileDolphinRuns())
-            return;
-
-        var backup = backups[chosen];
-        var licenses = _licenses.GetBackupLicenses(backup.Name);
-        var codes =
-            licenses.Count == 0
-                ? "No licenses found in this backup."
-                : string.Join("\n", licenses.Select(l => $"{(string.IsNullOrWhiteSpace(l.Name) ? "No name" : l.Name)}   {l.FriendCode}"));
-        var yes = await _popups
-            .Create<YesNoWindow>()
-            .SetMainText($"Restore the backup from {backup.Time:d MMM, HH:mm}?")
-            .SetExtraText($"{codes}\n\nYour current save is backed up first.")
-            .AwaitAnswer();
-        if (!yes)
-            return;
-
-        var result = _licenses.RestoreBackup(backup.Name);
-        if (result.IsFailure)
-        {
-            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
-            return;
-        }
-
-        ViewUtils.ShowSnackbar("Backup restored.");
-        AfterSaveChanged();
-    }
-
-    private async void Import_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var path = await _filePicker.OpenSingleFileAsync("Import a save (rksys.dat)", [SaveFile]);
-        if (path is null)
-            return;
-        if (BlockWhileDolphinRuns())
-            return;
-
-        var yes = await _popups
-            .Create<YesNoWindow>()
-            .SetMainText("Replace your save with this file?")
-            .SetExtraText("Your current save is backed up first.")
-            .AwaitAnswer();
-        if (!yes)
-            return;
-
-        var result = _licenses.ImportSave(path);
-        if (result.IsFailure)
-        {
-            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
-            return;
-        }
-
-        ViewUtils.ShowSnackbar("Save imported.");
-        AfterSaveChanged();
-    }
-
-    private async void Export_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var path = await _filePicker.SaveFileAsync("Export your save", [SaveFile], "rksys.dat");
-        if (path is null)
-            return;
-
-        var result = _licenses.ExportSave(path);
-        if (result.IsFailure)
-        {
-            ViewUtils.ShowSnackbar(result.Error.Message, ViewUtils.SnackbarType.Danger);
-            return;
-        }
-
-        ViewUtils.ShowSnackbar("Save exported.");
     }
 
     /// <summary>Shows the undo row when there is a backup from an earlier change.</summary>
@@ -586,14 +490,14 @@ public partial class FriendCodeSettings : UserControl
     {
         if (_licenses.GetLastBackupTime() is not { } when)
             return;
-        if (BlockWhileDolphinRuns())
+        if (BlockWhileGameRuns())
             return;
 
         var yes = await _popups
             .Create<YesNoWindow>()
             .SetMainText("Undo the friend code change?")
             .SetExtraText(
-                $"The friend codes go back to how they were on {when:d MMM, HH:mm}. Your races, VR and Miis stay as they are. Close Dolphin before you continue."
+                $"The friend codes go back to how they were on {when:d MMM, HH:mm}. Your races, VR and Miis stay as they are. Close the game before you continue."
             )
             .AwaitAnswer();
         if (!yes)

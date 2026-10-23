@@ -47,7 +47,6 @@ public sealed class DolphinMemoryReader : IDisposable
 
     public static bool IsSupported => OperatingSystem.IsWindows();
 
-    /// <summary>The current section id, or null when it cannot be read (not Mario Kart Wii yet, or unsupported).</summary>
     /// <summary>Which of the four save licenses is selected in the game (0 to 3), or null when it cannot be read.</summary>
     public int? ReadLicenseIndex(int processId, bool recomp = false)
     {
@@ -133,6 +132,7 @@ public sealed class DolphinMemoryReader : IDisposable
         }
     }
 
+    /// <summary>The current section id, or null when it cannot be read (not Mario Kart Wii yet, or unsupported).</summary>
     public int? ReadSectionId(int processId, bool recomp = false)
     {
         lock (_gate)

@@ -15,15 +15,16 @@ All builds are standalone single files. No installer or separate .NET installati
 ## Features
 
 - **Leaderboard**: search for any player.
-- **Rooms**: filter the room list and sort it by highest or lowest VR.
+- **Rooms**: filter the room list and sort it by highest or lowest VR. Flag players (Wii off, VR farmer, your own note) so you can spot them in rooms.
+- **RR Lounge**: the rr-lounge.com leaderboard in the launcher, with every player's profile, MMR chart and mogi history. It updates live.
 - **Miis**: download a Mii with the player's friend code or Mii name.
 - **Themes**: make your own themes and use your own images as backgrounds.
 - **RKSYS editor**: see if a friend code is free, then claim it in game.
-- **VR overlay**: show your VR on stream with an OBS overlay.
+- **VR overlay**: show your VR on stream with an OBS overlay, or open it as its own window.
 - **Custom Discord status**: put your own image on your Discord status instead of the default one.
-- **Ghosts**: import a ghost and the track is found for you. You can export ghosts too.
+- **Ghosts**: see your times next to the world records, download the fastest ghosts from rwfc.net/tt, and import or export ghost files.
 - **Backup**: back up your save and rating files and import them later.
-- **Sidebar**: press the pen icon to add pages, reorder them, make categories, or hide what you don't use.
+- **Sidebar**: press the pen icon to add pages, reorder them, make categories, or hide what you don't use. Hidden pages are still in Settings.
 - **WiiCompiled**: the Discord status and themes work there too.
 
 ## FAQ

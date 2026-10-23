@@ -1,4 +1,4 @@
-using WheelWizard.WheelWizardData.Domain;
+﻿using WheelWizard.WheelWizardData.Domain;
 using WheelWizard.WiiManagement.MiiManagement.Domain.Mii;
 
 namespace WheelWizard.Models.RRInfo;
@@ -30,6 +30,14 @@ public class RrPlayer : IEquatable<RrPlayer>
     public string BrDisplay => Br?.ToString() ?? "--";
 
     public BadgeVariant[] BadgeVariants { get; set; } = [];
+
+    /// <summary>Your own note for a player you flagged ("Wii off", "VR farmer"), or empty. See PlayerFlags.</summary>
+    public string FlagNote { get; set; } = string.Empty;
+
+    public bool IsFlagged => FlagNote.Length > 0;
+
+    /// <summary>The colour of your flag tag ("#RRGGBB").</summary>
+    public string FlagColor { get; set; } = "#FF6581";
     public bool HasBadges => BadgeVariants.Length != 0;
 
     public bool Equals(RrPlayer? other)

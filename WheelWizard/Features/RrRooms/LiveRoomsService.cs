@@ -82,10 +82,19 @@ public class LiveRoomsService : ObservablePollingService
         var raw = roomsResult.Value;
         var splitRaw = SplitMergedRooms(raw);
 
-        var friendProfileIds = _gameLicenseService
-            .ActiveCurrentFriends.Select(friend => FriendCode.FriendCodeToProfileId(friend.FriendCode))
-            .Where(profileId => profileId != 0)
-            .ToHashSet();
+        // The first room list can arrive before the save is read; then nobody is marked as a friend yet.
+        HashSet<uint> friendProfileIds;
+        try
+        {
+            friendProfileIds = _gameLicenseService
+                .ActiveCurrentFriends.Select(friend => FriendCode.FriendCodeToProfileId(friend.FriendCode))
+                .Where(profileId => profileId != 0)
+                .ToHashSet();
+        }
+        catch (Exception ex) when (ex is ArgumentOutOfRangeException or InvalidOperationException or NullReferenceException)
+        {
+            friendProfileIds = [];
+        }
 
         var rrRooms = splitRaw
             .Select(room => MapRoom(room, _whWzService, leaderboardByPid, leaderboardByFriendCode, friendProfileIds))

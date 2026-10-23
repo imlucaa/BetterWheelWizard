@@ -1,4 +1,4 @@
-using WheelWizard.Models.Enums;
+﻿using WheelWizard.Models.Enums;
 using WheelWizard.Settings.Types;
 
 namespace WheelWizard.Settings;
@@ -47,6 +47,7 @@ public interface ISettingsProperties
     Setting<bool> DOLPHIN_DISCORD_PRESENCE { get; }
     Setting<string> DISCORD_APP_ID { get; }
     Setting<string> MII_TAGS { get; }
+    Setting<string> PLAYER_FLAGS { get; }
     Setting<string> OVERLAY_CONFIG { get; }
     Setting<string> OVERLAY_PRESETS { get; }
     Setting<string> OVERLAY_FRIEND_CODE { get; }

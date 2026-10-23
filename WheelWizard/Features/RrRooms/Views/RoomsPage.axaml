@@ -74,7 +74,7 @@
                                         IsVisible="{Binding IsPublic}" />
                                 <Border Width="5" Height="38" CornerRadius="3" Grid.Column="0" Grid.RowSpan="2"
                                         HorizontalAlignment="Center" VerticalAlignment="Center"
-                                        Background="{DynamicResource Neutral500}"
+                                        Background="{DynamicResource Primary300}"
                                         IsVisible="{Binding IsPublic, Converter={x:Static BoolConverters.Not}}"
                                         ToolTip.Tip="Private room" />
 
@@ -91,6 +91,14 @@
                                     </TextBlock>
                                     <TextBlock Text="{Binding Id}" FontSize="11" Classes="TinyText"
                                                 TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <!-- A player you flagged is in this room. -->
+                                    <Border IsVisible="{Binding HasFlags}" CornerRadius="4" Padding="5,1"
+                                            Background="{Binding FlagColor}" VerticalAlignment="Center"
+                                            ToolTip.Tip="Someone you flagged is in this room">
+                                        <TextBlock FontSize="10" FontWeight="SemiBold" Foreground="#141414">
+                                            <Run Text="⚑ " /><Run Text="{Binding FlagSummary}" />
+                                        </TextBlock>
+                                    </Border>
                                 </StackPanel>
 
                                 <Grid Grid.Column="1" Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
@@ -165,7 +173,9 @@
                             IsOpenHost="{Binding IsOpenHost}"
                             HasBadges="{Binding HasBadges}"
                             IsTopPlayer="{Binding IsTopLeaderboardPlayer}"
-                            TopLabel="{Binding TopLabel}" />
+                            TopLabel="{Binding TopLabel}"
+                            FlagNote="{Binding FlagNote}"
+                            FlagBrush="{Binding FlagColor}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace WheelWizard.AutoUpdating;
 
@@ -19,7 +19,11 @@ public static partial class ReleaseNotesText
             if (line.Length == 0 || line.StartsWith("```", StringComparison.Ordinal) || line.StartsWith("<!--", StringComparison.Ordinal))
                 continue;
 
+            var heading = HeadingMarks().IsMatch(line);
             line = HeadingMarks().Replace(line, string.Empty);
+            // The update prompt puts its own "What's new:" above the notes, so the same heading is not shown twice.
+            if (heading && line.TrimEnd(':').Trim().Equals("What's new", StringComparison.OrdinalIgnoreCase))
+                continue;
             line = BulletMarks().Replace(line, "• ");
             line = Links().Replace(line, "$1");
             line = line.Replace("**", string.Empty).Replace("__", string.Empty).Replace("`", string.Empty).Trim();

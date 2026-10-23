@@ -356,13 +356,13 @@ public class RetroRewind : IDistribution
         using var archiveStream = _fileSystem.File.OpenRead(path);
         using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
 
-        // 1) Compute total work units (weâ€™ll treat each entry as one â€œunitâ€)
+        // 1) Compute total work units (we'll treat each entry as one "unit")
         var entries = archive.Entries.Where(e => !e.FullName.EndsWith("desktop.ini", StringComparison.OrdinalIgnoreCase)).ToList();
         var total = entries.Count;
         if (total == 0)
             return Ok();
 
-        // Tell the UI what weâ€™re doing, and set a â€œgoalâ€ so it can estimate MB or items
+        // Tell the UI what we're doing, and set a "goal" so it can estimate MB or items
 
         operation.Report(new(Message: t("state.extracting"), Goal: $"Extracting {total} files"));
 
@@ -372,7 +372,7 @@ public class RetroRewind : IDistribution
             if (!PathSafety.TryGetPathWithinDirectory(destinationDirectory, entry.FullName, out var destinationPath))
                 return Fail("The file path is outside the destination directory. Please contact the developers.");
 
-            // If itâ€™s a directory, create it
+            // If it's a directory, create it
             if (entry.FullName.EndsWith(Path.AltDirectorySeparatorChar) || entry.FullName.EndsWith(Path.DirectorySeparatorChar))
             {
                 _fileSystem.Directory.CreateDirectory(destinationPath);
@@ -392,7 +392,7 @@ public class RetroRewind : IDistribution
                 input.CopyTo(output);
             }
 
-            // Report incremental progress (0â€“100)
+            // Report incremental progress (0-100)
             var percent = (int)(((i + 1) / (double)total) * 100);
             operation.Report(new(Percent: percent));
         }

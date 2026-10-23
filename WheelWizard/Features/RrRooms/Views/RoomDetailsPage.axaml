@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -78,8 +78,7 @@
             <ListBox Grid.Row="1" x:Name="PlayersListView" SelectionMode="Single" BorderThickness="0"
                      Padding="0" Margin="0" Background="Transparent" ItemsSource="{Binding PlayersList}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     SelectionChanged="PlayerView_SelectionChanged">
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <rooms:PlayerListItem
@@ -90,7 +89,9 @@
                             IsOpenHost="{Binding IsOpenHost}"
                             HasBadges="{Binding HasBadges}" BadgeVariants="{Binding BadgeVariants}"
                             IsTopPlayer="{Binding IsTopLeaderboardPlayer}"
-                            TopLabel="{Binding TopLabel}" />
+                            TopLabel="{Binding TopLabel}"
+                            FlagNote="{Binding FlagNote}"
+                            FlagBrush="{Binding FlagColor}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
 
@@ -101,6 +102,11 @@
                         <Separator />
                         <MenuItem Header="View Profile" Click="ViewProfile_OnClick" />
                         <MenuItem Header="View player on RWFC" Click="ViewOnRwfc_OnClick" />
+                        <Separator />
+                        <!-- Filled when the menu opens: one click per note, "Other…" for your own. -->
+                        <MenuItem Tag="flag" Header="Flag player" />
+                        <MenuItem Tag="color" Header="Tag colour" />
+                        <MenuItem Tag="unflag" Header="Remove flag" Click="UnflagPlayer_OnClick" />
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>

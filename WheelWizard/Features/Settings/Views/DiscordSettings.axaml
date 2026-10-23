@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -48,7 +48,7 @@
                         <StackPanel Margin="0,0,16,0" Spacing="3" VerticalAlignment="Center">
                             <components:FormFieldLabel Text="View Room button" />
                             <TextBlock Classes="TinyText" TextWrapping="Wrap"
-                                       Text="While you are in a room, opens it in Wheel Wizard (needs Wheel Wizard open)." />
+                                       Text="Opens your room in the launcher, for friends who have it." />
                         </StackPanel>
                         <components:ToggleCheckBox Grid.Column="1" x:Name="RoomButtonToggle" Variant="Switch"
                                                    VerticalAlignment="Center" Click="RoomButton_OnClick" />

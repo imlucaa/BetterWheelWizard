@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -25,6 +25,15 @@
                             <components:ActionButton x:Name="ImportRksysButton" Tone="Secondary" Size="Compact" Text="Import"
                                                      Click="ImportRksys_OnClick" />
                         </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Copies kept automatically before every change to the save. -->
+                <Border Classes="SettingsBlockStyle SettingsRowStyle SettingsRowMiddle">
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="56" ColumnSpacing="16">
+                        <components:FormFieldLabel Text="Earlier saves" VerticalAlignment="Center" />
+                        <components:ActionButton Grid.Column="1" Tone="Secondary" Size="Compact" Text="Restore"
+                                                 VerticalAlignment="Center" Click="RestoreRksys_OnClick" />
                     </Grid>
                 </Border>
 

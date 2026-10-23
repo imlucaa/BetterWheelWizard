@@ -1,4 +1,5 @@
-using System.Reflection;
+﻿using System.Reflection;
+using Avalonia.Media.Imaging;
 using WheelWizard.ApplicationData;
 
 namespace WheelWizard.StreamOverlay;
@@ -94,6 +95,28 @@ public sealed class OverlayBackground(IApplicationDataLocation location)
                     File.Delete(file);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+    }
+
+    /// <summary>
+    /// The background picture for a preview of the overlay: the stored picture for the local link, or a downloaded one
+    /// for a web link. Null when there is none or it cannot be read.
+    /// </summary>
+    public async Task<Bitmap?> LoadPreviewImageAsync(string url)
+    {
+        try
+        {
+            if (IsLocalUrl(url))
+                return CurrentPath is { } file ? new Bitmap(file) : null;
+            if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                var bytes = await http.GetByteArrayAsync(url);
+                return bytes.Length <= 15 * 1024 * 1024 ? new Bitmap(new MemoryStream(bytes)) : null;
+            }
+        }
+        catch (Exception) { }
+
+        return null;
     }
 
     public (byte[] Bytes, string ContentType)? Read()

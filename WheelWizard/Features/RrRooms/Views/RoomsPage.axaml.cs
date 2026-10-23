@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using Avalonia.Controls;
@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using WheelWizard.Models.RRInfo;
 using WheelWizard.RrRooms;
+using WheelWizard.Settings;
 using WheelWizard.Shared.Polling;
 using WheelWizard.Views.Dialogs;
 using WheelWizard.Views.Shell.Navigation;
@@ -55,13 +56,17 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
 
     private IGameLicenseSingletonService GameLicenseService { get; }
 
+    private ISettingsManager Settings { get; }
+
     public RoomsPage(
         INavigationService navigation,
         LiveRoomsService liveRooms,
         IPopupFactory popups,
-        IGameLicenseSingletonService gameLicenseService
+        IGameLicenseSingletonService gameLicenseService,
+        ISettingsManager settings
     )
     {
+        Settings = settings;
         Navigation = navigation;
         LiveRooms = liveRooms;
         Popups = popups;
@@ -120,6 +125,8 @@ public partial class RoomsPage : UserControl, INotifyPropertyChanged, IPollingLi
         };
 
         var visibleRooms = filteredRooms.ToList();
+        // Players you flagged show in red, and their rooms get a red flag.
+        PlayerFlags.Apply(LiveRooms.CurrentRooms, PlayerFlags.Load(Settings));
         Rooms.Clear();
         foreach (var room in visibleRooms)
             Rooms.Add(room);

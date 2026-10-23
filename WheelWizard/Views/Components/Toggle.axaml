@@ -1,4 +1,4 @@
-<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:components="clr-namespace:WheelWizard.Views.Components">
     <Style Selector="components|ToggleCheckBox">
@@ -150,6 +150,19 @@
         <Style Selector="^:checked:pointerover">
             <Setter Property="Background" Value="{DynamicResource Brand300}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brand300}" />
+        </Style>
+        <!-- An "on" switch fills its track with the accent colour, so the knob takes the colour picked for text on that
+             accent (black on light accents, white on dark ones), the same one the main buttons use. -->
+        <Style Selector="^:is(components|ToggleCheckBox)[Variant=Switch]:checked /template/ Ellipse#PART_Thumb, ^:is(components|ToggleRadioButton)[Variant=Switch]:checked /template/ Ellipse#PART_Thumb">
+            <Setter Property="Fill" Value="{DynamicResource LauncherAccentTextBrush}" />
+        </Style>
+        <!-- The same for a ticked box and a picked round option: the tick and the dot sit on the accent colour, so they
+             take its text colour too, or a white tick on a white theme disappears and the box looks like a plain square. -->
+        <Style Selector="^:checked /template/ Path#PART_Check">
+            <Setter Property="Stroke" Value="{DynamicResource LauncherAccentTextBrush}" />
+        </Style>
+        <Style Selector="^:checked /template/ Ellipse#PART_Dot">
+            <Setter Property="Fill" Value="{DynamicResource LauncherAccentTextBrush}" />
         </Style>
         <Style Selector="^:focus-visible">
             <Setter Property="BorderBrush" Value="{DynamicResource Brand100}" />

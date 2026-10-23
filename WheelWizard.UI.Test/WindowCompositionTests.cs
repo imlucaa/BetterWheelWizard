@@ -270,7 +270,7 @@ public class WindowCompositionTests
     }
 
     [AvaloniaFact]
-    public void SettingsNavigation_ExposesTheLanguagePage()
+    public void SettingsNavigation_LanguageLivesInTheAppearanceTab()
     {
         var pages = Substitute.For<WheelWizard.Views.Shell.Navigation.IPageFactory>();
         pages.Create(Arg.Any<Type>(), Arg.Any<object[]>()).Returns(_ => new UserControl());
@@ -281,15 +281,15 @@ public class WindowCompositionTests
             pages
         );
 
+        // Language has a single setting, so it is a section of Appearance rather than a tab of its own.
         var navigation = page.FindControl<WheelWizard.Views.Components.SegmentedControl>("SettingPages")!;
-        var languageOption = Assert.Single(
-            navigation.Items.OfType<WheelWizard.Views.Components.SegmentOption>(),
-            option => Equals(option.Tag, nameof(WheelWizard.Settings.Views.LanguageSettings))
-        );
+        var options = navigation.Items.OfType<WheelWizard.Views.Components.SegmentOption>().ToList();
+        Assert.DoesNotContain(options, option => Equals(option.Tag, nameof(WheelWizard.Settings.Views.LanguageSettings)));
+        var appearanceOption = Assert.Single(options, option => Equals(option.Tag, nameof(WheelWizard.Settings.Views.AppearanceSettings)));
 
-        navigation.SelectedItem = languageOption;
+        navigation.SelectedItem = appearanceOption;
 
-        pages.Received().Create(typeof(WheelWizard.Settings.Views.LanguageSettings), Arg.Any<object[]>());
+        pages.Received().Create(typeof(WheelWizard.Settings.Views.AppearanceSettings), Arg.Any<object[]>());
     }
 
     [AvaloniaTheory]

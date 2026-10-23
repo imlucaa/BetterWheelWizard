@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,7 +28,7 @@
     </UserControl.Styles>
     <Grid RowDefinitions="Auto,*,Auto" Margin="0,15,0,0">
         <StackPanel Grid.Row="0" Spacing="8">
-            <components:FormFieldLabel Text="VR overlay" HorizontalAlignment="Center" />
+            <components:FormFieldLabel Text="VR overlay" />
             <ContentControl x:Name="PreviewHost" />
         </StackPanel>
 
@@ -38,9 +38,9 @@
 
                 <Border Classes="SettingsBlockStyle SettingsRowStyle">
                     <StackPanel Spacing="4" Margin="0,6">
-                        <components:FormFieldLabel Text="OBS link" HorizontalAlignment="Center" />
-                        <SelectableTextBlock x:Name="LinkText" Classes="TinyText" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
-                        <TextBlock Classes="TinyText" TextAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource Neutral400}"
+                        <components:FormFieldLabel Text="OBS link" />
+                        <SelectableTextBlock x:Name="LinkText" Classes="TinyText" TextWrapping="Wrap" />
+                        <TextBlock Classes="TinyText" Foreground="{DynamicResource Neutral400}"
                                    Text="Add it to OBS as a Browser source." />
                     </StackPanel>
                 </Border>
@@ -51,9 +51,11 @@
         </ScrollViewer>
 
         <!-- Always visible in the corner, so it does not need scrolling to. -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="4,10,4,6">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Margin="4,10,4,6">
             <components:Button Text="Reset" ButtonSize="Compact" Click="Reset_OnClick" />
-            <components:Button Grid.Column="2" x:Name="CopyButton" Text="Copy link" Click="Copy_OnClick" />
+            <!-- The overlay in its own window, for a second screen or a window capture; the OBS link still works. -->
+            <components:Button Grid.Column="2" x:Name="WindowButton" Text="Open as window" Click="OpenWindow_OnClick" />
+            <components:Button Grid.Column="3" x:Name="CopyButton" Text="Copy link" Click="Copy_OnClick" />
         </Grid>
     </Grid>
 </UserControl>

@@ -1,4 +1,4 @@
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -166,6 +166,33 @@ public partial class OverlaySettings : UserControl
         )
             mii = parsed.Value;
         _preview.SetPlayer(result.Value.Name, result.Value.Vr, result.Value.Rank, mii);
+    }
+
+    /// <summary>
+    /// The overlay in a window of its own (always on top), next to the OBS browser source. The same button closes it
+    /// again while it is open.
+    /// </summary>
+    private void OpenWindow_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (OverlayWindow.Current is not null)
+            OverlayWindow.CloseIfOpen();
+        else
+            OverlayWindow.ShowOrActivate(_config, _api, _live, _background);
+    }
+
+    private void UpdateWindowButton() => WindowButton.Text = OverlayWindow.Current is null ? "Open as window" : "Close window";
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        OverlayWindow.OpenChanged += UpdateWindowButton;
+        UpdateWindowButton();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        OverlayWindow.OpenChanged -= UpdateWindowButton;
+        base.OnDetachedFromVisualTree(e);
     }
 
     private void RefreshLink()
@@ -666,24 +693,7 @@ public partial class OverlaySettings : UserControl
             return;
         _loadedImage = url;
 
-        Bitmap? bitmap = null;
-        try
-        {
-            if (OverlayBackground.IsLocalUrl(url))
-            {
-                if (_background.CurrentPath is { } file)
-                    bitmap = new Bitmap(file);
-            }
-            else if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-            {
-                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-                var bytes = await http.GetByteArrayAsync(url);
-                if (bytes.Length <= 15 * 1024 * 1024)
-                    bitmap = new Bitmap(new MemoryStream(bytes));
-            }
-        }
-        catch (Exception) { }
-
+        var bitmap = await _background.LoadPreviewImageAsync(url);
         if (url == _loadedImage)
             _preview.SetBackgroundImage(bitmap);
     }
